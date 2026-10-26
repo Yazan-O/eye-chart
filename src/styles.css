@@ -2375,3 +2375,96 @@ a {
     white-space: normal;
   }
 }
+
+.dock .dials {
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 8px;
+  border-radius: 24px;
+}
+
+.dock .dials-list {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dock .dials-list > li {
+  display: contents;
+}
+
+.dock .dial {
+  width: 96px;
+  min-width: 0;
+  gap: 4px;
+}
+
+.dock .dial-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  max-width: 12ch;
+  overflow: hidden;
+  white-space: normal;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--on-room);
+}
+
+.dock .dial-state,
+.dock .dial-reading {
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.dock .dial-detail {
+  order: 99;
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  background: var(--room);
+  border: 1px solid #2a3a4a;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dock .dial-detail a {
+  color: var(--sky);
+}
+
+.dock .dials-live {
+  width: 100%;
+  margin: 0;
+  min-height: 0;
+  font-size: 12px;
+  text-align: center;
+}
+
+.dock .dials-live:empty {
+  display: none;
+}
+
+.plate .diff {
+  font-size: 13px;
+}
+
+:root[data-view="robot"] .app .stage {
+  opacity: 0.14 !important;
+  filter: grayscale(1);
+}
+
+@media (min-width: 861px) {
+  .hero .stage {
+    bottom: 176px;
+  }
+
+  .dock {
+    width: min(820px, calc(100% - 2 * var(--margin)));
+  }
+}
+
+.dock .dials-list {
+  align-items: flex-start;
+}

@@ -7,7 +7,7 @@ Eye Chart is a public web app at https://yazan-o.github.io/eye-chart/ that shows
 - A tally (`tally`) shows four counts: read correctly (`tally-read`), misread (`tally-misread`), blocked (`tally-blocked`), not read yet (`tally-unread`). The four counts always add up to 24.
 - `reading-summary` states "Read correctly: N of 24 letters" and the measurement date. N equals the number in `tally-read`.
 - `plaque` names the recorded run and its commit.
-- The chart key (`chart-key`) lists 7 rows (`chart-row-1` to `chart-row-7`) with Snellen labels 20/200 down to 20/25. Each of the 24 letters is a link `letter-link-<id>` whose text shows the letter name and its state (Read correctly, Misread, Blocked, Not read yet). Row 1 holds one letter (Counter); row 7 holds the hidden-text letters.
+- Below the full-screen chart (scroll down, under "All 24 letters"), the chart key (`chart-key`) lists 7 rows (`chart-row-1` to `chart-row-7`) with Snellen labels 20/200 down to 20/25. Each of the 24 letters is a link `letter-link-<id>` whose text shows the letter name and its state (Read correctly, Misread, Blocked, Not read yet). Row 1 holds one letter (Counter); row 7 holds the hidden-text letters.
 - Clicking a letter link opens that letter's station at `#/letter/<id>`.
 - `motion-toggle` pauses and resumes motion; its label changes to say motion is paused, and pressing it again restores "Pause motion".
 - `about-open` opens an About panel explaining the project in plain words; it can be closed again.
@@ -17,7 +17,7 @@ Eye Chart is a public web app at https://yazan-o.github.io/eye-chart/ that shows
 - Pressing the toggle again or Escape returns to the normal view and the status line goes away.
 
 ## 3. Lens machine (`lens-machine`)
-- Lists the lenses with a dial each (`lens-dial-<id>`), all "Off" at load.
+- Lists the lenses with a dial each (`lens-dial-<id>`) in a bar at the bottom of the chart, all "Off" at load. Once per visit, after the chart lands, the first misread letter with a recorded lens fix shows its fix for two seconds; its dial stays "Off" and unpressed.
 - Turning a dial on switches that letter's chart state to the reading taken with the lens; turning it off restores the original state. The letter's link `letter-link-<id>` carries `data-lens="on"` or `data-lens="off"` (letters without a lens carry no `data-lens`).
 
 ## 4. Letter station (`#/letter/<id>`)

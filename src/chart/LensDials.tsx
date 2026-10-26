@@ -51,7 +51,7 @@ export default function LensDials({
                   <span className="dial-glyph">{d.glyph}</span>
                   <span className="dial-name">{d.name}</span>
                   <span className="dial-state">
-                    {d.on || d.demo ? "On" : "Off"}
+                    {d.on ? "On" : "Off"}
                     {d.measured ? "" : ", not measured"}
                   </span>
                   <span className="dial-reading" data-testid={`lens-dial-reading-${d.id}`}>
