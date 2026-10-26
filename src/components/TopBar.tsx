@@ -7,14 +7,16 @@ import { GlassesMark } from "./Marks";
 export default function TopBar({ children }: { children?: ReactNode }) {
   return (
     <header className="topbar" data-testid="topbar">
-      <Link to="/" className="wordmark" data-testid="wordmark" aria-label="Eye Chart, home">
-        <GlassesMark />
-        <span className="wordmark-text">Eye Chart</span>
-      </Link>
+      <div className="topbar-start">
+        <Link to="/" className="wordmark" data-testid="wordmark" aria-label="Eye Chart, home">
+          <GlassesMark />
+          <span className="wordmark-text">Eye Chart</span>
+        </Link>
+        {children}
+      </div>
       <div className="topbar-actions">
         <AgentToggle />
         <About />
-        {children}
       </div>
     </header>
   );

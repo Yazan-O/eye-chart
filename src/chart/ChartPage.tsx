@@ -19,6 +19,7 @@ import type { LensDial } from "./Phoropter";
 const ChartScene = lazy(() => import("./ChartScene"));
 
 const LEGEND: GlyphState[] = ["read", "misread", "blocked", "unread"];
+const NO_DIALS: LensDial[] = [];
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -138,78 +139,87 @@ export default function ChartPage() {
 
   return (
     <div className="chart" data-testid="chart-page" data-intro={intro}>
-      <section
-        className="stage"
-        aria-label="Lit eye chart"
-        data-testid="scene"
-        data-reduced={String(still)}
-      >
-        <SceneBoundary fallback={<Fallback onReady={markReady} />}>
-          <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
-            <ChartScene
-              rows={rows}
-              activeId={activeId}
-              still={still}
-              frozen={view === "robot"}
-              intro={intro}
-              skipAt={skipAt}
-              shift={wide ? 0.36 : 0}
-              onActive={setActiveId}
-              onOpen={(id) => navigate(`/letter/${id}`)}
-              onReady={markReady}
-              dials={dials}
-              onToggleLens={toggleLens}
-            />
-          </Suspense>
-        </SceneBoundary>
-      </section>
       <TopBar />
-      <main className="rail">
-        <div className="title-block">
-          <RobotMark />
-          <h1 className="display" data-testid="heading">
-            Eye Chart
-          </h1>
-        </div>
-        <p className="lead" data-testid="tagline">
-          An eye exam for TestSprite&rsquo;s AI tester. Every letter is a real widget, built once
-          working and once broken.
-        </p>
-        <dl className="tally" data-testid="tally" aria-label="Letters by result">
-          {LEGEND.map((s) => (
-            <div key={s} data-state={s} data-testid={`tally-${s}`}>
-              <dt>
-                <GlyphMark glyph="E" state={s} />
-                {STATE_WORDS[s]}
-              </dt>
-              <dd>{ready && file ? count(s) : 0}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="summary" data-testid="reading-summary">
-          {summary}
-        </p>
-        <p className="plaque" data-testid="plaque">
-          {plaque}
-        </p>
-        <button
-          type="button"
-          className="quiet-toggle"
-          aria-pressed={paused}
-          onClick={() => ui.setPaused(!paused)}
-          data-testid="motion-toggle"
+      <div className="hero">
+        <section
+          className="stage"
+          aria-label="Lit eye chart"
+          data-testid="scene"
+          data-reduced={String(still)}
         >
-          {paused ? "Motion paused" : "Pause motion"}
-        </button>
+          <SceneBoundary fallback={<Fallback onReady={markReady} />}>
+            <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
+              <ChartScene
+                rows={rows}
+                activeId={activeId}
+                still={still}
+                frozen={view === "robot"}
+                intro={intro}
+                skipAt={skipAt}
+                shift={wide ? 0.18 : 0}
+                onActive={setActiveId}
+                onOpen={(id) => navigate(`/letter/${id}`)}
+                onReady={markReady}
+                dials={NO_DIALS}
+                onToggleLens={toggleLens}
+              />
+            </Suspense>
+          </SceneBoundary>
+        </section>
+        <main className="hud">
+          <div className="title-block">
+            <RobotMark />
+            <h1 className="display" data-testid="heading">
+              Eye Chart
+            </h1>
+          </div>
+          <p className="lead" data-testid="tagline">
+            Each letter is a real web widget, built once working and once broken. A slash means
+            TestSprite&rsquo;s AI tester misread it. Turn a lens to fix it.
+          </p>
+          <dl className="tally" data-testid="tally" aria-label="Letters by result">
+            {LEGEND.map((s) => (
+              <div key={s} data-state={s} data-testid={`tally-${s}`}>
+                <dt>
+                  <GlyphMark glyph="E" state={s} />
+                  {STATE_WORDS[s]}
+                </dt>
+                <dd>{ready && file ? count(s) : 0}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="summary" data-testid="reading-summary">
+            {summary}
+          </p>
+          <p className="plaque" data-testid="plaque">
+            {plaque}
+          </p>
+        </main>
+        <div className="dock">
+          <LensDials
+            dials={dials}
+            activeId={activeId}
+            onToggle={toggleLens}
+            onReset={() => setLenses(new Set())}
+            onActive={setActiveId}
+          />
+        </div>
+      </div>
+      <section className="index" aria-label="All letters">
+        <div className="index-head">
+          <h2>All {all.length} letters</h2>
+          <button
+            type="button"
+            className="quiet-toggle"
+            aria-pressed={paused}
+            onClick={() => ui.setPaused(!paused)}
+            data-testid="motion-toggle"
+          >
+            {paused ? "Motion paused" : "Pause motion"}
+          </button>
+        </div>
         <ChartKey rows={rows} activeId={activeId} onActive={setActiveId} />
-        <LensDials
-          dials={dials}
-          activeId={activeId}
-          onToggle={toggleLens}
-          onReset={() => setLenses(new Set())}
-          onActive={setActiveId}
-        />
-      </main>
+      </section>
     </div>
   );
 }

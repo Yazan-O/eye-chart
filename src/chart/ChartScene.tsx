@@ -20,7 +20,6 @@ import { backOut, focusAt, introDone, lampAt, landAt } from "../core/intro";
 import type { IntroClock, IntroMode } from "../core/intro";
 import {
   ACCENT,
-  drawGlow,
   drawGlyph,
   drawGrain,
   drawHatch,
@@ -29,7 +28,6 @@ import {
   INK,
   LAMP_INK,
   PANEL,
-  SKY,
 } from "./glyphArt";
 import { layoutChart } from "./layout";
 import type { PlacedGlyph, PlacedSlat } from "./layout";
@@ -139,7 +137,6 @@ function Glyph({
   sharedRef,
   onActive,
   onOpen,
-  glowMap,
   hatchMap,
 }: {
   glyph: ChartGlyph;
@@ -149,7 +146,6 @@ function Glyph({
   sharedRef: SharedRef;
   onActive: (id: string | null) => void;
   onOpen: (id: string) => void;
-  glowMap: CanvasTexture;
   hatchMap: CanvasTexture;
 }) {
   const s = place.size;
@@ -179,7 +175,6 @@ function Glyph({
   );
 
   const face = useRef<Mesh>(null);
-  const glow = useRef<Mesh>(null);
   const bar = useRef<Group>(null);
   const slash = useRef<Group>(null);
   const hatch = useRef<Mesh>(null);
@@ -211,8 +206,6 @@ function Glyph({
     u.uGhost!.value = Math.abs(ghost.v);
     if (glyph.state === "read") {
       const k = landAt(clock, t, row, 500);
-      const breathe = 0.8;
-      if (glow.current) (glow.current.material as MeshBasicMaterial).opacity = k * breathe;
       if (bar.current) bar.current.scale.x = Math.max(0.0001, k);
     }
     if (glyph.state === "blocked" && hatch.current) {
@@ -249,19 +242,6 @@ function Glyph({
   return (
     <group position={[place.x, place.y, place.z]}>
       <group ref={body}>
-        {glyph.state === "read" && (
-          <mesh ref={glow} position={[0, 0, -0.012]}>
-            <planeGeometry args={[s * 1.7, s * 1.7]} />
-            <meshBasicMaterial
-              map={glowMap}
-              transparent
-              opacity={0}
-              toneMapped={false}
-              fog={false}
-              depthWrite={false}
-            />
-          </mesh>
-        )}
         <mesh ref={face} material={material} onPointerOver={over} onPointerOut={out} onClick={click}>
           <planeGeometry args={[s, s]} />
         </mesh>
@@ -304,19 +284,21 @@ function Slat({
   lifted,
   sharedRef,
   grain,
+  edge,
 }: {
   slat: PlacedSlat;
   dim: boolean;
   lifted: boolean;
   sharedRef: SharedRef;
   grain: CanvasTexture;
+  edge: number;
 }) {
-  const label = useMemo(() => texture((c) => drawLabel(c, slat.fraction, SKY), 256, 64), [slat.fraction]);
+  const label = useMemo(() => texture((c) => drawLabel(c, slat.fraction, LABEL), 256, 64), [slat.fraction]);
   useEffect(() => () => label.dispose(), [label]);
   const face = useRef<MeshBasicMaterial>(null);
   const group = useRef<Group>(null);
   const base = useMemo(() => (dim ? ROW_DIM.clone() : new Color(PANEL)), [dim]);
-  const labelH = Math.max(0.16, slat.height * 0.2);
+  const labelH = 0.26;
 
   useFrame(() => {
     const t = sharedRef.current.born === null ? 0 : now() - sharedRef.current.born;
@@ -339,7 +321,7 @@ function Slat({
         <planeGeometry args={[slat.width, slat.height]} />
         <meshBasicMaterial ref={face} map={grain} color={base} toneMapped={false} fog={false} />
       </mesh>
-      <mesh position={[-slat.width / 2 - labelH * 2.2, 0, 0]}>
+      <mesh position={[-edge - labelH * 2.2, 0, 0]}>
         <planeGeometry args={[labelH * 4, labelH]} />
         <meshBasicMaterial map={label} transparent toneMapped={false} fog={false} />
       </mesh>
@@ -467,6 +449,7 @@ function Rig({
 }
 
 const SLOW_FRAME_MS = 50;
+const LABEL = "#7f9bb3";
 
 function Ladder({ onSlow }: { onSlow: () => void }) {
   const statsRef = useRef({ last: 0, sum: 0, n: 0 });
@@ -556,7 +539,6 @@ export default function ChartScene({
     if (skipAt !== null) sharedRef.current.clock.skipAt = sharedRef.current.born === null ? 0 : skipAt - sharedRef.current.born;
   }, [sharedRef, skipAt]);
 
-  const glowMap = useMemo(() => texture(drawGlow, 128, 128), []);
   const hatchMap = useMemo(() => texture(drawHatch, 128, 128), []);
   const grain = useMemo(() => {
     const t = texture(drawGrain, 128, 128);
@@ -567,11 +549,10 @@ export default function ChartScene({
   }, []);
   useEffect(
     () => () => {
-      glowMap.dispose();
       hatchMap.dispose();
       grain.dispose();
     },
-    [glowMap, hatchMap, grain],
+    [hatchMap, grain],
   );
 
   const byId = useMemo(() => {
@@ -583,6 +564,7 @@ export default function ChartScene({
   const activeRow = activeId ? (byId.get(activeId)?.row ?? -1) : -1;
 
   const phoropterY = layout.bottom - 0.75;
+  const labelEdge = useMemo(() => Math.max(0, ...layout.slats.map((sl) => sl.width / 2)), [layout]);
   const extent: Extent = useMemo(
     () => ({
       top: layout.top,
@@ -627,6 +609,7 @@ export default function ChartScene({
               lifted={activeRow === i}
               sharedRef={sharedRef}
               grain={grain}
+              edge={labelEdge}
             />
           ))}
           {layout.glyphs.map((p) => {
@@ -641,7 +624,6 @@ export default function ChartScene({
                 sharedRef={sharedRef}
                 onActive={onActive}
                 onOpen={onOpen}
-                glowMap={glowMap}
                 hatchMap={hatchMap}
               />
             ) : null;

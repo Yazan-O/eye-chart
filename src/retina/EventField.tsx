@@ -29,11 +29,29 @@ function outline(ctx: CanvasRenderingContext2D, n: AgentNode, dash: number[], co
   ctx.strokeRect(n.box.x + 0.5, n.box.y + 0.5, n.box.w - 1, n.box.h - 1);
 }
 
+function drawVoid(ctx: CanvasRenderingContext2D, n: AgentNode) {
+  ctx.lineWidth = 2;
+  ctx.setLineDash([10, 8]);
+  ctx.strokeStyle = BLOCKED;
+  ctx.strokeRect(n.box.x + 8, n.box.y + 8, n.box.w - 16, n.box.h - 16);
+  ctx.setLineDash([]);
+  ctx.fillStyle = BLOCKED;
+  ctx.font = "500 18px ui-monospace, Consolas, monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Canvas: nothing readable inside", n.box.x + n.box.w / 2, n.box.y + n.box.h / 2);
+  ctx.textAlign = "start";
+}
+
 export function drawStill(ctx: CanvasRenderingContext2D, nodes: AgentNode[], fixed: ReadonlySet<string>) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.lineWidth = 1.5;
   nodes.forEach((n) => {
-    if (n.kind === "void") return;
+    if (n.kind === "void") {
+      drawVoid(ctx, n);
+      ctx.lineWidth = 1.5;
+      return;
+    }
     const code = codeOf(n, fixed);
     if (code === "read" || code === "fixed") outline(ctx, n, [], OFF);
     else if (code === "blocked") outline(ctx, n, [6, 4], BLOCKED);
@@ -156,6 +174,9 @@ export default function EventField({
         }
       });
       ctx.setLineDash([]);
+      built.forEach((n) => {
+        if (n.kind === "void") drawVoid(ctx, n);
+      });
       for (let pass = 0; pass < 2; pass++) {
         const size = pass === 0 ? 6 : 2;
         const half = size / 2;

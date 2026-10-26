@@ -126,8 +126,8 @@ export default function StationPage() {
   return (
     <div className="station" data-testid="station-page">
       <TopBar>
-        <Link to="/" className="button button--ink" data-testid="back-to-chart">
-          Back to the chart
+        <Link to="/" className="back-link" data-testid="back-to-chart" aria-label="Back to the chart">
+          &larr; Chart
         </Link>
       </TopBar>
       <main>
