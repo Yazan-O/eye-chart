@@ -187,7 +187,7 @@ Every pull request runs three kinds of check against its own preview deploy. Two
 
 ```mermaid
 flowchart TD
-  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, build"]
+  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, 65 Playwright tests, build"]
   PR --> DEP["Deploy job, pages.yml<br/>preview at /eye-chart/pr-preview/pr-N/<br/>finishes only when the preview serves this build"]
   DEP --> APP["TestSprite GitHub App<br/>21-test site suite on the preview"]
   PR --> RX["Re-examination job, calibration.yml<br/>waits for the preview, then the TestSprite CLI<br/>re-reads 5 headline twins"]
@@ -204,6 +204,7 @@ flowchart TD
 | **Site suite**: TestSprite project "Eye Chart site", 21 tests, planned from [`docs/PRD.md`](docs/PRD.md) | The Eye Chart site itself | Chart, letter stations, lens machine, sensor view, routes, twin pages and phone width. The PRD it is planned from states checkable facts, for example: the four tally counts add up to 24, the summary line equals the read-correctly tally, and each lens letter's link carries `data-lens="on"` or `"off"`. | Every PR, through the TestSprite GitHub App, on that PR's preview | **Yes.** `main` requires the "TestSprite V3" check. |
 | **Re-examination**: TestSprite calibration project, CLI 0.15.0 | TestSprite itself, on 5 headline twins: `toast/works`, `hover-menu/works`, `hover-menu/lens`, `autocomplete/broken`, `consent-scrim/broken` | Each verdict against the twin's built-in truth, posted as a table on the PR | Every same-repo PR while at least 8 credits remain; below that it posts a "skipped" note and starts no run | **No, by design.** A misread is a finding about the tester, not a bug in the site. |
 | **Unit tests**: Vitest, 13 files, 109 tests | Data rules and widgets | Readings parsing and scoring, lens logic, chart rows and layout, the sensor view's accessibility scan, routing, and the twins of each letter | Every PR and every push to `main` | **Yes.** `main` requires "verify". |
+| **End-to-end tests**: Playwright, 65 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
 
 <details>
 <summary><b>The 21 site-suite tests</b> (names from TestSprite's PR comment)</summary>
@@ -243,7 +244,7 @@ flowchart TD
 | `af671fb` | red: 20/21 passed, 1 failed | `0c48b66` Dial link opens the station's lens section and names the letter |
 | `0c48b66` | **green: all 21 tests passed** | merged as `1d98446` |
 
-The merge waited until the check was green. Pull requests [2](https://github.com/Yazan-O/eye-chart/pull/2) and [3](https://github.com/Yazan-O/eye-chart/pull/3) also merged on a green 21 of 21.
+The merge waited until the check was green. Pull requests [2](https://github.com/Yazan-O/eye-chart/pull/2), [3](https://github.com/Yazan-O/eye-chart/pull/3) and [4](https://github.com/Yazan-O/eye-chart/pull/4) also merged on a green 21 of 21.
 
 ### The re-examination comment: pull request 3
 
@@ -351,7 +352,7 @@ Every reading carries its run id, so any single verdict can be looked up and rer
 <details>
 <summary><b>Credits used</b></summary>
 
-- The account had 150 credits and no top-ups. A frontend test run costs 0.5 credits ([`docs/CONTRACT.md`](docs/CONTRACT.md)).
+- The account started with 150 credits. A frontend test run costs 0.5 credits ([`docs/CONTRACT.md`](docs/CONTRACT.md)).
 - The readings file holds 62 readings: 48 twin readings and 14 lens readings.
 - The re-examination on PR 3 reported 16 credits before and 3 after. Below its floor of 8 credits, the job posts a "skipped" note and starts no run, so a PR never fails for lack of credits.
 
