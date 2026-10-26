@@ -117,6 +117,22 @@ export const letters: Letter[] = [
     trap: "Suggestions appear only when text arrives one key at a time.",
     howToUse: "Enter a city in the City field, then pick it from the suggestions.",
     brokenBehaviour: "Typing shows suggestions, but pasting or filling the whole word shows none.",
+    lens: {
+      name: "Listen to input, combobox roles",
+      summary: "Suggestions follow the input event, so pasted or filled text works too, and the field and list carry the combobox pattern. This is a fix lens: it removes the defect.",
+      diff: `   <input id="city" value={value}
++    role="combobox" aria-autocomplete="list"
++    aria-expanded={matches.length > 0} aria-controls="city-options"
+     onChange={(e) => {
+       setValue(e.currentTarget.value);
+-      if (!keysOnly) setQuery(e.currentTarget.value);
++      setQuery(e.currentTarget.value);
+     }}
+-    onKeyUp={(e) => setQuery(e.currentTarget.value)}
+   />
+-  <ul className="letter-suggestions">
++  <ul className="letter-suggestions" id="city-options" role="listbox">`,
+    },
     Component: Autocomplete,
   },
   {
@@ -127,6 +143,15 @@ export const letters: Letter[] = [
     trap: "A cookie notice fades out but can leave an invisible layer over the page.",
     howToUse: "Accept the cookie notice, then click Continue. The step goes from 1 to 2.",
     brokenBehaviour: "After Accept the notice fades, but Continue no longer responds.",
+    lens: {
+      name: "Remove the notice on Accept",
+      summary: "Accept takes the notice and its layer out of the page instead of fading them, and the notice is a labelled dialog. This is a fix lens: it removes the defect.",
+      diff: `-  {(!accepted || broken) && (
+-    <div className={\`letter-scrim\${accepted ? " letter-scrim-faded" : ""}\`}>
++  {!accepted && (
++    <div className="letter-scrim" role="dialog" aria-modal="true"
++      aria-labelledby="consent-text">`,
+    },
     Component: ConsentScrim,
   },
   {

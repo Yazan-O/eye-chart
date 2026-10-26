@@ -9,6 +9,24 @@ import IconStatus from "./IconStatus";
 import PseudoChip from "./PseudoChip";
 import { letters } from "./registry";
 import ZeroWidthCode, { clean } from "./ZeroWidthCode";
+import Autocomplete from "./Autocomplete";
+import ConsentScrim from "./ConsentScrim";
+
+describe("fix lenses", () => {
+  it("autocomplete lens suggests on a whole-word fill", () => {
+    render(<Autocomplete variant="lens" />);
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Rochester" } });
+    fireEvent.click(screen.getByRole("option", { name: "Rochester" }));
+    expect(screen.getByText("Chosen: Rochester")).toBeInTheDocument();
+  });
+
+  it("consent lens removes the layer on Accept", () => {
+    const { container } = render(<ConsentScrim variant="lens" />);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
+    expect(container.querySelector(".letter-scrim")).toBeNull();
+  });
+});
 
 afterEach(() => {
   vi.useRealTimers();

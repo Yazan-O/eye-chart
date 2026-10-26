@@ -5,6 +5,7 @@ export default function ConsentScrim({ variant }: LetterProps) {
   const [accepted, setAccepted] = useState(false);
   const [step, setStep] = useState(1);
   const broken = variant === "broken";
+  const lens = variant === "lens";
 
   return (
     <div className="letter-widget">
@@ -13,9 +14,14 @@ export default function ConsentScrim({ variant }: LetterProps) {
         Continue
       </button>
       {!accepted || broken ? (
-        <div className={`letter-scrim${accepted ? " letter-scrim-faded" : ""}`}>
+        <div
+          className={`letter-scrim${accepted ? " letter-scrim-faded" : ""}`}
+          role={lens ? "dialog" : undefined}
+          aria-modal={lens ? true : undefined}
+          aria-labelledby={lens ? "consent-text" : undefined}
+        >
           <div className="letter-consent">
-            <span>We use cookies to remember your settings.</span>
+            <span id={lens ? "consent-text" : undefined}>We use cookies to remember your settings.</span>
             <button type="button" onClick={() => setAccepted(true)}>
               Accept
             </button>

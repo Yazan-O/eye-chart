@@ -22,6 +22,7 @@ export default function Autocomplete({ variant }: LetterProps) {
   const [value, setValue] = useState("");
   const [chosen, setChosen] = useState<string | null>(null);
   const keysOnly = variant === "broken";
+  const lens = variant === "lens";
   const matches = chosen ? [] : suggest(query);
 
   return (
@@ -32,6 +33,10 @@ export default function Autocomplete({ variant }: LetterProps) {
           id="city"
           className="letter-field"
           autoComplete="off"
+          role={lens ? "combobox" : undefined}
+          aria-autocomplete={lens ? "list" : undefined}
+          aria-expanded={lens ? matches.length > 0 : undefined}
+          aria-controls={lens ? "city-options" : undefined}
           value={value}
           onChange={(e) => {
             setValue(e.currentTarget.value);
@@ -44,12 +49,14 @@ export default function Autocomplete({ variant }: LetterProps) {
         />
       </div>
       {matches.length > 0 ? (
-        <ul className="letter-suggestions">
+        <ul className="letter-suggestions" id="city-options" role={lens ? "listbox" : undefined}>
           {matches.map((c) => (
-            <li key={c}>
+            <li key={c} role={lens ? "none" : undefined}>
               <button
                 type="button"
                 className="letter-suggestion"
+                role={lens ? "option" : undefined}
+                aria-selected={lens ? false : undefined}
                 onClick={() => {
                   setValue(c);
                   setChosen(c);
