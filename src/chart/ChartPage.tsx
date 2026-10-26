@@ -165,6 +165,7 @@ export default function ChartPage() {
   useEffect(() => {
     if (!landed || still || view !== "human" || !demoId || demoShown()) return;
     markDemoShown();
+    if (lensOn.size > 0) return;
     const timers: number[] = [];
     const stop = () => {
       timers.forEach((t) => window.clearTimeout(t));
@@ -177,8 +178,9 @@ export default function ChartPage() {
     return () => {
       timers.forEach((t) => window.clearTimeout(t));
       events.forEach((e) => window.removeEventListener(e, stop));
+      setDemo(null);
     };
-  }, [landed, still, view, demoId]);
+  }, [landed, still, view, demoId, lensOn]);
   const all = rows.flatMap((r) => r.glyphs);
   const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
   const taken = file ? formatDate(file.takenAt) : "";

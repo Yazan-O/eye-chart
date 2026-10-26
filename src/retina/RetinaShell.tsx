@@ -118,7 +118,7 @@ export default function Sensor() {
         </p>
         <div className="retina-actions">
           <button type="button" className="button button--quiet" onClick={leaveSensor} data-testid="agent-exit">
-            Close (Esc)
+            Back to human eyes
           </button>
           {lensRows.length > 0 && (
             <button
