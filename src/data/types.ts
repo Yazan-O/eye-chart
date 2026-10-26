@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-export type Variant = "works" | "broken" | "lens";
+export type Variant = "works" | "broken" | "lens" | "lens-broken";
 
 export interface Lens {
   name: string;

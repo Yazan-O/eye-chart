@@ -1,4 +1,4 @@
-import { findReading, isCorrect, letterState } from "../data/readings";
+import { findReading, letterState } from "../data/readings";
 import type { GlyphState, Reading } from "../data/types";
 
 export type LensResult = "none" | "fixed" | "notFixed";
@@ -17,9 +17,9 @@ export interface LetterView {
 }
 
 export function lensResult(letterId: string, results: Reading[]): LensResult {
-  const r = findReading(results, letterId, "lens");
-  if (!r || r.verdict === "blocked") return "none";
-  return isCorrect(r) ? "fixed" : "notFixed";
+  const lenses = [findReading(results, letterId, "lens"), findReading(results, letterId, "lens-broken")];
+  if (!lenses.some((r) => r && r.verdict !== "blocked")) return "none";
+  return letterState({ id: letterId }, results, true) === "read" ? "fixed" : "notFixed";
 }
 
 export function letterView(letterId: string, results: Reading[]): LetterView {
