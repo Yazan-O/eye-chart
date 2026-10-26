@@ -1,0 +1,72 @@
+{
+  "origin": "http://127.0.0.1:4173",
+  "letters": [
+    {
+      "id": "counter",
+      "name": "Counter adds one per click",
+      "steps": [
+        ["action", "Click the 'Add one' button three times"],
+        ["assertion", "Verify the page shows 'Count: 3'"]
+      ]
+    },
+    {
+      "id": "toast",
+      "name": "Save shows a Saved notice",
+      "steps": [
+        ["action", "Click the 'Save' button"],
+        ["assertion", "Verify a notice with the text 'Saved' appears after clicking Save"]
+      ]
+    },
+    {
+      "id": "hover-menu",
+      "name": "Hover menu opens the chosen page",
+      "steps": [
+        ["action", "Hover the mouse over 'Menu' to open it"],
+        ["action", "Click 'Settings' in the menu that opens"],
+        ["assertion", "Verify the page shows 'Current page: Settings'"]
+      ]
+    },
+    {
+      "id": "shadow-form",
+      "name": "Greeting form greets by name",
+      "steps": [
+        ["action", "Type 'Ada' into the 'Your name' field"],
+        ["action", "Click the 'Greet' button"],
+        ["assertion", "Verify the page shows 'Hello, Ada!'"]
+      ]
+    },
+    {
+      "id": "animated-total",
+      "name": "Load total shows 1,250",
+      "steps": [
+        ["action", "Click the 'Load total' button"],
+        ["assertion", "Verify the total shows 'Total: 1,250'"]
+      ]
+    },
+    {
+      "id": "virtual-list",
+      "name": "Virtual list selects the clicked item",
+      "steps": [
+        ["action", "Scroll the list until 'Item 7777' is visible"],
+        ["action", "Click 'Item 7777'"],
+        ["assertion", "Verify the page shows 'Selected: Item 7777'"]
+      ]
+    },
+    {
+      "id": "canvas-slider",
+      "name": "Canvas slider sets 70",
+      "steps": [
+        ["action", "Drag the round slider handle to the 70 mark on the scale"],
+        ["assertion", "Verify the readout shows 'Value: 70'"]
+      ]
+    },
+    {
+      "id": "webgl-knob",
+      "name": "WebGL knob turns to 7",
+      "steps": [
+        ["action", "Press on the knob and drag upward to turn it until it reaches 7"],
+        ["assertion", "Verify the readout shows 'Volume: 7'"]
+      ]
+    }
+  ]
+}
