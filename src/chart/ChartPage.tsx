@@ -189,7 +189,7 @@ export default function ChartPage() {
         <p className="summary" data-testid="reading-summary">
           {summary}
         </p>
-        <p className="plaque visually-hidden" data-testid="plaque">
+        <p className="plaque" data-testid="plaque">
           {plaque}
         </p>
         <button

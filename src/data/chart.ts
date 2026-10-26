@@ -6,6 +6,7 @@ export interface ChartGlyph {
   glyph: string;
   name: string;
   state: GlyphState;
+  lens?: "on" | "off";
 }
 
 export interface ChartRow {
@@ -52,6 +53,7 @@ export function buildRows(
         glyph: l.glyph,
         name: l.name,
         state: letterState(l, results, lensOn.has(l.id)),
+        lens: l.lens ? (lensOn.has(l.id) ? ("on" as const) : ("off" as const)) : undefined,
       })),
     }));
 }

@@ -77,7 +77,12 @@ export function letterState(
   results: Reading[],
   lensOn = false,
 ): GlyphState {
-  const variants: Variant[] = lensOn ? ["works", "lens"] : ["works", "broken"];
+  const lens = lensOn ? findReading(results, letter.id, "lens") : null;
+  const variants: Variant[] = !lens
+    ? ["works", "broken"]
+    : lens.truth === "pass"
+      ? ["lens", "broken"]
+      : ["works", "lens"];
   const readings = variants.map((v) => findReading(results, letter.id, v));
   if (readings.some((r) => r && r.verdict !== "blocked" && !isCorrect(r))) {
     return "misread";

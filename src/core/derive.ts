@@ -31,8 +31,10 @@ export function letterView(letterId: string, results: Reading[]): LetterView {
 }
 
 export function markFor(state: GlyphState, lens: LensResult, lensOn: boolean): Mark {
+  if (lensOn && lens === "fixed" && (state === "misread" || state === "blocked")) {
+    return { focus: 0, ghost: 0, glow: 0, mark: "tick" };
+  }
   if (state === "misread") {
-    if (lensOn && lens === "fixed") return { focus: 0, ghost: 0, glow: 0, mark: "tick" };
     return { focus: 0, ghost: 1, glow: 0, mark: "slash" };
   }
   if (state === "read") return { focus: 0, ghost: 0, glow: 1, mark: "bar" };
@@ -41,7 +43,9 @@ export function markFor(state: GlyphState, lens: LensResult, lensOn: boolean): M
 }
 
 export function stateWord(state: GlyphState, lens: LensResult, lensOn: boolean): string {
-  if (state === "misread" && lensOn && lens === "fixed") return "fixed with lens";
-  if (state === "misread" && lensOn && lens === "notFixed") return "still misread with lens";
+  if ((state === "misread" || state === "blocked") && lensOn && lens === "fixed") return "fixed with lens";
+  if ((state === "misread" || state === "blocked") && lensOn && lens === "notFixed") {
+    return "still misread with lens";
+  }
   return { read: "read", misread: "misread", blocked: "blocked", unread: "not read yet" }[state];
 }

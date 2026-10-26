@@ -1,15 +1,19 @@
 import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { buildRows, fractionOfLetter } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
 import { findLetter } from "../data/letters";
-import { letterState, STATE_WORDS } from "../data/readings";
+import { findReading, letterState, STATE_WORDS } from "../data/readings";
 import type { Truth, Variant } from "../data/types";
-import GlyphMark from "../components/GlyphMark";
 import TopBar from "../components/TopBar";
+import { lensResult, stateWord } from "../core/derive";
+import { useStillMotion } from "../core/motion";
 import NotFound from "../pages/NotFound";
-import Diff from "./Diff";
+import LensExploded from "./LensExploded";
+import LensGlyph from "./LensGlyph";
 import ReadingCard from "./ReadingCard";
+
+type Pane = "works" | "broken" | "lens";
 
 function twinUrl(id: string, variant: Variant): string {
   return `${import.meta.env.BASE_URL}#/l/${id}/${variant}`;
@@ -22,24 +26,36 @@ function Twin({
   title,
   note,
   expected,
+  active,
+  testId,
+  openId = `open-${variant}`,
+  reading = true,
 }: {
   id: string;
   name: string;
   variant: Variant;
   title: string;
   note: string;
-  expected: Truth;
+  expected?: Truth;
+  active: boolean;
+  testId: string;
+  openId?: string;
+  reading?: boolean;
 }) {
   const { file } = useReadings();
   return (
-    <section className={`twin-column twin-column--${variant}`} data-testid={`station-${variant}`}>
+    <section
+      className={`twin-column twin-column--${variant}`}
+      data-testid={testId}
+      data-active={active || undefined}
+    >
       <div className="twin-head">
         <h2>{title}</h2>
         <a
           href={twinUrl(id, variant)}
           target="_blank"
           rel="noreferrer"
-          data-testid={`open-${variant}`}
+          data-testid={openId}
         >
           Open alone
         </a>
@@ -51,12 +67,14 @@ function Twin({
         title={`${name}, ${title.toLowerCase()} twin`}
         data-testid={`frame-${variant}`}
       />
-      <ReadingCard
-        letterId={id}
-        variant={variant}
-        expected={expected}
-        results={file?.results ?? []}
-      />
+      {reading && (
+        <ReadingCard
+          letterId={id}
+          variant={variant}
+          expected={expected}
+          results={file?.results ?? []}
+        />
+      )}
     </section>
   );
 }
@@ -67,6 +85,8 @@ export default function StationPage() {
   const { file } = useReadings();
   const rows = useMemo(() => buildRows(letters, file?.results ?? []), [letters, file]);
   const order = rows.flatMap((r) => r.glyphs.map((g) => g.id));
+  const still = useStillMotion();
+  const [params, setParams] = useSearchParams();
 
   if (!ready) return null;
   const letter = findLetter(letters, id);
@@ -74,6 +94,30 @@ export default function StationPage() {
 
   const results = file?.results ?? [];
   const state = letterState(letter, results);
+  const wanted = params.get("pane");
+  const pane: Pane =
+    wanted === "broken" || (wanted === "lens" && letter.lens) ? wanted : "works";
+  const lensOn = pane === "lens";
+  const lens = lensResult(letter.id, results);
+  const word = lensOn && lens !== "none" ? stateWord(state, lens, true) : STATE_WORDS[state];
+  const lensFor = findReading(results, letter.id, "lens")?.truth === "fail" ? "broken" : "works";
+  const lensTwin = letter.lens && (
+    <Twin
+      id={letter.id}
+      name={letter.name}
+      variant="lens"
+      title="Lens"
+      note={letter.lens.summary}
+      active
+      testId="station-lens-twin"
+      openId="open-lens-pane"
+      reading={false}
+    />
+  );
+  const choose = (next: Pane) => setParams(next === "works" ? {} : { pane: next }, { replace: true });
+  const choices: [Pane, string][] = letter.lens
+    ? [["works", "Works"], ["broken", "Broken"], ["lens", "Lens"]]
+    : [["works", "Works"], ["broken", "Broken"]];
   const fraction = fractionOfLetter(rows, letter.id);
   const at = order.indexOf(letter.id);
   const prev = at > 0 ? order[at - 1] : undefined;
@@ -88,14 +132,14 @@ export default function StationPage() {
       </TopBar>
       <main>
         <header className="station-head">
-          <GlyphMark glyph={letter.glyph} state={state} large />
+          <LensGlyph glyph={letter.glyph} state={state} lens={lens} lensOn={lensOn} />
           <div className="station-title">
             <h1 className="display" data-testid="station-heading">
               {letter.name}
             </h1>
-            <p className="station-meta" data-testid="station-state">
+            <p className="station-meta" data-testid="station-state" data-lens={lensOn ? "on" : "off"}>
               {fraction ? `Row ${fraction}. ` : ""}
-              {STATE_WORDS[state]}.
+              {word.charAt(0).toUpperCase() + word.slice(1)}.
             </p>
             <p className="station-trap" data-testid="station-trap">
               {letter.trap}
@@ -103,23 +147,45 @@ export default function StationPage() {
           </div>
         </header>
 
-        <div className="twins">
-          <Twin
-            id={letter.id}
-            name={letter.name}
-            variant="works"
-            title="Works"
-            note={letter.howToUse}
-            expected="pass"
-          />
-          <Twin
-            id={letter.id}
-            name={letter.name}
-            variant="broken"
-            title="Broken"
-            note={letter.brokenBehaviour}
-            expected="fail"
-          />
+        <div className="pane-switch" role="group" aria-label="Which twin to show" data-testid="pane-switch">
+          {choices.map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={pane === value}
+              onClick={() => choose(value)}
+              data-testid={`pane-${value}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="twins" data-pane={pane}>
+          {lensOn && lensFor === "works" ? lensTwin : (
+            <Twin
+              id={letter.id}
+              name={letter.name}
+              variant="works"
+              title="Works"
+              note={letter.howToUse}
+              expected="pass"
+              active={pane === "works"}
+              testId="station-works"
+            />
+          )}
+          {lensOn && lensFor === "broken" ? lensTwin : (
+            <Twin
+              id={letter.id}
+              name={letter.name}
+              variant="broken"
+              title="Broken"
+              note={letter.brokenBehaviour}
+              expected="fail"
+              active={pane === "broken"}
+              testId="station-broken"
+            />
+          )}
         </div>
 
         <section className="lens" data-testid="station-lens">
@@ -131,27 +197,14 @@ export default function StationPage() {
               <p className="lens-summary" data-testid="lens-summary">
                 {letter.lens.summary}
               </p>
-              <div className="lens-body">
-                <Diff diff={letter.lens.diff} />
-                <div className="lens-after">
-                  <div className="twin-head">
-                    <h3>Reading with the lens on</h3>
-                    <a
-                      href={twinUrl(letter.id, "lens")}
-                      target="_blank"
-                      rel="noreferrer"
-                      data-testid="open-lens"
-                    >
-                      Open alone
-                    </a>
-                  </div>
-                  <ReadingCard
-                    letterId={letter.id}
-                    variant="lens"
-                    results={results}
-                  />
-                </div>
-              </div>
+              <LensExploded
+                letterId={letter.id}
+                lens={letter.lens}
+                results={results}
+                still={still}
+                lensUrl={twinUrl(letter.id, "lens")}
+                replaces={lensFor}
+              />
             </>
           ) : (
             <p className="lens-none" data-testid="lens-none">

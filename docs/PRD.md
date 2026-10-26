@@ -3,7 +3,7 @@
 Eye Chart is a public web app at https://yazan-o.github.io/eye-chart/ that shows how well TestSprite's AI tester reads 24 real web widgets. No sign-in. All routes are hash routes.
 
 ## 1. Chart page (`#/`)
-- Shows the heading "EYE CHART." (`heading`), a tagline (`tagline`) and a 3D chart (`chart-canvas`) inside `scene`.
+- Shows the heading "Eye Chart" (`heading`) beside a small robot wearing glasses, a tagline (`tagline`) and a 3D chart (`chart-canvas`) inside `scene`.
 - A tally (`tally`) shows four counts: read correctly (`tally-read`), misread (`tally-misread`), blocked (`tally-blocked`), not read yet (`tally-unread`). The four counts always add up to 24.
 - `reading-summary` states "Read correctly: N of 24 letters" and the measurement date. N equals the number in `tally-read`.
 - `plaque` names the recorded run and its commit.
@@ -18,12 +18,13 @@ Eye Chart is a public web app at https://yazan-o.github.io/eye-chart/ that shows
 
 ## 3. Lens machine (`lens-machine`)
 - Lists the lenses with a dial each (`lens-dial-<id>`), all "Off" at load.
-- Turning a dial on switches that letter's chart state to the reading taken with the lens; turning it off restores the original state.
+- Turning a dial on switches that letter's chart state to the reading taken with the lens; turning it off restores the original state. The letter's link `letter-link-<id>` carries `data-lens="on"` or `data-lens="off"` (letters without a lens carry no `data-lens`).
 
 ## 4. Letter station (`#/letter/<id>`)
 - Shows the letter's name, row and state, the trap in one sentence, and the working and broken versions side by side with an "Open alone" link each.
 - Shows the truth for each version, TestSprite's verdict and its stated reason.
-- Letters with a lens show the lens name, summary, code change and the reading with the lens on.
+- A switch (`pane-switch`) has buttons `pane-works`, `pane-broken` and, for letters with a lens, `pane-lens`, each with `aria-pressed`. "Lens" puts the lens twin (`station-lens-twin`) in place of the twin it fixes, the big letter (`station-glyph`) fuses its ghost and shows a tick when the recorded lens reading is correct, and `station-state` reads "Fixed with lens." with `data-lens="on"`. At 375 px one twin shows at a time.
+- Letters with a lens show the lens name, summary and an exploded view (`lens-exploded`): the twin as TestSprite read it (`lens-before`), the lens's real code change (`lens-diff`), and the lens twin's reading (`reading-lens`), joined as "twin + lens = lens twin". `lens-explode` assembles and separates the parts.
 - Previous and next links move between letters.
 
 ## 5. Twin pages (`#/l/<id>/works`, `#/l/<id>/broken`)

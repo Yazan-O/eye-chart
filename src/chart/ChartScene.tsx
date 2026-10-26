@@ -184,6 +184,7 @@ function Glyph({
   const slash = useRef<Group>(null);
   const hatch = useRef<Mesh>(null);
   const body = useRef<Group>(null);
+  const ghostRef = useRef({ v: 0, vel: 0 });
 
   useFrame(() => {
     const t = sharedRef.current.born === null ? 0 : now() - sharedRef.current.born;
@@ -194,12 +195,20 @@ function Glyph({
     u.uFocus!.value = focusAt(clock, t, row);
     u.uLight!.value = lampAt(clock, t);
 
+    const ghost = ghostRef.current;
     if (glyph.state === "misread") {
-      u.uGhost!.value = backOut(landAt(clock, t, row, 420));
+      ghost.v = backOut(landAt(clock, t, row, 420));
+      ghost.vel = 0;
       if (slash.current) slash.current.scale.x = Math.max(0.0001, landAt(clock, t, row, 260));
+    } else if (sharedRef.current.still || (Math.abs(ghost.v) < 0.002 && Math.abs(ghost.vel) < 0.002)) {
+      ghost.v = 0;
+      ghost.vel = 0;
     } else {
-      u.uGhost!.value = 0;
+      const dt = 1 / 30;
+      ghost.vel += (-170 * ghost.v - 14 * ghost.vel) * dt;
+      ghost.v += ghost.vel * dt;
     }
+    u.uGhost!.value = Math.abs(ghost.v);
     if (glyph.state === "read") {
       const k = landAt(clock, t, row, 500);
       const breathe = 0.8;

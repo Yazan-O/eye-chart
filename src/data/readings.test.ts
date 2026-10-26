@@ -48,6 +48,17 @@ describe("letterState", () => {
     expect(letterState({ id: "a" }, results)).toBe("misread");
     expect(letterState({ id: "a" }, results, true)).toBe("read");
   });
+
+  it("puts a passing lens in place of the works twin, and keeps the state with no lens row", () => {
+    const results = [
+      r("works", "pass", "failed"),
+      r("broken", "fail", "failed"),
+      r("lens", "pass", "passed"),
+    ];
+    expect(letterState({ id: "a" }, results)).toBe("misread");
+    expect(letterState({ id: "a" }, results, true)).toBe("read");
+    expect(letterState({ id: "a" }, results.slice(0, 2), true)).toBe("misread");
+  });
 });
 
 describe("parseReadings", () => {
