@@ -1,0 +1,18 @@
+{
+  "takenAt": "2026-10-26T15:32:13.146Z",
+  "commit": "965166d",
+  "engine": "TestSprite cloud agent, CLI 0.15.0",
+  "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
+  "results": [
+    {
+      "letterId": "virtual-list",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "fcd4e1e2-3bc4-43b4-b91d-f2f392c43e9e",
+      "runId": "ddcbaf20-d7b8-48a0-921e-63bac293c0a9",
+      "reason": "The page shows that Item 7777 is selected.",
+      "screenshot": "readings/shots/ddcbaf20-d7b8-48a0-921e-63bac293c0a9.png"
+    }
+  ]
+}
