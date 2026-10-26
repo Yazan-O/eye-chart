@@ -135,7 +135,6 @@ function Glyph({
   glyph,
   place,
   row,
-  index,
   active,
   sharedRef,
   onActive,
@@ -146,7 +145,6 @@ function Glyph({
   glyph: ChartGlyph;
   place: PlacedGlyph;
   row: number;
-  index: number;
   active: boolean;
   sharedRef: SharedRef;
   onActive: (id: string | null) => void;
@@ -204,9 +202,7 @@ function Glyph({
     }
     if (glyph.state === "read") {
       const k = landAt(clock, t, row, 500);
-      const breathe = sharedRef.current.still
-        ? 0.8
-        : 0.725 + 0.175 * Math.sin((now() / 3200) * Math.PI * 2 + index * 0.37);
+      const breathe = 0.8;
       if (glow.current) (glow.current.material as MeshBasicMaterial).opacity = k * breathe;
       if (bar.current) bar.current.scale.x = Math.max(0.0001, k);
     }
@@ -216,7 +212,7 @@ function Glyph({
       hatch.current.position.x = -(1 - k) * s * 0.6;
     }
     if (body.current) {
-      const target = active ? 1.06 : 1;
+      const target = active ? 1.015 : 1;
       const cur = body.current.scale.x;
       body.current.scale.setScalar(sharedRef.current.still ? target : cur + (target - cur) * 0.25);
     }
@@ -315,10 +311,10 @@ function Slat({
 
   useFrame(() => {
     const t = sharedRef.current.born === null ? 0 : now() - sharedRef.current.born;
-    const breathe = sharedRef.current.still ? 1 : 1 + 0.015 * Math.sin((now() / 6000) * Math.PI * 2);
+    const breathe = 1;
     if (face.current) face.current.color.copy(base).multiplyScalar(lampAt(sharedRef.current.clock, t) * breathe);
     if (group.current) {
-      const target = slat.z + (lifted ? 0.06 : 0);
+      const target = slat.z + (lifted ? 0.01 : 0);
       const z = group.current.position.z;
       group.current.position.z = sharedRef.current.still ? target : z + (target - z) * 0.2;
     }
@@ -447,12 +443,12 @@ function Rig({
       return;
     }
     const still = sharedRef.current.still;
-    const reach = Math.tan((1.2 * Math.PI) / 180) * frame.distance;
+    const reach = Math.tan((0.3 * Math.PI) / 180) * frame.distance;
     const tx = still ? 0 : state.pointer.x * reach;
     const ty = still ? 0 : state.pointer.y * reach * 0.6;
     sway.current.x = still ? 0 : sway.current.x + (tx - sway.current.x) * 0.08;
     sway.current.y = still ? 0 : sway.current.y + (ty - sway.current.y) * 0.08;
-    const breathe = still ? 0 : 0.08 * Math.sin((now() / 9000) * Math.PI * 2);
+    const breathe = 0;
     camera.position.set(sway.current.x, frame.centerY + 0.45 + sway.current.y, frame.distance + breathe);
     aim.set(0, frame.centerY - 0.15, frame.centerZ);
     camera.lookAt(aim);
@@ -605,7 +601,6 @@ export default function ChartScene({
                 glyph={entry.glyph}
                 place={p}
                 row={entry.row}
-                index={entry.index}
                 active={activeId === p.id}
                 sharedRef={sharedRef}
                 onActive={onActive}

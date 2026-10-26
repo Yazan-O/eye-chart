@@ -1238,3 +1238,112 @@ a {
     animation: none;
   }
 }
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--on-room);
+}
+
+.glasses-mark {
+  color: var(--lamp);
+  flex: none;
+}
+
+.chart .wordmark-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.title-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.robot-mark {
+  width: 72px;
+  height: 72px;
+  flex: none;
+}
+
+.robot-eyes {
+  animation: robot-look 5s ease-in-out infinite;
+}
+
+.robot-bulb {
+  animation: robot-blink 2.5s steps(1) infinite;
+}
+
+.robot-head {
+  transform-origin: 60px 96px;
+  animation: robot-tilt 5s ease-in-out infinite;
+}
+
+@keyframes robot-look {
+  0%, 15% { transform: translateX(0); }
+  25%, 45% { transform: translateX(-6px); }
+  55%, 75% { transform: translateX(6px); }
+  85%, 100% { transform: translateX(0); }
+}
+
+@keyframes robot-tilt {
+  0%, 15%, 85%, 100% { transform: rotate(0deg); }
+  25%, 45% { transform: rotate(-4deg); }
+  55%, 75% { transform: rotate(4deg); }
+}
+
+@keyframes robot-blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+:root[data-motion="paused"] .robot-mark *,
+:root[data-motion="still"] .robot-mark * {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robot-mark * {
+    animation: none;
+  }
+}
+
+.rail .display {
+  font-size: clamp(40px, 3.6vw, 56px);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.rail .lead {
+  margin-top: 18px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--on-room-2);
+}
+
+.rail .tally dd {
+  font-size: clamp(28px, 2.4vw, 36px);
+}
+
+.rail .summary {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 860px) {
+  .rail .display {
+    font-size: 40px;
+  }
+
+  .robot-mark {
+    width: 56px;
+    height: 56px;
+  }
+}

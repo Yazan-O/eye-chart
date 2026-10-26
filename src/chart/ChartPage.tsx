@@ -9,6 +9,7 @@ import { introMode, markIntroShown } from "../core/intro";
 import { useStillMotion } from "../core/motion";
 import { ui, useUi } from "../core/store";
 import GlyphMark from "../components/GlyphMark";
+import { RobotMark } from "../components/Marks";
 import SceneBoundary from "../components/SceneBoundary";
 import TopBar from "../components/TopBar";
 import ChartKey from "./ChartKey";
@@ -164,9 +165,12 @@ export default function ChartPage() {
       </section>
       <TopBar />
       <main className="rail">
-        <h1 className="display" data-testid="heading">
-          Eye Chart.
-        </h1>
+        <div className="title-block">
+          <RobotMark />
+          <h1 className="display" data-testid="heading">
+            Eye Chart
+          </h1>
+        </div>
         <p className="lead" data-testid="tagline">
           An eye exam for TestSprite&rsquo;s AI tester. Every letter is a real widget, built once
           working and once broken.
@@ -185,7 +189,7 @@ export default function ChartPage() {
         <p className="summary" data-testid="reading-summary">
           {summary}
         </p>
-        <p className="plaque" data-testid="plaque">
+        <p className="plaque visually-hidden" data-testid="plaque">
           {plaque}
         </p>
         <button
