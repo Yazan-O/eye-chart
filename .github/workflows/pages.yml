@@ -57,3 +57,16 @@ jobs:
           source-dir: dist
           preview-branch: gh-pages
           umbrella-dir: pr-preview
+      - name: Wait until the preview serves this build
+        if: github.event.action != 'closed'
+        run: |
+          url="https://yazan-o.github.io/eye-chart/pr-preview/pr-${{ github.event.number }}/"
+          for i in $(seq 1 60); do
+            if curl -fsS "${url}?v=${{ github.sha }}-${i}" | cmp -s - dist/index.html; then
+              echo "Preview live after ${i} checks"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Preview not live after 10 minutes"
+          exit 1
