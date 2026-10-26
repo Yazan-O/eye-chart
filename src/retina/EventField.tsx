@@ -35,11 +35,17 @@ function drawVoid(ctx: CanvasRenderingContext2D, n: AgentNode) {
   ctx.strokeStyle = BLOCKED;
   ctx.strokeRect(n.box.x + 8, n.box.y + 8, n.box.w - 16, n.box.h - 16);
   ctx.setLineDash([]);
-  ctx.fillStyle = BLOCKED;
+  const label = "Canvas: nothing readable inside";
+  const cx = n.box.x + n.box.w / 2;
+  const cy = n.box.y + n.box.h / 2;
   ctx.font = "500 18px ui-monospace, Consolas, monospace";
+  const w = ctx.measureText(label).width + 32;
+  ctx.fillStyle = "#04070b";
+  ctx.fillRect(cx - w / 2, cy - 20, w, 40);
+  ctx.fillStyle = BLOCKED;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Canvas: nothing readable inside", n.box.x + n.box.w / 2, n.box.y + n.box.h / 2);
+  ctx.fillText(label, cx, cy);
   ctx.textAlign = "start";
 }
 

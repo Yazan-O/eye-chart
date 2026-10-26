@@ -199,6 +199,7 @@ describe("App routing", () => {
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    expect(screen.getByTestId("twin-summary")).toHaveTextContent("Twin readings correct: 1 of 2.");
     const dial = screen.getByTestId("lens-dial-canvas-slider");
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(link).toHaveAttribute("data-lens", "off");
@@ -247,6 +248,47 @@ describe("App routing", () => {
     expect(link).toHaveAttribute("data-state", "misread");
     await waitFor(() => expect(dial).not.toHaveClass("is-on"), { timeout: 3000 });
     expect(sessionStorage.getItem("eye-chart-lens-demo")).toBe("1");
+    resetReadingsCache();
+  }, 8000);
+
+  it("ends the lens demo for good when a dial is turned during it", async () => {
+    const reading = (variant: string, truth: string, verdict: string) => ({
+      letterId: "canvas-slider",
+      variant,
+      truth,
+      verdict,
+      reason: "r",
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          takenAt: "2026-10-26T15:00:00Z",
+          results: [
+            reading("works", "pass", "failed"),
+            reading("broken", "fail", "failed"),
+            reading("lens", "pass", "passed"),
+          ],
+        }),
+      }),
+    );
+    sessionStorage.clear();
+    resetReadingsCache();
+    renderAt("/");
+    const link = screen.getByTestId("letter-link-canvas-slider");
+    await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    act(() => ui.setReady(true));
+    const dial = screen.getByTestId("lens-dial-canvas-slider");
+    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
+    fireEvent.click(dial);
+    expect(dial).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(dial);
+    expect(dial).toHaveAttribute("aria-pressed", "false");
+    expect(dial).not.toHaveClass("is-on");
+    await new Promise((r) => setTimeout(r, 2600));
+    expect(dial).not.toHaveClass("is-on");
+    expect(link).toHaveAttribute("data-state", "misread");
     resetReadingsCache();
   }, 8000);
 

@@ -91,6 +91,17 @@ export function letterState(
   return "read";
 }
 
+export function twinTally(
+  letters: Pick<Letter, "id">[],
+  results: Reading[],
+): { correct: number; total: number } {
+  const ids = new Set(letters.map((l) => l.id));
+  const twins = results.filter(
+    (r) => ids.has(r.letterId) && (r.variant === "works" || r.variant === "broken"),
+  );
+  return { correct: twins.filter((r) => isCorrect(r)).length, total: twins.length };
+}
+
 export const STATE_WORDS: Record<GlyphState, string> = {
   read: "Read correctly",
   misread: "Misread",

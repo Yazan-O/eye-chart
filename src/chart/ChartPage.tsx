@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
-import { letterState, STATE_WORDS } from "../data/readings";
+import { letterState, STATE_WORDS, twinTally } from "../data/readings";
 import type { GlyphState } from "../data/types";
 import { lensResult } from "../core/derive";
 import { introMode, markIntroShown } from "../core/intro";
@@ -165,6 +165,7 @@ export default function ChartPage() {
   useEffect(() => {
     if (!landed || still || view !== "human" || !demoId || demoShown()) return;
     markDemoShown();
+    if (lensOn.size > 0) return;
     const timers: number[] = [];
     const stop = () => {
       timers.forEach((t) => window.clearTimeout(t));
@@ -177,11 +178,13 @@ export default function ChartPage() {
     return () => {
       timers.forEach((t) => window.clearTimeout(t));
       events.forEach((e) => window.removeEventListener(e, stop));
+      setDemo(null);
     };
-  }, [landed, still, view, demoId]);
+  }, [landed, still, view, demoId, lensOn]);
   const all = rows.flatMap((r) => r.glyphs);
   const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
   const taken = file ? formatDate(file.takenAt) : "";
+  const twins = twinTally(letters, file?.results ?? []);
 
   let summary = "Not read yet.";
   if (!ready) summary = "Loading the readings.";
@@ -248,6 +251,11 @@ export default function ChartPage() {
           <p className="summary" data-testid="reading-summary">
             {summary}
           </p>
+          {ready && file && (
+            <p className="summary" data-testid="twin-summary">
+              Twin readings correct: {twins.correct} of {twins.total}.
+            </p>
+          )}
           <p className="plaque" data-testid="plaque">
             {plaque}
           </p>
