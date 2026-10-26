@@ -1,4 +1,5 @@
 import { findReading, isCorrect } from "../data/readings";
+import Shot from "./Shot";
 import type { Reading, Truth, Variant } from "../data/types";
 
 const VERDICT_WORDS: Record<Reading["verdict"], string> = {
@@ -79,19 +80,11 @@ export default function ReadingCard({
         </figure>
       )}
       {reading.screenshot && (
-        <a
-          className="shot"
-          href={`${base}${reading.screenshot}`}
-          target="_blank"
-          rel="noreferrer"
-          data-testid={`${prefix}-screenshot`}
-        >
-          <img
-            src={`${base}${reading.screenshot}`}
-            alt={`What TestSprite saw on the ${variant} twin`}
-            loading="lazy"
-          />
-        </a>
+        <Shot
+          src={`${base}${reading.screenshot}`}
+          alt={`What TestSprite saw on the ${variant} twin`}
+          testId={`${prefix}-screenshot`}
+        />
       )}
     </div>
   );

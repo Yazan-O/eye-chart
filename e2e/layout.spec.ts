@@ -3,7 +3,8 @@ import type { Page } from "@playwright/test";
 
 async function noSideScroll(page: Page, path: string) {
   await page.goto(path);
-  await page.waitForLoadState("networkidle");
+  await expect(page.getByTestId("topbar")).toBeVisible();
+  await page.waitForTimeout(500);
   const widths = await page.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
     view: document.documentElement.clientWidth,

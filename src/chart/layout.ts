@@ -26,10 +26,10 @@ export interface ChartLayout {
 }
 
 const FIRST_SIZE = 1.15;
-const SHRINK = 0.84;
-const MIN_SIZE = 0.3;
+const SHRINK = 0.88;
+const MIN_SIZE = 0.5;
 const STEP_BACK = 0.78;
-const MAX_DEPTH = 3.4;
+const MAX_DEPTH = 1.8;
 
 export function layoutChart(rows: ChartRow[], flat: boolean): ChartLayout {
   const sizes = rows.map((_, i) => Math.max(MIN_SIZE, FIRST_SIZE * SHRINK ** i));

@@ -47,3 +47,16 @@ test("next walks every station in chart order and previous walks back", async ({
   }
   await expect(page.getByTestId("prev-letter")).toHaveCount(0);
 });
+
+test("a station screenshot opens larger and closes with Escape", async ({ page }) => {
+  const id = letterIds.find((l) => find(l, "works")?.screenshot);
+  test.skip(!id, "no reading carries a screenshot");
+  await page.goto(`/#/letter/${id}`);
+  await page.getByTestId("reading-works-screenshot").click();
+  const zoom = page.getByTestId("reading-works-screenshot-zoom");
+  await expect(zoom).toBeVisible();
+  const width = await zoom.locator("img").evaluate((el) => el.getBoundingClientRect().width);
+  expect(width).toBeGreaterThan(400);
+  await page.keyboard.press("Escape");
+  await expect(zoom).toHaveCount(0);
+});

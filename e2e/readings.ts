@@ -8,6 +8,7 @@ export interface Reading {
   truth: "pass" | "fail";
   verdict: "passed" | "failed" | "blocked";
   reason?: string;
+  screenshot?: string;
 }
 
 export const STATE_WORDS: Record<State, string> = {

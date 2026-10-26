@@ -41,6 +41,8 @@ The Playwright suite checks:
 - unknown routes show the not-found page and its link returns to the chart;
 - at 375 px the chart and three stations have no horizontal scroll;
 - with reduced motion the chart settles and then requests no animation frames;
+- the answer key: for each of the 21 letters not drawn on a canvas, the test drives the working twin to its pass outcome and the broken twin to its fail outcome, so CI proves the truth TestSprite is scored against (for example, three clicks give "Count: 3" on the working counter and "Count: 6" on the broken one);
+- the top bar links to the source on GitHub, the landing page says what TestSprite is, and a station screenshot opens larger and closes with Escape;
 - each of the 48 twins renders alone, without the chart shell, and the counter twin counts three clicks right when it works and wrong when broken.
 
 The oracle in `e2e/readings.ts` reads the readings file and applies the letter-state rule on its own, so a wrong count on the page fails the suite. CI uploads the HTML report as the `playwright-report` artifact.
