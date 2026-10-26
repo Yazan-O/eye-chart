@@ -35,7 +35,7 @@ export default function LensDials({
               <button
                 type="button"
                 data-measured={String(d.measured)}
-                className={`dial${d.on ? " is-on" : ""}${activeId === d.id ? " is-active" : ""}`}
+                className={`dial${d.on || d.demo ? " is-on" : ""}${activeId === d.id ? " is-active" : ""}`}
                 aria-pressed={d.on}
                 aria-label={`${d.name} lens on ${d.glyph}`}
                 onClick={() => onToggle(d.id)}
@@ -50,7 +50,7 @@ export default function LensDials({
                   <span className="dial-glyph">{d.glyph}</span>
                   <span className="dial-name">{d.name}</span>
                   <span className="dial-state">
-                    {d.on ? "On" : "Off"}
+                    {d.on || d.demo ? "On" : "Off"}
                     {d.measured ? "" : ", not measured"}
                   </span>
                 </span>

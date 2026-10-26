@@ -20,6 +20,25 @@ const ChartScene = lazy(() => import("./ChartScene"));
 
 const LEGEND: GlyphState[] = ["read", "misread", "blocked", "unread"];
 const NO_DIALS: LensDial[] = [];
+const DEMO_KEY = "eye-chart-lens-demo";
+const DEMO_WAIT_MS = 500;
+const DEMO_HOLD_MS = 2000;
+
+function demoShown(): boolean {
+  try {
+    return sessionStorage.getItem(DEMO_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function markDemoShown() {
+  try {
+    sessionStorage.setItem(DEMO_KEY, "1");
+  } catch {
+    return;
+  }
+}
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -58,7 +77,8 @@ export default function ChartPage() {
   const { letters } = useLetters();
   const { file, ready } = useReadings();
   const still = useStillMotion();
-  const { view, paused } = useUi();
+  const { view, paused, ready: landed } = useUi();
+  const [demo, setDemo] = useState<string | null>(null);
   const wide = useWideScreen();
   const navigate = useNavigate();
   const [intro] = useState(() => introMode(still));
@@ -96,9 +116,10 @@ export default function ChartPage() {
         glyph: l.glyph,
         name: l.lens?.name ?? "",
         on: lensOn.has(l.id),
+        demo: demo === l.id,
         measured: lensResult(l.id, file?.results ?? []) !== "none",
       })),
-    [withLens, lensOn, file],
+    [withLens, lensOn, file, demo],
   );
 
   const setLenses = useCallback(
@@ -122,6 +143,38 @@ export default function ChartPage() {
     () => buildRows(letters, file?.results ?? [], lensOn),
     [letters, file, lensOn],
   );
+  const demoId = useMemo(() => {
+    const results = file?.results ?? [];
+    const lensIds = new Set(withLens.map((l) => l.id));
+    for (const g of rows.flatMap((r) => r.glyphs)) {
+      if (g.state === "misread" && lensIds.has(g.id) && !lensOn.has(g.id) && lensResult(g.id, results) === "fixed") {
+        return g.id;
+      }
+    }
+    return null;
+  }, [rows, withLens, lensOn, file]);
+  const sceneRows = useMemo(
+    () => (demo ? buildRows(letters, file?.results ?? [], new Set([...lensOn, demo])) : rows),
+    [demo, rows, letters, file, lensOn],
+  );
+
+  useEffect(() => {
+    if (!landed || still || view !== "human" || !demoId || demoShown()) return;
+    markDemoShown();
+    const timers: number[] = [];
+    const stop = () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      setDemo(null);
+    };
+    timers.push(window.setTimeout(() => setDemo(demoId), DEMO_WAIT_MS));
+    timers.push(window.setTimeout(() => setDemo(null), DEMO_WAIT_MS + DEMO_HOLD_MS));
+    const events = ["keydown", "pointerdown", "wheel", "touchstart"] as const;
+    events.forEach((e) => window.addEventListener(e, stop, { once: true, passive: true }));
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      events.forEach((e) => window.removeEventListener(e, stop));
+    };
+  }, [landed, still, view, demoId]);
   const all = rows.flatMap((r) => r.glyphs);
   const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
   const taken = file ? formatDate(file.takenAt) : "";
@@ -150,7 +203,7 @@ export default function ChartPage() {
           <SceneBoundary fallback={<Fallback onReady={markReady} />}>
             <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
               <ChartScene
-                rows={rows}
+                rows={sceneRows}
                 activeId={activeId}
                 still={still}
                 frozen={view === "robot"}
