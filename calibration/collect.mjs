@@ -87,20 +87,22 @@ for (const t of tests) {
 }
 
 const order = JSON.parse(readFileSync(new URL("./tests.json", import.meta.url), "utf8")).letters.map((l) => l.id);
-results.sort(
-  (a, b) => order.indexOf(a.letterId) - order.indexOf(b.letterId) || (a.variant === "works" ? -1 : 1),
-);
+const variants = ["works", "broken", "lens"];
+const rank = (r) => order.indexOf(r.letterId) * 3 + variants.indexOf(r.variant);
 
-const takenAt =runs.map((r) => r.finishedAt).filter(Boolean).sort().at(-1) ?? new Date().toISOString();
-const readings = {
-  takenAt,
-  commit,
-  engine: `TestSprite cloud agent, CLI ${cliVersion}`,
-  projectId,
-  results,
-};
-const body = `${JSON.stringify(readings, null, 2)}\n`;
+const takenAt = runs.map((r) => r.finishedAt).filter(Boolean).sort().at(-1) ?? new Date().toISOString();
+const head = { takenAt, commit, engine: `TestSprite cloud agent, CLI ${cliVersion}`, projectId };
 const dir = new URL("public/readings/", repo);
-writeFileSync(new URL(`${takenAt.slice(0, 10)}.json`, dir), body);
-writeFileSync(new URL("latest.json", dir), body);
+const latestFile = new URL("latest.json", dir);
+const fresh = new Set(results.map((r) => `${r.letterId}/${r.variant}`));
+const kept = existsSync(latestFile)
+  ? JSON.parse(readFileSync(latestFile, "utf8")).results.filter((r) => !fresh.has(`${r.letterId}/${r.variant}`))
+  : [];
+const merged = [...kept, ...results].sort((a, b) => rank(a) - rank(b));
+results.sort((a, b) => rank(a) - rank(b));
+
+let dated = new URL(`${takenAt.slice(0, 10)}.json`, dir);
+for (let n = 2; existsSync(dated); n++) dated = new URL(`${takenAt.slice(0, 10)}-${n}.json`, dir);
+writeFileSync(dated, `${JSON.stringify({ ...head, results }, null, 2)}\n`);
+writeFileSync(latestFile, `${JSON.stringify({ ...head, results: merged }, null, 2)}\n`);
 console.log(results.map((r) => `${r.letterId}/${r.variant} truth=${r.truth} verdict=${r.verdict}`).join("\n"));
