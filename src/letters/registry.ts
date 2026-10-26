@@ -280,7 +280,7 @@ export const letters: Letter[] = [
     name: "Clipped label",
     trap: "The decisive word is cut off by the box, but the full text is in the page.",
     howToUse: "The notice should show its full sentence.",
-    brokenBehaviour: "The box cuts the notice to Free tri with no ellipsis.",
+    brokenBehaviour: "The box cuts the notice off before its last word, with no ellipsis.",
     Component: ClippedLabel,
   },
   {
