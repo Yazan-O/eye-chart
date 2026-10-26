@@ -33,7 +33,7 @@ function cli(args, { allowFail = false } = {}) {
   try {
     return JSON.parse(execFileSync(ts, [...args.map(q), "--output", "json"], { shell, encoding: "utf8", maxBuffer: 64 << 20 }));
   } catch (err) {
-    if (allowFail && err.stdout) return JSON.parse(err.stdout);
+    if (allowFail) return err.stdout ? JSON.parse(err.stdout) : null;
     throw err;
   }
 }
@@ -92,12 +92,18 @@ if (missing.length) {
   }
 }
 
-const runSummary = join(work, "summary.json");
-cli(
-  ["test", "run", ...wanted.map((w) => w.testId), "--target-url", root, "--wait", "--timeout", "900", "--summary-file", runSummary],
-  { allowFail: true },
-);
-const runs = existsSync(runSummary) ? JSON.parse(readFileSync(runSummary, "utf8")).runs : [];
+const runs = [];
+for (const w of wanted) {
+  const runSummary = join(work, `summary-${w.id}-${w.variant}.json`);
+  try {
+    cli(["test", "run", w.testId, "--target-url", root, "--wait", "--timeout", "900", "--summary-file", runSummary], {
+      allowFail: true,
+    });
+  } catch (err) {
+    console.error(`run failed for ${w.key}: ${err.stderr ?? err.message}`);
+  }
+  if (existsSync(runSummary)) runs.push(...JSON.parse(readFileSync(runSummary, "utf8")).runs);
+}
 
 const results = wanted.map((w) => {
   const run = runs.find((r) => r.testId === w.testId);
