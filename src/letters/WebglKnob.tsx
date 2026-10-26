@@ -11,6 +11,7 @@ import {
   Scene,
   WebGLRenderer,
 } from "three";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 const SIZE = 320;
@@ -91,12 +92,12 @@ export default function WebglKnob({ variant }: LetterProps) {
     paint.current?.();
   }, [value]);
 
-  const shown = variant === "broken" ? 0 : value;
+  const shown = isBroken(variant) ? 0 : value;
 
   return (
     <div className="letter-widget">
       {failed ? <p>WebGL is not available in this browser.</p> : null}
-      {variant === "lens" ? (
+      {hasLens(variant) ? (
         <label className="letter-sr">
           Volume knob
           <input

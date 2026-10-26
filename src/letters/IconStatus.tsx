@@ -1,3 +1,4 @@
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 function Tick() {
@@ -21,7 +22,7 @@ function Cross() {
 export default function IconStatus({ variant }: LetterProps) {
   const rows = [
     { name: "Build", passed: 3, icon: "tick" },
-    { name: "Lint", passed: 1, icon: variant === "broken" ? "tick" : "cross" },
+    { name: "Lint", passed: 1, icon: isBroken(variant) ? "tick" : "cross" },
   ];
   return (
     <div className="letter-widget">

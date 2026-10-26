@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 const TAG = "greet-form";
@@ -54,7 +55,7 @@ export default function ShadowForm({ variant }: LetterProps) {
     const slot = host.current;
     if (!slot) return;
     const el = document.createElement(TAG) as GreetFormElement;
-    el.wrong = variant === "broken";
+    el.wrong = isBroken(variant);
     slot.appendChild(el);
     return () => {
       el.remove();

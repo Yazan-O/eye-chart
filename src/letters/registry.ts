@@ -118,20 +118,16 @@ export const letters: Letter[] = [
     howToUse: "Enter a city in the City field, then pick it from the suggestions.",
     brokenBehaviour: "Typing shows suggestions, but pasting or filling the whole word shows none.",
     lens: {
-      name: "Listen to input, combobox roles",
-      summary: "Suggestions follow the input event, so pasted or filled text works too, and the field and list carry the combobox pattern. This is a fix lens: it removes the defect.",
+      name: "Combobox roles",
+      summary: "The field and its list carry the combobox pattern: role, aria-expanded and aria-controls, with options as role option. The bug itself stays.",
       diff: `   <input id="city" value={value}
 +    role="combobox" aria-autocomplete="list"
 +    aria-expanded={matches.length > 0} aria-controls="city-options"
-     onChange={(e) => {
-       setValue(e.currentTarget.value);
--      if (!keysOnly) setQuery(e.currentTarget.value);
-+      setQuery(e.currentTarget.value);
-     }}
--    onKeyUp={(e) => setQuery(e.currentTarget.value)}
-   />
+     onChange={...} onKeyUp={...} />
 -  <ul className="letter-suggestions">
-+  <ul className="letter-suggestions" id="city-options" role="listbox">`,
++  <ul className="letter-suggestions" id="city-options" role="listbox">
+-    <button className="letter-suggestion">
++    <button className="letter-suggestion" role="option" aria-selected={false}>`,
     },
     Component: Autocomplete,
   },
@@ -144,13 +140,16 @@ export const letters: Letter[] = [
     howToUse: "Accept the cookie notice, then click Continue. The step goes from 1 to 2.",
     brokenBehaviour: "After Accept the notice fades, but Continue no longer responds.",
     lens: {
-      name: "Remove the notice on Accept",
-      summary: "Accept takes the notice and its layer out of the page instead of fading them, and the notice is a labelled dialog. This is a fix lens: it removes the defect.",
-      diff: `-  {(!accepted || broken) && (
--    <div className={\`letter-scrim\${accepted ? " letter-scrim-faded" : ""}\`}>
-+  {!accepted && (
-+    <div className="letter-scrim" role="dialog" aria-modal="true"
-+      aria-labelledby="consent-text">`,
+      name: "Modal semantics",
+      summary: "The notice is a labelled modal dialog, and the page behind it is inert for as long as its layer exists, so a covered Continue is also out of reach in the page structure. The bug itself stays.",
+      diff: `-  <div>
++  <div ref={page} inert={layerShown}>
+     <p>Step {step} of 3</p>
+     <button>Continue</button>
+   </div>
+-  <div className="letter-scrim">
++  <div className="letter-scrim" role="dialog" aria-modal="true"
++    aria-labelledby="consent-text">`,
     },
     Component: ConsentScrim,
   },

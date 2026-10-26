@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const CONFIRM_MS = 900;
@@ -11,7 +12,7 @@ export default function Optimistic({ variant }: LetterProps) {
 
   function like() {
     setLiked(true);
-    if (variant === "broken") {
+    if (isBroken(variant)) {
       timer.current = window.setTimeout(() => setLiked(false), CONFIRM_MS);
     }
   }

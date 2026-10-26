@@ -4,7 +4,7 @@ import type { Variant } from "./types";
 
 export const letterRoutePath = "/l/:id/:variant";
 
-const VARIANTS: readonly Variant[] = ["works", "broken", "lens"];
+const VARIANTS: readonly Variant[] = ["works", "broken", "lens", "lens-broken"];
 
 function isVariant(v: string | undefined): v is Variant {
   return VARIANTS.includes(v as Variant);
@@ -19,7 +19,7 @@ export function TwinPage({ id, variant }: { id?: string; variant?: string }) {
       </main>
     );
   }
-  if (variant === "lens" && !letter.lens) {
+  if ((variant === "lens" || variant === "lens-broken") && !letter.lens) {
     return (
       <main className="letter-page">
         <h1>{letter.name}</h1>

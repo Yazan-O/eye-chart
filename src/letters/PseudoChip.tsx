@@ -1,7 +1,8 @@
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export default function PseudoChip({ variant }: LetterProps) {
-  const done = variant === "broken" ? 2 : 3;
+  const done = isBroken(variant) ? 2 : 3;
   return (
     <div className="letter-widget">
       <div className="letter-row-gap">

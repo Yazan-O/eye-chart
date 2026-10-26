@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 export const ITEM_COUNT = 10000;
@@ -19,7 +20,7 @@ export default function VirtualList({ variant }: LetterProps) {
   const [scrollTop, setScrollTop] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const list = useRef<HTMLDivElement>(null);
-  const lens = variant === "lens";
+  const lens = hasLens(variant);
   const { first, last } = visibleRange(scrollTop);
   const rows = [];
   for (let i = first; i <= last; i++) {
@@ -34,7 +35,7 @@ export default function VirtualList({ variant }: LetterProps) {
         aria-posinset={lens ? i + 1 : undefined}
         aria-setsize={lens ? ITEM_COUNT : undefined}
         onClick={() =>
-          setSelected(variant === "broken" ? Math.min(i + 1, ITEM_COUNT - 1) : i)
+          setSelected(isBroken(variant) ? Math.min(i + 1, ITEM_COUNT - 1) : i)
         }
       >
         Item {i + 1}

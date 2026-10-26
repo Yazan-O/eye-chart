@@ -15,8 +15,8 @@ const spec = JSON.parse(readFileSync(new URL("./tests.json", import.meta.url), "
 mkdirSync(outDir, { recursive: true });
 
 for (const letter of spec.letters) {
-  for (const variant of ["works", "broken", "lens"]) {
-    if (wanted ? !wanted.has(`${letter.id}/${variant}`) : variant === "lens") continue;
+  for (const variant of ["works", "broken", "lens", "lens-broken"]) {
+    if (wanted ? !wanted.has(`${letter.id}/${variant}`) : variant.startsWith("lens")) continue;
     const url = `${spec.origin}/#/l/${letter.id}/${variant}`;
     const plan = {
       projectId,

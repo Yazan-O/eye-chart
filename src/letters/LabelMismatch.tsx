@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const DRAFT = "Agenda: review the garden plan";
@@ -22,7 +23,7 @@ export default function LabelMismatch({ variant }: LetterProps) {
         onChange={(e) => setDraft(e.currentTarget.value)}
       />
       <div className="letter-row-gap">
-        {variant === "broken" ? (
+        {isBroken(variant) ? (
           <button type="button" aria-label="Discard changes" onClick={discard}>
             Save
           </button>
