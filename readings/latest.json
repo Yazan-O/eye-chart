@@ -1,6 +1,6 @@
 {
-  "takenAt": "2026-10-26T15:21:20.932Z",
-  "commit": "03c22f4",
+  "takenAt": "2026-10-26T15:32:13.146Z",
+  "commit": "965166d",
   "engine": "TestSprite cloud agent, CLI 0.15.0",
   "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
   "results": [
@@ -208,11 +208,11 @@
       "letterId": "virtual-list",
       "variant": "lens",
       "truth": "pass",
-      "verdict": "failed",
+      "verdict": "passed",
       "testId": "fcd4e1e2-3bc4-43b4-b91d-f2f392c43e9e",
-      "runId": "750faeb6-c336-4f8d-9223-1fb1c06f5f6d",
-      "reason": "The most likely hosting-side issue is that the page’s item selection logic is not persisting or propagating the selection state for Item 7777. This can happen if the click event is attached to the wrong element, the handler updates a local variable instead of reactive state, the item ID comparison fails due to a type mismatch, or a hydration/runtime issue prevents the client-side state update from taking effect. As a result, the UI remains on \"Selected: none\" and the item is not marked selected. Underlying error: TEST FAILURE\n\nSelecting Item 7777 did not update the page’s selected status.\n\nObservations:\n- The page shows “Selected: none” after the click.\n- Item 7777 is not marked as selected.",
-      "screenshot": "readings/shots/750faeb6-c336-4f8d-9223-1fb1c06f5f6d.png"
+      "runId": "ddcbaf20-d7b8-48a0-921e-63bac293c0a9",
+      "reason": "The page shows that Item 7777 is selected.",
+      "screenshot": "readings/shots/ddcbaf20-d7b8-48a0-921e-63bac293c0a9.png"
     },
     {
       "letterId": "shadow-form",
