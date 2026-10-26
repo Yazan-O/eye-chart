@@ -6,7 +6,7 @@
   <a href="https://yazan-o.github.io/eye-chart/"><img alt="Live site" src="https://img.shields.io/badge/live-yazan--o.github.io%2Feye--chart-2f6fbf"></a>
   <a href="https://github.com/Yazan-O/eye-chart/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Yazan-O/eye-chart/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/Yazan-O/eye-chart/actions/workflows/pages.yml"><img alt="Deploy" src="https://github.com/Yazan-O/eye-chart/actions/workflows/pages.yml/badge.svg"></a>
-  <a href="https://github.com/Yazan-O/eye-chart/pull/3/checks"><img alt="TestSprite V3 gate: 21 of 21, required on main" src="https://img.shields.io/badge/TestSprite%20V3%20gate-21%2F21%20%7C%20required%20on%20main-1d8a5b"></a>
+  <a href="https://github.com/Yazan-O/eye-chart/pull/8/checks"><img alt="TestSprite V3 gate: 31 of 31, required on main" src="https://img.shields.io/badge/TestSprite%20V3%20gate-31%2F31%20%7C%20required%20on%20main-1d8a5b"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-5b6878"></a>
 </p>
 
@@ -25,7 +25,8 @@ When TestSprite misreads a letter, we give it a **lens**: a small change to the 
 | Letters read right on both twins | **17 of 24** | 4 letters misread, 3 blocked |
 | Hidden-text row (row 7) read right | **10 of 10 twins** | The agent ignored every planted "this works" note |
 | Lenses that fix their letter | **5 of 7** | 2 do not, and we show both |
-| Site suite on every PR | **21 of 21**, required check | Went red 3 times on PR 1 before it went green |
+| Site suite on every PR | **31 of 31**, required check | Went red 3 times on PR 1 before it went green |
+| Planted bug in PR 8 | **Blocked by 2 Playwright tests** | TestSprite's suite passed the buggy commit 31 of 31, which is logged as a finding |
 
 Every number above is computed from [`public/readings/latest.json`](public/readings/latest.json) (TestSprite cloud agent, CLI 0.15.0, 62 readings, 2026-10-26) or read from the PR check statuses linked below.
 
@@ -187,7 +188,7 @@ Every pull request runs three kinds of check against its own preview deploy. Two
 
 ```mermaid
 flowchart TD
-  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, 65 Playwright tests, build"]
+  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, 109 Playwright tests, build"]
   PR --> DEP["Deploy job, pages.yml<br/>preview at /eye-chart/pr-preview/pr-N/<br/>finishes only when the preview serves this build"]
   DEP --> APP["TestSprite GitHub App<br/>21-test site suite on the preview"]
   PR --> RX["Re-examination job, calibration.yml<br/>waits for the preview, then the TestSprite CLI<br/>re-reads 5 headline twins"]
@@ -201,13 +202,13 @@ flowchart TD
 
 | Suite | What it tests | What it asserts | When | Holds the merge? |
 |---|---|---|---|---|
-| **Site suite**: TestSprite project "Eye Chart site", 21 tests, planned from [`docs/PRD.md`](docs/PRD.md) | The Eye Chart site itself | Chart, letter stations, lens machine, sensor view, routes, twin pages and phone width. The PRD it is planned from states checkable facts, for example: the four tally counts add up to 24, the summary line equals the read-correctly tally, and each lens letter's link carries `data-lens="on"` or `"off"`. | Every PR, through the TestSprite GitHub App, on that PR's preview | **Yes.** `main` requires the "TestSprite V3" check. |
+| **Site suite**: TestSprite project "Eye Chart site", 31 tests, planned from [`docs/PRD.md`](docs/PRD.md) | The Eye Chart site itself | Chart, letter stations, lens machine, sensor view, routes, twin pages and phone width. The PRD it is planned from states checkable facts, for example: the four tally counts add up to 24, the summary line equals the read-correctly tally, and each lens letter's link carries `data-lens="on"` or `"off"`. | Every PR, through the TestSprite GitHub App, on that PR's preview | **Yes.** `main` requires the "TestSprite V3" check. |
 | **Re-examination**: TestSprite calibration project, CLI 0.15.0 | TestSprite itself, on 5 headline twins: `toast/works`, `hover-menu/works`, `hover-menu/lens`, `autocomplete/broken`, `consent-scrim/broken` | Each verdict against the twin's built-in truth, posted as a table on the PR | Every same-repo PR while at least 8 credits remain; below that it posts a "skipped" note and starts no run | **No, by design.** A misread is a finding about the tester, not a bug in the site. |
 | **Unit tests**: Vitest, 13 files, 109 tests | Data rules and widgets | Readings parsing and scoring, lens logic, chart rows and layout, the sensor view's accessibility scan, routing, and the twins of each letter | Every PR and every push to `main` | **Yes.** `main` requires "verify". |
-| **End-to-end tests**: Playwright, 65 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
+| **End-to-end tests**: Playwright, 109 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
 
 <details>
-<summary><b>The 21 site-suite tests</b> (names from TestSprite's PR comment)</summary>
+<summary><b>The first 21 site-suite tests</b> (names from TestSprite's comment on PR 1; the suite is now 31)</summary>
 
 1. Chart landing page shows results overview
 2. Open a letter station from the chart
@@ -245,6 +246,19 @@ flowchart TD
 | `0c48b66` | **green: all 21 tests passed** | merged as `1d98446` |
 
 The merge waited until the check was green. Pull requests [2](https://github.com/Yazan-O/eye-chart/pull/2), [3](https://github.com/Yazan-O/eye-chart/pull/3) and [4](https://github.com/Yazan-O/eye-chart/pull/4) also merged on a green 21 of 21.
+
+### The planted bug: pull request 8, blocked then fixed
+
+[Pull request 8](https://github.com/Yazan-O/eye-chart/pull/8) planted a bug on purpose: the chart's tally skipped the first row. On the preview it showed 23 letters instead of 24.
+
+| Commit | `verify` (lint, types, 109 unit, 109 Playwright, build) | TestSprite V3 | Result |
+|---|---|---|---|
+| `4abcbcb` Planted bug: chart tally skips the first row | **red**: 107 Playwright tests passed, 2 failed | green: all 31 tests passed | Merge blocked |
+| `db5344c` Fix: the tally counts every row again | green: 109 of 109 Playwright | green: all 31 tests passed | Merged as `e1d1d83` |
+
+The two Playwright tests that caught it are in `e2e/chart.spec.ts`: the four tally counts add up to 24 and match the readings file, and the reading summary repeats the read count and the letter total.
+
+The finding: TestSprite's suite passed the buggy commit 31 of 31. Its test "Tally counts add to 24 and match the About totals" passed while the page showed 23 and the totals no longer matched. A count that is off by one row read as correct, which is the kind of misread Eye Chart measures. The check that held the merge was `verify`.
 
 ### The re-examination comment: pull request 3
 
