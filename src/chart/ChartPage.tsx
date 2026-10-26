@@ -233,6 +233,10 @@ export default function ChartPage() {
               Eye Chart
             </h1>
           </div>
+          <p className="lead lead-what" data-testid="what-testsprite">
+            TestSprite is an AI testing agent: it opens a web page, uses it like a person would,
+            and reports pass or fail.
+          </p>
           <p className="lead" data-testid="tagline">
             Each letter is a real web widget, built once working and once broken. A slash means
             TestSprite&rsquo;s AI tester misread it. Turn a lens to fix it.

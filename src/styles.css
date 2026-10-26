@@ -2514,3 +2514,74 @@ a {
     top: 72px;
   }
 }
+
+.hud .lead-what {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--on-room-2);
+}
+
+.hud .lead-what + .lead {
+  margin-top: 8px;
+  color: var(--on-room);
+}
+
+.shot {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--on-room-2);
+  cursor: zoom-in;
+}
+
+.shot img {
+  max-width: min(100%, 420px);
+}
+
+.shot-hint {
+  font-size: 13px;
+}
+
+.shot-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: rgba(4, 7, 11, 0.9);
+  cursor: zoom-out;
+}
+
+.shot-zoom img {
+  max-width: min(100%, 1280px);
+  max-height: calc(100svh - 120px);
+  cursor: default;
+}
+
+.shot-zoom-bar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.shot-zoom-bar a {
+  color: var(--sky);
+}
+
+@media (max-width: 860px) {
+  .topbar-github {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .hero .stage {
+    height: max(56svh, 460px);
+  }
+}
