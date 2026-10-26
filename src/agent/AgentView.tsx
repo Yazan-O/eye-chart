@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
@@ -30,6 +38,11 @@ function skip(el: Element): boolean {
 function Overlay({ onClose }: { onClose: () => void }) {
   const [nodes, setNodes] = useState<AgentNode[]>([]);
   const { pathname } = useLocation();
+  const exit = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    exit.current?.focus();
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -84,6 +97,15 @@ function Overlay({ onClose }: { onClose: () => void }) {
           </div>
         ))}
       </div>
+      <button
+        ref={exit}
+        type="button"
+        className="button agent-exit"
+        onClick={onClose}
+        data-testid="agent-exit"
+      >
+        Back to human eyes
+      </button>
       <p className="agent-summary" role="status" data-testid="agent-summary">
         What a page-structure reader gets here: {counts.controls} parts it can find
         {counts.unnamed > 0 ? ` (${counts.unnamed} with no name)` : ""}, and{" "}
@@ -97,7 +119,10 @@ function Overlay({ onClose }: { onClose: () => void }) {
 export function AgentViewProvider({ children }: { children: ReactNode }) {
   const [on, setOn] = useState(false);
   const toggle = useCallback(() => setOn((v) => !v), []);
-  const close = useCallback(() => setOn(false), []);
+  const close = useCallback(() => {
+    setOn(false);
+    document.querySelector<HTMLElement>('[data-testid="agent-toggle"]')?.focus();
+  }, []);
   const value = useMemo(() => ({ on, toggle, setOn }), [on, toggle]);
   return (
     <AgentViewContext.Provider value={value}>

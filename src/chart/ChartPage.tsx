@@ -1,5 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
 import { STATE_WORDS } from "../data/readings";
@@ -9,6 +9,8 @@ import GlyphMark from "../components/GlyphMark";
 import SceneBoundary from "../components/SceneBoundary";
 import TopBar from "../components/TopBar";
 import ChartKey from "./ChartKey";
+import LensDials from "./LensDials";
+import type { LensDial } from "./Phoropter";
 
 const ChartScene = lazy(() => import("./ChartScene"));
 
@@ -31,8 +33,46 @@ export default function ChartPage() {
   const reduced = usePrefersReducedMotion();
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [params, setParams] = useSearchParams();
+  const lensParam = params.get("lens") ?? "";
 
-  const rows = useMemo(() => buildRows(letters, file?.results ?? []), [letters, file]);
+  const withLens = useMemo(() => letters.filter((l) => l.lens), [letters]);
+  const lensOn = useMemo(() => {
+    const wanted = new Set(lensParam.split(",").filter(Boolean));
+    return new Set(withLens.filter((l) => wanted.has(l.id)).map((l) => l.id));
+  }, [lensParam, withLens]);
+  const dials: LensDial[] = useMemo(
+    () =>
+      withLens.map((l) => ({
+        id: l.id,
+        glyph: l.glyph,
+        name: l.lens?.name ?? "",
+        on: lensOn.has(l.id),
+      })),
+    [withLens, lensOn],
+  );
+
+  const setLenses = useCallback(
+    (next: Set<string>) => {
+      const value = [...next].sort().join(",");
+      setParams(value ? { lens: value } : {}, { replace: true });
+    },
+    [setParams],
+  );
+  const toggleLens = useCallback(
+    (id: string) => {
+      const next = new Set(lensOn);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      setLenses(next);
+    },
+    [lensOn, setLenses],
+  );
+
+  const rows = useMemo(
+    () => buildRows(letters, file?.results ?? [], lensOn),
+    [letters, file, lensOn],
+  );
   const all = rows.flatMap((r) => r.glyphs);
   const readCount = all.filter((g) => g.state === "read").length;
   const taken = file ? formatDate(file.takenAt) : "";
@@ -40,7 +80,9 @@ export default function ChartPage() {
   let summary = "Not read yet.";
   if (!ready) summary = "Loading the readings.";
   else if (file && all.length > 0) {
-    summary = `Read correctly: ${readCount} of ${all.length} letters${taken ? `, measured ${taken}` : ""}.`;
+    const lensWords =
+      lensOn.size === 0 ? "" : lensOn.size === 1 ? "With 1 lens on. " : `With ${lensOn.size} lenses on. `;
+    summary = `${lensWords}Read correctly: ${readCount} of ${all.length} letters${taken ? `, measured ${taken}` : ""}.`;
   }
 
   const flatFallback = <div className="chart-flat" data-testid="chart-flat" />;
@@ -86,9 +128,18 @@ export default function ChartPage() {
                 reduced={reduced}
                 onActive={setActiveId}
                 onOpen={(id) => navigate(`/letter/${id}`)}
+                dials={dials}
+                onToggleLens={toggleLens}
               />
             </Suspense>
           </SceneBoundary>
+          <LensDials
+            dials={dials}
+            activeId={activeId}
+            onToggle={toggleLens}
+            onReset={() => setLenses(new Set())}
+            onActive={setActiveId}
+          />
         </section>
       </main>
     </div>

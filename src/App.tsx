@@ -3,7 +3,7 @@ import { AgentViewProvider } from "./agent/AgentView";
 import ScrollToTop from "./components/ScrollToTop";
 import ChartPage from "./chart/ChartPage";
 import StationPage from "./station/StationPage";
-import TwinPage from "./twin/TwinPage";
+import { LetterRoute, letterRoutePath } from "./letters/routes";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -13,7 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<ChartPage />} />
         <Route path="/letter/:id" element={<StationPage />} />
-        <Route path="/l/:id/:variant" element={<TwinPage />} />
+        <Route path={letterRoutePath} element={<LetterRoute />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AgentViewProvider>

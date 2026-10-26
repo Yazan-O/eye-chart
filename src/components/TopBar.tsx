@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { AgentToggle } from "../agent/AgentView";
+import About from "./About";
 
 export default function TopBar({ children }: { children?: ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function TopBar({ children }: { children?: ReactNode }) {
       </Link>
       <div className="topbar-actions">
         <AgentToggle />
+        <About />
         {children}
       </div>
     </header>

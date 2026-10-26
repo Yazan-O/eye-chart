@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
-import { CanvasTexture, SRGBColorSpace, Vector3 } from "three";
+import { CanvasTexture, Color, SRGBColorSpace, Vector3 } from "three";
 import type { ChartGlyph, ChartRow } from "../data/chart";
 import { drawGlyph, drawLabel, GLYPH_FONT } from "./glyphArt";
 import { layoutChart } from "./layout";
-import type { ChartLayout, PlacedGlyph, PlacedSlat } from "./layout";
+import type { PlacedGlyph, PlacedSlat } from "./layout";
+import Phoropter, { phoropterWidth } from "./Phoropter";
+import type { LensDial } from "./Phoropter";
 
 export interface ChartSceneProps {
   rows: ChartRow[];
@@ -13,12 +15,23 @@ export interface ChartSceneProps {
   reduced: boolean;
   onActive: (id: string | null) => void;
   onOpen: (id: string) => void;
+  dials: LensDial[];
+  onToggleLens: (id: string) => void;
+}
+
+interface Extent {
+  top: number;
+  bottom: number;
+  width: number;
+  depth: number;
 }
 
 const ROOM = "#0e1822";
 const PANEL = "#f6fbff";
 const SKY = "#6bb4ee";
 const FOV = 38;
+const PANEL_FAR = new Color("#a9bccd");
+const PANEL_NEAR = new Color(PANEL);
 
 function useFontReady(): boolean {
   const [ready, setReady] = useState(false);
@@ -101,7 +114,8 @@ function Glyph({
   );
 }
 
-function Slat({ slat }: { slat: PlacedSlat }) {
+function Slat({ slat, shade }: { slat: PlacedSlat; shade: number }) {
+  const face = useMemo(() => PANEL_NEAR.clone().lerp(PANEL_FAR, shade), [shade]);
   const label = useMemo(
     () => makeTexture((c) => drawLabel(c, slat.fraction, SKY), 256, 64),
     [slat.fraction],
@@ -116,7 +130,7 @@ function Slat({ slat }: { slat: PlacedSlat }) {
       </mesh>
       <mesh position={[0, 0, -0.005]}>
         <planeGeometry args={[slat.width, slat.height]} />
-        <meshBasicMaterial color={PANEL} toneMapped={false} fog={false} />
+        <meshBasicMaterial color={face} toneMapped={false} fog={false} />
       </mesh>
       <mesh position={[-slat.width / 2 - labelH * 2.2, 0, 0]}>
         <planeGeometry args={[labelH * 4, labelH]} />
@@ -126,12 +140,13 @@ function Slat({ slat }: { slat: PlacedSlat }) {
   );
 }
 
-function Rig({ layout, reduced }: { layout: ChartLayout; reduced: boolean }) {
+function Rig({ layout, reduced }: { layout: Extent; reduced: boolean }) {
   const camera = useThree((s) => s.camera);
   const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
   const born = useRef<number | null>(null);
   const aim = useMemo(() => new Vector3(), []);
+  const goal = useMemo(() => new Vector3(), []);
 
   const frame = useMemo(() => {
     const height = layout.top - layout.bottom + 0.6;
@@ -158,20 +173,20 @@ function Rig({ layout, reduced }: { layout: ChartLayout; reduced: boolean }) {
     const ease = 1 - (1 - t) ** 3;
     const px = state.pointer.x;
     const py = state.pointer.y;
-    const target = new Vector3(
-      px * 0.55,
-      frame.centerY + 0.55 + py * 0.3,
+    goal.set(
+      px * 1.1 * ease,
+      frame.centerY + 0.8 + py * 0.45 * ease,
       frame.distance + (1 - ease) * 3.2,
     );
-    camera.position.lerp(target, t < 1 ? 1 : 0.06);
-    aim.set(px * 0.12, frame.centerY - 0.1, frame.centerZ);
+    camera.position.lerp(goal, t < 1 ? 1 : 0.05);
+    aim.set(px * 0.2, frame.centerY - 0.15, frame.centerZ);
     camera.lookAt(aim);
   });
 
   return null;
 }
 
-function Room({ layout }: { layout: ChartLayout }) {
+function Room({ layout }: { layout: Extent }) {
   return (
     <>
       <color attach="background" args={[ROOM]} />
@@ -184,7 +199,7 @@ function Room({ layout }: { layout: ChartLayout }) {
         color={PANEL}
         distance={6}
       />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, layout.bottom - 0.4, -2]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, layout.bottom - 0.1, -2]}>
         <planeGeometry args={[40, 40]} />
         <meshStandardMaterial color="#1a2b3c" roughness={0.55} metalness={0.2} />
       </mesh>
@@ -202,6 +217,8 @@ export default function ChartScene({
   reduced,
   onActive,
   onOpen,
+  dials,
+  onToggleLens,
 }: ChartSceneProps) {
   const fontReady = useFontReady();
   const layout = useMemo(() => layoutChart(rows, reduced), [rows, reduced]);
@@ -210,6 +227,17 @@ export default function ChartScene({
     rows.forEach((r) => r.glyphs.forEach((g) => map.set(g.id, g)));
     return map;
   }, [rows]);
+  const phoropterY = layout.bottom - 0.75;
+  const extent: Extent = useMemo(
+    () => ({
+      top: layout.top,
+      bottom: dials.length > 0 ? phoropterY - 1.5 : layout.bottom,
+      width: Math.max(layout.width, dials.length > 0 ? phoropterWidth(dials.length) : 0),
+      depth: layout.depth,
+    }),
+    [layout, dials.length, phoropterY],
+  );
+  const rowsBack = Math.max(1, layout.slats.length - 1);
 
   useEffect(() => () => {
     document.body.style.cursor = "";
@@ -224,12 +252,12 @@ export default function ChartScene({
       camera={{ fov: FOV, position: [0, 0, 10], near: 0.1, far: 60 }}
       onPointerMissed={() => onActive(null)}
     >
-      <Room layout={layout} />
-      <Rig layout={layout} reduced={reduced} />
+      <Room layout={extent} />
+      <Rig layout={extent} reduced={reduced} />
       {fontReady && (
         <group key="chart">
-          {layout.slats.map((s) => (
-            <Slat key={s.fraction + s.y} slat={s} />
+          {layout.slats.map((s, i) => (
+            <Slat key={s.fraction + s.y} slat={s} shade={reduced ? 0 : (i / rowsBack) * 0.55} />
           ))}
           {layout.glyphs.map((p) => {
             const g = byId.get(p.id);
@@ -244,6 +272,16 @@ export default function ChartScene({
               />
             ) : null;
           })}
+          {dials.length > 0 && (
+            <Phoropter
+              dials={dials}
+              y={phoropterY}
+              reduced={reduced}
+              activeId={activeId}
+              onToggle={onToggleLens}
+              onActive={onActive}
+            />
+          )}
         </group>
       )}
     </Canvas>

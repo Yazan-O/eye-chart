@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { resetReadingsCache } from "./data/readings";
 import type { Letter, Variant } from "./data/types";
 
 vi.mock("./chart/ChartScene", () => ({
@@ -33,6 +34,7 @@ const testLetters: Letter[] = [
     trap: "t",
     howToUse: "h",
     brokenBehaviour: "b",
+    lens: { name: "Slider role", summary: "s", diff: "+role" },
     Component: Widget,
   },
 ];
@@ -95,15 +97,10 @@ describe("App routing", () => {
     expect(await screen.findByTestId("scene-mock")).toHaveAttribute("data-reduced", "true");
   });
 
-  it("renders a twin alone on its route", () => {
-    renderAt("/l/plain-button/broken");
-    expect(screen.getByTestId("twin-plain-button-broken")).toHaveTextContent("Widget broken");
+  it("renders a real twin alone on its route, without chart chrome", () => {
+    renderAt("/l/counter/works");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Counter");
     expect(screen.queryByTestId("topbar")).not.toBeInTheDocument();
-  });
-
-  it("refuses a lens twin for a letter without a lens", () => {
-    renderAt("/l/plain-button/lens");
-    expect(screen.getByTestId("not-found")).toBeInTheDocument();
   });
 
   it("opens a station with both twins embedded and no invented verdicts", () => {
@@ -113,7 +110,8 @@ describe("App routing", () => {
     expect(screen.getByTestId("frame-broken")).toHaveAttribute("src", "/#/l/canvas-slider/broken");
     expect(screen.getByTestId("reading-works-verdict")).toHaveTextContent("Not read yet");
     expect(screen.getByTestId("reading-broken-verdict")).toHaveTextContent("Not read yet");
-    expect(screen.getByTestId("lens-none")).toBeInTheDocument();
+    expect(screen.getByTestId("lens-name")).toHaveTextContent("Lens: Slider role");
+    expect(screen.getByTestId("reading-lens-verdict")).toHaveTextContent("Not read yet");
     expect(screen.getByTestId("prev-letter")).toHaveAttribute("href", "/letter/plain-button");
   });
 
@@ -127,6 +125,54 @@ describe("App routing", () => {
     expect(screen.getByTestId("agent-summary")).toHaveTextContent("What a page-structure reader gets here");
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByTestId("agent-overlay")).not.toBeInTheDocument();
+    fireEvent.click(toggle);
+    fireEvent.click(screen.getByTestId("agent-exit"));
+    expect(screen.queryByTestId("agent-overlay")).not.toBeInTheDocument();
+  });
+
+  it("turns a lens dial with the keyboard-reachable button and rereads the chart", async () => {
+    const reading = (variant: string, truth: string, verdict: string) => ({
+      letterId: "canvas-slider",
+      variant,
+      truth,
+      verdict,
+      reason: "r",
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          takenAt: "2026-10-26T15:00:00Z",
+          results: [
+            reading("works", "pass", "passed"),
+            reading("broken", "fail", "passed"),
+            reading("lens", "fail", "failed"),
+          ],
+        }),
+      }),
+    );
+    resetReadingsCache();
+    renderAt("/");
+    const link = screen.getByTestId("letter-link-canvas-slider");
+    await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    const dial = screen.getByTestId("lens-dial-canvas-slider");
+    expect(dial).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(dial);
+    expect(dial).toHaveAttribute("aria-pressed", "true");
+    expect(link).toHaveAttribute("data-state", "read");
+    expect(screen.getByTestId("reading-summary")).toHaveTextContent("With 1 lens on.");
+    fireEvent.click(screen.getByTestId("lens-reset"));
+    expect(link).toHaveAttribute("data-state", "misread");
+    resetReadingsCache();
+  });
+
+  it("opens and closes the about panel", () => {
+    renderAt("/");
+    fireEvent.click(screen.getByTestId("about-open"));
+    expect(screen.getByTestId("about-panel")).toHaveAccessibleName("An eye exam for an AI tester");
+    fireEvent.click(screen.getByTestId("about-close"));
+    expect(screen.queryByTestId("about-panel")).not.toBeInTheDocument();
   });
 
   it("renders the not-found page with a link home on unknown routes", () => {

@@ -129,6 +129,7 @@ a {
 }
 
 .wordmark {
+  white-space: nowrap;
   font: 500 20px / 1 var(--text);
   text-decoration: none;
   letter-spacing: -0.01em;
@@ -160,7 +161,8 @@ a {
   grid-template-rows: auto 1fr;
   column-gap: 32px;
   padding: 0 0 0 var(--margin);
-  min-height: calc(100svh - 72px);
+  height: calc(100svh - 72px);
+  min-height: 560px;
 }
 
 .room-head {
@@ -187,7 +189,11 @@ a {
 
 .room-key {
   grid-area: key;
-  padding: 40px 0 64px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 32px 12px 48px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
 }
 
 .room-chart {
@@ -341,14 +347,6 @@ a {
 
 .glyph--large.glyph--unread {
   -webkit-text-stroke-width: 3px;
-}
-
-.twin {
-  min-height: 100svh;
-  padding: 24px;
-  background: #ffffff;
-  color: #111111;
-  color-scheme: light;
 }
 
 .plain {
@@ -550,9 +548,7 @@ a {
   width: 100%;
   height: 380px;
   border: 0;
-  background: #ffffff;
-  outline: 8px solid #e6f1fb;
-  outline-offset: -8px;
+  background: #0b1020;
 }
 
 .reading {
@@ -719,9 +715,16 @@ a {
   }
 }
 
-.agent-toggle {
+.topbar {
   position: relative;
-  z-index: 1001;
+  z-index: 2;
+}
+
+.agent-exit {
+  position: absolute;
+  top: 16px;
+  right: var(--margin);
+  pointer-events: auto;
 }
 
 .agent {
@@ -792,12 +795,257 @@ a {
 
 .agent-summary {
   position: absolute;
-  left: var(--margin);
-  right: var(--margin);
-  bottom: var(--margin);
-  max-width: 60ch;
-  padding: 14px 18px;
+  top: 84px;
+  left: 50%;
+  width: min(760px, calc(100% - 2 * var(--margin)));
+  transform: translateX(-50%);
+  padding: 20px 26px;
   background: var(--panel);
   color: var(--ink);
+  font: 500 var(--step-lead) / 1.3 var(--text);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .agent-summary {
+    animation: drop 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.dials {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.dials-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dials-head h2 {
+  font: 500 var(--step-body) / 1 var(--text);
+}
+
+.dials-reset {
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--sky);
+  font: 500 var(--step-small) / 1 var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.dials-none {
+  color: var(--on-room-2);
+}
+
+.dials-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dial {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 7px 16px 7px 7px;
+  border: 0;
+  background: var(--room-2);
+  color: var(--on-room);
+  font: 400 var(--step-small) / 1.2 var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.dial:hover,
+.dial.is-active {
+  background: #1d3044;
+}
+
+.dial:active {
+  transform: scale(0.97);
+}
+
+.dial-knob {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #2b333c;
+  border: 4px solid #c9d3dc;
+  transition: background-color 200ms ease, transform 420ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.dial-knob::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 1.5px);
+  top: 7px;
+  width: 3px;
+  height: 11px;
+  background: var(--on-room);
+}
+
+.dial.is-on .dial-knob {
+  background: var(--accent);
+  transform: rotate(-90deg);
+}
+
+.dial-text {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+}
+
+.dial-glyph {
+  grid-row: span 2;
+  font: 700 22px / 1 var(--text);
+  align-self: center;
+}
+
+.dial-name {
+  font-weight: 500;
+}
+
+.dial-state {
+  color: var(--on-room-2);
+}
+
+.dial.is-on .dial-state {
+  color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .room-main {
+    height: auto;
+    min-height: 0;
+  }
+
+  .room-key {
+    overflow: visible;
+    padding-right: var(--margin);
+  }
+
+  .room-chart {
+    height: auto;
+    min-height: 0;
+    padding-top: max(62svh, 380px);
+  }
+
+  .room-chart .chart-canvas,
+  .room-chart .chart-flat {
+    inset: 0 0 auto 0;
+    height: max(62svh, 380px) !important;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .topbar .button {
+    min-height: 40px;
+    padding: 8px 14px;
+  }
+
+  .dials {
+    position: static;
+    padding: 20px var(--margin) 0;
+  }
+
+  .agent-summary {
+    top: 76px;
+    font-size: var(--step-body);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dial-knob {
+    transition: none;
+  }
+}
+
+.about-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(14, 24, 34, 0.55);
+}
+
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(560px, 100%);
+  height: 100%;
+  overflow-y: auto;
+  padding: 40px 40px 48px;
+  background: var(--sky);
+  color: var(--ink);
+  color-scheme: light;
   font-size: var(--step-body);
+}
+
+.about .display {
+  margin-bottom: 12px;
+  font-size: clamp(44px, 5vw, 72px);
+  outline: none;
+}
+
+.about p {
+  max-width: 52ch;
+}
+
+.about .button {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .about {
+    animation: slide 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 860px) {
+  .about {
+    padding: 28px var(--margin) 40px;
+  }
 }
