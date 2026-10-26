@@ -1,0 +1,70 @@
+name: Re-examination
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: Site to examine
+        required: false
+        default: https://yazan-o.github.io/eye-chart/
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: re-examination
+  cancel-in-progress: false
+
+jobs:
+  examine:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TESTSPRITE_API_KEY: ${{ secrets.TESTSPRITE_API_KEY }}
+      TESTSPRITE_CALIBRATION_PROJECT_ID: ${{ secrets.TESTSPRITE_CALIBRATION_PROJECT_ID }}
+      TESTSPRITE_NO_UPDATE_NOTIFIER: "1"
+      TARGET: ${{ github.event_name == 'pull_request' && format('https://yazan-o.github.io/eye-chart/pr-preview/pr-{0}/', github.event.number) || inputs.target_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i -g @testsprite/testsprite-cli@0.15.0
+      - name: Wait for the preview deploy of this commit
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 60); do
+            state=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow Deploy --commit "$SHA" --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"' || true)
+            echo "deploy: $state"
+            case "$state" in
+              "completed success") break ;;
+              completed*) echo "::warning::preview deploy did not succeed ($state)"; break ;;
+            esac
+            sleep 10
+          done
+      - name: Wait for the preview URL
+        run: |
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$TARGET" || true)
+            echo "$TARGET -> $code"
+            if [ "$code" = "200" ]; then sleep 30; exit 0; fi
+            sleep 10
+          done
+          echo "::error::$TARGET did not answer 200 within 10 minutes"
+          exit 1
+      - name: Re-examine the headline twins
+        run: node calibration/ci.mjs "$TARGET" re-examination.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: re-examination
+          path: re-examination.json
+          if-no-files-found: warn
