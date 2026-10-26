@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { resetReadingsCache } from "./data/readings";
+import { ui } from "./core/store";
 import type { Letter, Variant } from "./data/types";
 
 vi.mock("./chart/ChartScene", () => ({
@@ -72,10 +73,19 @@ describe("App routing", () => {
   beforeEach(() => {
     mockMatchMedia(false);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }));
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    );
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    ui.reset();
+    window.sessionStorage.clear();
   });
 
   it("names the product and mirrors every letter as a link", async () => {
@@ -115,19 +125,51 @@ describe("App routing", () => {
     expect(screen.getByTestId("prev-letter")).toHaveAttribute("href", "/letter/plain-button");
   });
 
-  it("switches to the agent view from the chart and back", () => {
+  it("switches to the sensor view and back, with data-view and data-ready hooks", async () => {
+    mockMatchMedia(true);
     renderAt("/");
     const toggle = screen.getByTestId("agent-toggle");
     expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(toggle).toHaveTextContent("See it like TestSprite");
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByTestId("agent-overlay")).toBeInTheDocument();
-    expect(screen.getByTestId("agent-summary")).toHaveTextContent("What a page-structure reader gets here");
+    expect(toggle).toHaveTextContent("See it like TestSprite");
+    expect(document.documentElement.dataset.view).toBe("robot");
+    expect(await screen.findByTestId("agent-overlay")).toBeInTheDocument();
+    expect(screen.getByTestId("agent-summary")).toHaveTextContent(/Sensor view\. \d+ parts found\./);
+    expect(screen.getByTestId("sensor-caption")).toHaveTextContent("an illustration, not TestSprite");
+    await waitFor(() => expect(document.documentElement.dataset.ready).toBe("true"));
     fireEvent.keyDown(window, { key: "Escape" });
+    expect(document.documentElement.dataset.view).toBe("human");
     expect(screen.queryByTestId("agent-overlay")).not.toBeInTheDocument();
     fireEvent.click(toggle);
-    fireEvent.click(screen.getByTestId("agent-exit"));
+    fireEvent.click(await screen.findByTestId("agent-exit"));
     expect(screen.queryByTestId("agent-overlay")).not.toBeInTheDocument();
+  });
+
+  it("closes the shutter before swapping to the sensor view when motion is on", () => {
+    vi.useFakeTimers();
+    try {
+      renderAt("/");
+      fireEvent.click(screen.getByTestId("agent-toggle"));
+      expect(document.documentElement.dataset.view).toBe("human");
+      act(() => {
+        vi.advanceTimersByTime(200);
+      });
+      expect(document.documentElement.dataset.view).toBe("robot");
+      expect(document.documentElement.dataset.ready).toBe("false");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("toggles pause motion and marks the root", () => {
+    renderAt("/");
+    const pause = screen.getByTestId("motion-toggle");
+    expect(pause).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(pause);
+    expect(pause).toHaveAttribute("aria-pressed", "true");
+    expect(document.documentElement.dataset.motion).toBe("paused");
   });
 
   it("turns a lens dial with the keyboard-reachable button and rereads the chart", async () => {

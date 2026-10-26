@@ -12,12 +12,14 @@ export default function App() {
     <AgentViewProvider>
       <ScrollToTop />
       <RootHooks />
-      <Routes>
-        <Route path="/" element={<ChartPage />} />
-        <Route path="/letter/:id" element={<StationPage />} />
-        <Route path={letterRoutePath} element={<LetterRoute />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<ChartPage />} />
+          <Route path="/letter/:id" element={<StationPage />} />
+          <Route path={letterRoutePath} element={<LetterRoute />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </AgentViewProvider>
   );
 }

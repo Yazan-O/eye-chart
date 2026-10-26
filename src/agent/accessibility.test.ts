@@ -71,6 +71,12 @@ describe("readPage", () => {
     expect(nodes.map((n) => n.name)).toEqual(["Inside"]);
   });
 
+  it("still finds a canvas the page hides from assistive tech", () => {
+    const root = mount('<div aria-hidden="true"><canvas></canvas><button>Ghost</button></div>');
+    const nodes = readPage(root, { measure: box });
+    expect(nodes.map((n) => `${n.kind}:${n.role}`)).toEqual(["void:canvas"]);
+  });
+
   it("drops elements with no size", () => {
     const root = mount("<button>Zero</button>");
     expect(readPage(root, { measure: () => ({ x: 0, y: 0, w: 0, h: 0 }) })).toEqual([]);

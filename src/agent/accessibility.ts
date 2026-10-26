@@ -14,6 +14,7 @@ export interface AgentNode {
   box: Box;
   letterId?: string;
   state?: string;
+  el?: Element;
 }
 
 function letterOf(el: Element): { letterId?: string; state?: string } {
@@ -155,6 +156,16 @@ export function nameOf(el: Element): string {
   return squash(el.getAttribute("title"));
 }
 
+function isHiddenFromView(el: Element): boolean {
+  if (el.hasAttribute("hidden")) return true;
+  const view = el.ownerDocument.defaultView;
+  if (view && el instanceof view.Element) {
+    const style = view.getComputedStyle(el);
+    if (style.display === "none" || style.visibility === "hidden") return true;
+  }
+  return false;
+}
+
 export function isHidden(el: Element): boolean {
   if (el.getAttribute("aria-hidden") === "true") return true;
   if (el.hasAttribute("hidden") || el.hasAttribute("inert")) return true;
@@ -198,7 +209,14 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
 
   const visit = (el: Element) => {
     if (options.skip?.(el)) return;
-    if (isHidden(el)) return;
+    if (isHidden(el)) {
+      if (el.getAttribute("aria-hidden") === "true" && !isHiddenFromView(el)) {
+        el.querySelectorAll("canvas").forEach((c) => {
+          if (!isHiddenFromView(c)) visit(c);
+        });
+      }
+      return;
+    }
     const tag = el.tagName.toLowerCase();
     if (tag === "script" || tag === "style" || tag === "template" || tag === "noscript") return;
 
@@ -210,6 +228,7 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
           role: "canvas",
           name: squash(el.getAttribute("aria-label")) || textFrom(el),
           box,
+          el,
         });
       }
       return;
@@ -239,7 +258,7 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
     const role = roleOf(el);
     if (role && CONTROL_ROLES.has(role)) {
       const box = place(el);
-      if (box) out.push({ kind: "control", role, name: nameOf(el), box, ...letterOf(el) });
+      if (box) out.push({ kind: "control", role, name: nameOf(el), box, el, ...letterOf(el) });
       if (role !== "group" && role !== "dialog" && role !== "listbox" && role !== "menu" && role !== "tablist") {
         el.querySelectorAll("canvas").forEach((c) => visit(c));
         return;
@@ -248,7 +267,7 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
       const text = ownText(el);
       if (text) {
         const box = place(el);
-        if (box) out.push({ kind: "text", role: "text", name: text, box, ...letterOf(el) });
+        if (box) out.push({ kind: "text", role: "text", name: text, box, el, ...letterOf(el) });
       }
     }
 
