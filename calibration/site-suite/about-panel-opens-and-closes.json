@@ -1,0 +1,30 @@
+{
+  "testId": "3959a604-1402-431f-8949-f71528e15809",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "About panel opens and closes",
+  "type": "frontend",
+  "priority": "Medium",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the eye chart page"
+    },
+    {
+      "type": "action",
+      "description": "Open the About panel"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify an About panel is displayed with an explanation of the project"
+    },
+    {
+      "type": "action",
+      "description": "Close the About panel"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the About panel is no longer visible"
+    }
+  ]
+}

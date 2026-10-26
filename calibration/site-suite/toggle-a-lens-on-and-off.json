@@ -1,0 +1,30 @@
+{
+  "testId": "95ba5b0c-6978-4822-8a34-ace0c44a0d38",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Toggle a lens on and off",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the lens machine page"
+    },
+    {
+      "type": "action",
+      "description": "Turn on a lens dial for a letter with a lens"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the selected letter changes to its lens reading"
+    },
+    {
+      "type": "action",
+      "description": "Turn off the same lens dial"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the selected letter returns to its original state"
+    }
+  ]
+}

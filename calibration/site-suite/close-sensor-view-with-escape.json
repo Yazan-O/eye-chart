@@ -1,0 +1,30 @@
+{
+  "testId": "4b3e2744-c842-4fbe-a11a-8f0cff864b41",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Close sensor view with Escape",
+  "type": "frontend",
+  "priority": "Medium",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the Eye Chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the control to enable sensor view mode"
+    },
+    {
+      "type": "action",
+      "description": "Press Escape"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the sensor view status line is no longer shown"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the normal eye chart view is displayed"
+    }
+  ]
+}

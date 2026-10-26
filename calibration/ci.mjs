@@ -12,7 +12,7 @@ const MAX_CREDITS = 3;
 
 const [base, outFile] = process.argv.slice(2);
 const project = process.env.TESTSPRITE_CALIBRATION_PROJECT_ID;
-const minCredits = Number(process.env.CALIBRATION_MIN_CREDITS ?? "8");
+const minCredits = Number(process.env.CALIBRATION_MIN_CREDITS ?? SET.length * CREDITS_PER_RUN);
 if (!base || !outFile || !project) {
   console.error("usage: TESTSPRITE_CALIBRATION_PROJECT_ID=<id> node calibration/ci.mjs <preview base url> <out.json>");
   process.exit(2);
@@ -60,7 +60,7 @@ const wanted = SET.map((key) => {
 
 const before = cli(["usage"]).credits;
 if (before < minCredits) {
-  summary(`## Re-examination skipped\n\nCredits left: ${before}, below the floor of ${minCredits}. No run was started.`);
+  summary(`## Re-examination skipped: credits\n\nCredits left: ${before}. This run needs ${minCredits}. No run was started.`);
   writeFileSync(outFile, JSON.stringify({ skipped: true, credits: before, minCredits }, null, 2));
   process.exit(0);
 }

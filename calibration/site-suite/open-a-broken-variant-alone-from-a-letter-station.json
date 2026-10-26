@@ -1,0 +1,30 @@
+{
+  "testId": "262405d3-4e2f-48e8-8e5a-70e6170c2032",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Open a broken variant alone from a letter station",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the link for a letter on the chart"
+    },
+    {
+      "type": "action",
+      "description": "Open the broken variant alone"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify only the single broken widget is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the surrounding chart is not displayed"
+    }
+  ]
+}

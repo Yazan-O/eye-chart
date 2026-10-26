@@ -1,0 +1,34 @@
+{
+  "testId": "15b93614-280c-4c78-a133-eca57e2edb71",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Virtual list lens dial turns Misread into Read correctly and back",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "assertion",
+      "description": "In the lens bar at the bottom, verify the Virtual list dial ('List positions and a jump field') shows Off and its reading line says 'Misread'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'List positions and a jump field' lens dial"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line now says 'Misread → Read correctly' and the reading summary begins 'With 1 lens on.'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'List positions and a jump field' lens dial again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line says 'Misread' again and the reading summary no longer mentions a lens"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "testId": "bd189878-057f-4e85-8e67-31ae59408263",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Sensor view counts parts and Escape leaves it",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'See it like TestSprite' button"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify a status line reads 'Sensor view. N parts found.' where N is a whole number greater than 0, and the button now says 'Back to human eyes'"
+    },
+    {
+      "type": "action",
+      "description": "Press the Escape key"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the status line starting 'Sensor view.' is gone and the button says 'See it like TestSprite' again"
+    }
+  ]
+}

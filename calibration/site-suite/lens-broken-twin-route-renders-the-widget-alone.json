@@ -1,0 +1,22 @@
+{
+  "testId": "43a01b68-334e-4b2a-a83c-f79459c035ab",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Lens-broken twin route renders the widget alone",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site at hash #/l/virtual-list/lens-broken (base URL followed by #/l/virtual-list/lens-broken)"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page shows the heading 'Virtual list', the text 'Selected: none' and a list starting with 'Item 1'"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page shows no 'Eye Chart' heading and no tally, so the widget is rendered alone"
+    }
+  ]
+}

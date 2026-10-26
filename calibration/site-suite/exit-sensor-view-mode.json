@@ -1,0 +1,30 @@
+{
+  "testId": "393b89eb-0c92-463a-880a-5420ec6c7915",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Exit sensor view mode",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the Eye Chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the control to enable sensor view mode"
+    },
+    {
+      "type": "action",
+      "description": "Click the control again to return to the normal view"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the sensor view status line is no longer shown"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the normal eye chart view is displayed"
+    }
+  ]
+}

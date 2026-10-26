@@ -1,0 +1,22 @@
+{
+  "testId": "3222401d-8745-4fc4-8bea-3887e4a9d800",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Reach count three on the working counter",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the working counter standalone page"
+    },
+    {
+      "type": "action",
+      "description": "Click the increment button three times"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the counter shows the accumulated count after three clicks"
+    }
+  ]
+}

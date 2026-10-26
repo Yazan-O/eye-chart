@@ -1,0 +1,22 @@
+{
+  "testId": "71f48966-ed84-4e9e-86dd-cb844ddcb40b",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Chart landing page shows results overview",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the eye chart page"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page displays the chart heading, the reading summary, the tally, and the chart canvas"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the chart key lists all seven rows and the letter links are present"
+    }
+  ]
+}

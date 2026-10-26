@@ -1,0 +1,26 @@
+{
+  "testId": "29454f50-924f-4022-8154-1dc34803fdb8",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Review the truth and verdicts for a letter",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the link for a letter on the chart"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the truth for each version is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify TestSprite's verdict and stated reason are displayed for the letter"
+    }
+  ]
+}

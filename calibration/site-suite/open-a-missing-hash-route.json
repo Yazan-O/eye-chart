@@ -1,0 +1,26 @@
+{
+  "testId": "cba3011c-775a-407e-b423-e51322604010",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Open a missing hash route",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the app home page"
+    },
+    {
+      "type": "action",
+      "description": "Navigate to a non-existent hash route"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify a not-found page is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify a link back to the chart is available"
+    }
+  ]
+}

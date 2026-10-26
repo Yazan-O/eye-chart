@@ -1,0 +1,26 @@
+{
+  "testId": "6a41025d-ba9b-46c4-bbf4-28a0323bf1ca",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Return to the chart from not found",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to a non-existent hash route"
+    },
+    {
+      "type": "action",
+      "description": "Click the link back to the chart"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the chart page is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the eye chart heading is displayed"
+    }
+  ]
+}

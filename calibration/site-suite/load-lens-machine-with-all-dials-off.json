@@ -1,0 +1,22 @@
+{
+  "testId": "e1b59f47-ea66-4c5c-bb69-fb944cf79117",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Load lens machine with all dials off",
+  "type": "frontend",
+  "priority": "Medium",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the lens machine page"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify all lens dials are off at load"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the chart shows the original letter states"
+    }
+  ]
+}

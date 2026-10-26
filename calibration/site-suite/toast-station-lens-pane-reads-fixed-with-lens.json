@@ -1,0 +1,26 @@
+{
+  "testId": "eda22d28-03c3-474a-b610-554d3da9d1ae",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Toast station lens pane reads Fixed with lens",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site at hash #/letter/toast (base URL followed by #/letter/toast)"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the state line ends with 'Misread.'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Lens' button in the pane switch"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the 'Lens' button is pressed, the state line now ends with 'Fixed with lens.', and the URL contains 'pane=lens'"
+    }
+  ]
+}

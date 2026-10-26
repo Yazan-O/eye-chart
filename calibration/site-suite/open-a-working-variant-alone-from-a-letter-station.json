@@ -1,0 +1,30 @@
+{
+  "testId": "36619654-e98e-49bf-97bd-51444af22303",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Open a working variant alone from a letter station",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the link for a letter on the chart"
+    },
+    {
+      "type": "action",
+      "description": "Open the working variant alone"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify only the single working widget is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the surrounding chart is not displayed"
+    }
+  ]
+}
