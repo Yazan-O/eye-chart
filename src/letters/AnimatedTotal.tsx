@@ -36,6 +36,7 @@ export default function AnimatedTotal({ variant }: LetterProps) {
 
   return (
     <div className="letter-widget">
+      <p>Parts: 800 + 450</p>
       <p className="letter-readout letter-big">
         Total: {value.toLocaleString("en-US")}
       </p>

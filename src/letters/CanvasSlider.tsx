@@ -7,6 +7,17 @@ const LEFT = 20;
 const TRACK = 600;
 const TRACK_Y = 50;
 
+const STEP_KEYS: Record<string, number | "min" | "max"> = {
+  ArrowRight: 1,
+  ArrowUp: 1,
+  ArrowLeft: -1,
+  ArrowDown: -1,
+  PageUp: 10,
+  PageDown: -10,
+  Home: "min",
+  End: "max",
+};
+
 export function valueAt(x: number) {
   return Math.max(0, Math.min(100, Math.round(((x - LEFT) / TRACK) * 100)));
 }
@@ -50,6 +61,14 @@ export default function CanvasSlider({ variant }: LetterProps) {
   }
 
   const shown = variant === "broken" ? 100 - value : value;
+  const lens = variant === "lens";
+
+  function key(e: React.KeyboardEvent<HTMLCanvasElement>) {
+    const step = STEP_KEYS[e.key];
+    if (step === undefined) return;
+    e.preventDefault();
+    setValue((v) => Math.max(0, Math.min(100, step === "min" ? 0 : step === "max" ? 100 : v + step)));
+  }
 
   return (
     <div className="letter-widget">
@@ -58,6 +77,13 @@ export default function CanvasSlider({ variant }: LetterProps) {
         width={WIDTH}
         height={HEIGHT}
         className="letter-canvas"
+        tabIndex={lens ? 0 : undefined}
+        role={lens ? "slider" : undefined}
+        aria-label={lens ? "Value" : undefined}
+        aria-valuemin={lens ? 0 : undefined}
+        aria-valuemax={lens ? 100 : undefined}
+        aria-valuenow={lens ? value : undefined}
+        onKeyDown={lens ? key : undefined}
         onPointerDown={(e) => {
           dragging.current = true;
           e.currentTarget.setPointerCapture(e.pointerId);

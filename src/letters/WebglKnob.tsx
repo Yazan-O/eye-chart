@@ -96,6 +96,19 @@ export default function WebglKnob({ variant }: LetterProps) {
   return (
     <div className="letter-widget">
       {failed ? <p>WebGL is not available in this browser.</p> : null}
+      {variant === "lens" ? (
+        <label className="letter-sr">
+          Volume knob
+          <input
+            type="range"
+            min={0}
+            max={MAX}
+            step={1}
+            value={value}
+            onChange={(e) => setValue(Number(e.currentTarget.value))}
+          />
+        </label>
+      ) : null}
       <canvas
         ref={canvas}
         width={SIZE}

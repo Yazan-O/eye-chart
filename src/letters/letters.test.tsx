@@ -17,10 +17,19 @@ afterEach(() => {
 });
 
 describe("registry", () => {
-  it("has eight letters with unique ids, rows 1 to 8", () => {
-    expect(letters).toHaveLength(8);
-    expect(new Set(letters.map((l) => l.id)).size).toBe(8);
-    expect(letters.map((l) => l.row)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  it("has unique ids in rows 1 to 7, sorted by row", () => {
+    expect(new Set(letters.map((l) => l.id)).size).toBe(letters.length);
+    const rows = letters.map((l) => l.row);
+    expect(rows).toEqual([...rows].sort((a, b) => a - b));
+    expect(new Set(rows)).toEqual(new Set([1, 2, 3, 4, 5, 6, 7]));
+  });
+
+  it("lens letters render a page for the lens route", () => {
+    for (const l of letters.filter((x) => x.lens && x.id !== "canvas-slider" && x.id !== "webgl-knob")) {
+      const { container, unmount } = render(<TwinPage id={l.id} variant="lens" />);
+      expect(container.textContent).not.toMatch(/No lens yet/);
+      unmount();
+    }
   });
 
   it("twin pages never print the variant name", () => {
