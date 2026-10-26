@@ -201,12 +201,54 @@ describe("App routing", () => {
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
     const dial = screen.getByTestId("lens-dial-canvas-slider");
     expect(dial).toHaveAttribute("aria-pressed", "false");
+    expect(link).toHaveAttribute("data-lens", "off");
+    expect(screen.getByTestId("letter-link-plain-button")).not.toHaveAttribute("data-lens");
     fireEvent.click(dial);
     expect(dial).toHaveAttribute("aria-pressed", "true");
     expect(link).toHaveAttribute("data-state", "read");
+    expect(link).toHaveAttribute("data-lens", "on");
     expect(screen.getByTestId("reading-summary")).toHaveTextContent("With 1 lens on.");
     fireEvent.click(screen.getByTestId("lens-reset"));
     expect(link).toHaveAttribute("data-state", "misread");
+    resetReadingsCache();
+  });
+
+  it("fuses the station letter when the lens pane shows a recorded fix", async () => {
+    const reading = (variant: string, truth: string, verdict: string) => ({
+      letterId: "canvas-slider",
+      variant,
+      truth,
+      verdict,
+      reason: "r",
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          takenAt: "2026-10-26T15:00:00Z",
+          results: [
+            reading("works", "pass", "failed"),
+            reading("broken", "fail", "failed"),
+            reading("lens", "pass", "passed"),
+          ],
+        }),
+      }),
+    );
+    resetReadingsCache();
+    renderAt("/letter/canvas-slider");
+    const glyph = await screen.findByTestId("station-glyph");
+    await waitFor(() => expect(glyph).toHaveAttribute("data-mark", "slash"));
+    expect(glyph).toHaveAttribute("data-ghost", "apart");
+    expect(screen.getByTestId("lens-before")).toHaveTextContent("Misread");
+    fireEvent.click(screen.getByTestId("pane-lens"));
+    expect(screen.getByTestId("pane-lens")).toHaveAttribute("aria-pressed", "true");
+    expect(glyph).toHaveAttribute("data-mark", "tick");
+    expect(glyph).toHaveAttribute("data-ghost", "fused");
+    expect(screen.getByTestId("station-state")).toHaveTextContent("Fixed with lens.");
+    expect(screen.getByTestId("station-lens-twin")).toBeInTheDocument();
+    expect(screen.queryByTestId("station-works")).not.toBeInTheDocument();
+    expect(screen.getByTestId("station-broken")).toBeInTheDocument();
     resetReadingsCache();
   });
 
@@ -214,6 +256,8 @@ describe("App routing", () => {
     renderAt("/");
     fireEvent.click(screen.getByTestId("about-open"));
     expect(screen.getByTestId("about-panel")).toHaveAccessibleName("An eye exam for an AI tester");
+    expect(screen.getByTestId("about-run")).toHaveTextContent("No run recorded yet.");
+    expect(screen.getByTestId("about-measured")).toHaveTextContent("0 of 2 letters measured.");
     fireEvent.click(screen.getByTestId("about-close"));
     expect(screen.queryByTestId("about-panel")).not.toBeInTheDocument();
   });

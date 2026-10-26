@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
@@ -466,6 +466,26 @@ function Rig({
   return null;
 }
 
+const SLOW_FRAME_MS = 50;
+
+function Ladder({ onSlow }: { onSlow: () => void }) {
+  const statsRef = useRef({ last: 0, sum: 0, n: 0 });
+  useFrame(() => {
+    const t = performance.now();
+    const r = statsRef.current;
+    const gap = t - r.last;
+    r.last = t;
+    if (gap <= 0 || gap > 400) return;
+    r.sum += gap;
+    r.n += 1;
+    if (r.n < 30) return;
+    if (r.sum / r.n > SLOW_FRAME_MS) onSlow();
+    r.sum = 0;
+    r.n = 0;
+  });
+  return null;
+}
+
 function Ticker({ active }: { active: boolean }) {
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
@@ -514,6 +534,12 @@ export default function ChartScene({
 }: ChartSceneProps) {
   const fontReady = useFontReady();
   const layout = useMemo(() => layoutChart(rows, still), [rows, still]);
+  const [level, setLevel] = useState(0);
+  const calm = still || level >= 2;
+  const slow = useCallback(() => setLevel((l) => Math.min(2, l + 1)), []);
+  useEffect(() => {
+    document.documentElement.dataset.perf = String(level);
+  }, [level]);
   const sharedRef = useRef<Shared>({
     clock: { mode: intro, rows: rows.length, skipAt: null },
     born: null,
@@ -522,9 +548,9 @@ export default function ChartScene({
   });
 
   useEffect(() => {
-    sharedRef.current.still = still;
+    sharedRef.current.still = calm;
     sharedRef.current.clock.rows = rows.length;
-  }, [sharedRef, still, rows.length]);
+  }, [sharedRef, calm, rows.length]);
 
   useEffect(() => {
     if (skipAt !== null) sharedRef.current.clock.skipAt = sharedRef.current.born === null ? 0 : skipAt - sharedRef.current.born;
@@ -579,7 +605,7 @@ export default function ChartScene({
       className="chart-canvas"
       data-testid="chart-canvas"
       aria-hidden="true"
-      dpr={[1, 1.5]}
+      dpr={level >= 1 ? 1 : [1, 1.5]}
       frameloop={frozen ? "never" : "demand"}
       gl={{ alpha: true, antialias: true }}
       camera={{ fov: FOV, position: [0, 0, 10], near: 0.1, far: 60 }}
@@ -588,7 +614,8 @@ export default function ChartScene({
       <ambientLight intensity={0.6} />
       <pointLight position={[0, layout.top, 1.2]} intensity={10} color={PANEL} distance={10} />
       <Rig extent={extent} shift={shift} sharedRef={sharedRef} onOpen={onOpen} />
-      <Ticker active={!still && !frozen} />
+      <Ticker active={!calm && !frozen} />
+      {!calm && !frozen && <Ladder onSlow={slow} />}
       {fontReady && (
         <>
           <Intro sharedRef={sharedRef} onReady={onReady} />
@@ -619,7 +646,7 @@ export default function ChartScene({
               />
             ) : null;
           })}
-          {!still && <Dust extent={extent} />}
+          {!calm && <Dust extent={extent} />}
           {dials.length > 0 && (
             <Phoropter
               dials={dials}

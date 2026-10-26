@@ -1,4 +1,42 @@
 import { useEffect, useRef, useState } from "react";
+import { useLetters, useReadings } from "../data/hooks";
+import { STATE_WORDS } from "../data/readings";
+import type { GlyphState } from "../data/types";
+import GlyphMark from "./GlyphMark";
+
+const REPO = "https://github.com/Yazan-O/eye-chart";
+const KEY: [GlyphState, string][] = [
+  ["read", "TestSprite passed the working twin and failed the broken one."],
+  ["misread", "TestSprite got at least one twin wrong. A ghost copy and an orange slash."],
+  ["blocked", "TestSprite could not test a twin. Hatched."],
+  ["unread", "No reading recorded yet. An outline only."],
+];
+
+function RunFacts() {
+  const { letters } = useLetters();
+  const { file } = useReadings();
+  const measured = new Set(
+    (file?.results ?? []).filter((r) => r.variant !== "lens").map((r) => r.letterId),
+  );
+  const count = letters.filter((l) => measured.has(l.id)).length;
+  const date = file ? new Date(file.takenAt) : null;
+  const when =
+    date && !Number.isNaN(date.getTime())
+      ? date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+      : "";
+  return (
+    <>
+      <p data-testid="about-run">
+        {file
+          ? `Recorded run: ${file.engine}${when ? `, ${when}` : ""}${file.commit ? `, commit ${file.commit.slice(0, 7)}` : ""}.`
+          : "No run recorded yet."}
+      </p>
+      <p data-testid="about-measured">
+        {count} of {letters.length} letters measured.
+      </p>
+    </>
+  );
+}
 
 export default function About() {
   const [open, setOpen] = useState(false);
@@ -49,26 +87,49 @@ export default function About() {
             </h2>
             <p>
               TestSprite sends an AI agent to test web pages. Eye Chart checks how well that
-              agent sees.
+              agent sees. Each letter is a real widget, built twice: one copy works, the other is
+              broken in a way any person would spot. TestSprite tests both.
+            </p>
+            <RunFacts />
+            <h3>What the marks mean</h3>
+            <ul className="about-key">
+              {KEY.map(([state, text]) => (
+                <li key={state}>
+                  <GlyphMark glyph="E" state={state} />
+                  <span>
+                    <strong>{STATE_WORDS[state]}.</strong> {text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p>
+              A reading is correct when TestSprite&rsquo;s verdict matches the twin&rsquo;s truth:
+              passed for the working twin, failed for the broken one.
+            </p>
+            <h3>Lenses</h3>
+            <p>
+              For each miss there is a lens: a small code change to the twin TestSprite misread,
+              tested again. Turn a dial to see the chart with that lens on. A dial with no
+              recorded reading says &ldquo;not measured&rdquo; and changes nothing.
+            </p>
+            <h3>See it like TestSprite</h3>
+            <p>
+              A camera that only sees change, built from the page&rsquo;s own structure. It is
+              one half of what an agent reads (it also reads screenshots), and an illustration,
+              not TestSprite&rsquo;s internals. Orange and blue dots are the two directions of
+              change. A misread letter flickers, a blocked one is dashed, an unread one stays
+              silent. Background speckle means nothing.
+            </p>
+            <h3>Keys</h3>
+            <p>
+              R switches the view when the chart or the button has focus. Escape leaves it.
+              Pause motion stops every ambient movement.
             </p>
             <p>
-              Each letter on the chart is a real widget, built twice. One copy works. The other
-              is broken in a way any person would spot. TestSprite tests both copies.
+              <a href={REPO} target="_blank" rel="noreferrer" data-testid="about-repo">
+                Source on GitHub
+              </a>
             </p>
-            <p>
-              A letter is lit when TestSprite passes the working copy and fails the broken one.
-              It is struck through when TestSprite gets either one wrong, and faded when it could
-              not test it. An outline means it has not been tested yet.
-            </p>
-            <p>
-              For each miss there is a lens: a small code change that helps the agent see the
-              widget. Turn a dial to see the chart as tested with that lens on.
-            </p>
-            <p>
-              See it like TestSprite shows what a tool that reads page structure gets: drawings
-              on a canvas go blank, and only labelled parts remain.
-            </p>
-            <p>Every verdict on this site comes from a real TestSprite run.</p>
             <button type="button" className="button" onClick={close} data-testid="about-close">
               Close
             </button>

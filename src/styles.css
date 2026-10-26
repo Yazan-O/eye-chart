@@ -1670,3 +1670,35 @@ a {
   align-self: flex-start;
   margin-top: 48px;
 }
+
+.about h3 {
+  margin-top: 8px;
+  font: 500 var(--step-lead) / 1.2 var(--text);
+}
+
+.about-key {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-key li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 14px;
+  max-width: 52ch;
+}
+
+@media (max-width: 860px) {
+  .explode-plates {
+    align-items: stretch;
+  }
+
+  .plate-joint {
+    align-self: center;
+    margin-top: 0;
+  }
+}
