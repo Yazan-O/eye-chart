@@ -74,6 +74,7 @@ function useAppearDelays(nodes: AgentNode[], still: boolean) {
 
 export default function Sensor() {
   const nodes = useSensorNodes();
+  const { pathname } = useLocation();
   const still = useStillMotion();
   const { compare } = useUi();
   const { letters } = useLetters();
@@ -101,9 +102,13 @@ export default function Sensor() {
   );
 
   const counts = countSensor(nodes);
+  const onChart = pathname === "/";
   const total = letters.length;
   const canvasWord = counts.canvases === 1 ? "1 canvas" : `${counts.canvases} canvases`;
-  const line = `${canvasWord}. ${counts.lettersInside} of ${total} letters inside ${counts.canvases === 1 ? "it" : "them"}.`;
+  const line =
+    onChart && counts.canvases === 1
+      ? `The chart is one canvas. TestSprite can see ${counts.lettersInside === 0 ? "none" : counts.lettersInside} of its ${total} letters inside it.`
+      : `${canvasWord}. ${counts.lettersInside} of ${total} letters inside them.`;
 
   return (
     <div className="retina" {...{ [OVERLAY]: "" }} data-testid="agent-overlay">

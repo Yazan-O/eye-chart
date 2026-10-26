@@ -199,6 +199,7 @@ describe("App routing", () => {
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    expect(screen.getByTestId("twin-summary")).toHaveTextContent("Twin readings correct: 1 of 2.");
     const dial = screen.getByTestId("lens-dial-canvas-slider");
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(link).toHaveAttribute("data-lens", "off");

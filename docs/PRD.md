@@ -7,10 +7,11 @@ Eye Chart is a public web app at https://yazan-o.github.io/eye-chart/ that shows
 - A tally (`tally`) shows four counts: read correctly (`tally-read`), misread (`tally-misread`), blocked (`tally-blocked`), not read yet (`tally-unread`). The four counts always add up to 24.
 - `reading-summary` states "Read correctly: N of 24 letters" and the measurement date. N equals the number in `tally-read`.
 - `plaque` names the recorded run and its commit.
+- `twin-summary` states "Twin readings correct: N of M": the working and broken twin readings TestSprite got right, out of all twin readings in the readings file.
 - Below the full-screen chart (scroll down, under "All 24 letters"), the chart key (`chart-key`) lists 7 rows (`chart-row-1` to `chart-row-7`) with Snellen labels 20/200 down to 20/25. Each of the 24 letters is a link `letter-link-<id>` whose text shows the letter name and its state (Read correctly, Misread, Blocked, Not read yet). Row 1 holds one letter (Counter); row 7 holds the hidden-text letters.
 - Clicking a letter link opens that letter's station at `#/letter/<id>`.
 - `motion-toggle` pauses and resumes motion; its label changes to say motion is paused, and pressing it again restores "Pause motion".
-- `about-open` opens an About panel explaining the project in plain words; it can be closed again.
+- `about-open` opens an About panel explaining the project in plain words; it can be closed again. Inside it, `about-totals` gives the readings file's totals ("The readings file holds N readings: M twin readings, K of them correct, and L lens readings.") and `about-letters` gives the letter counts by state; they match `tally-*` and `twin-summary` with no lens on.
 
 ## 2. See it like TestSprite (`agent-toggle`)
 - Pressing "See it like TestSprite" switches the page into the sensor view: a status line starting "Sensor view." reports how many parts of the page the agent can find and how many canvases it cannot see into.

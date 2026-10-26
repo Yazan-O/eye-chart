@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLetters, useReadings } from "../data/hooks";
-import { STATE_WORDS } from "../data/readings";
+import { buildRows } from "../data/chart";
+import { STATE_WORDS, twinTally } from "../data/readings";
 import type { GlyphState } from "../data/types";
 import GlyphMark from "./GlyphMark";
 
@@ -19,6 +20,10 @@ function RunFacts() {
     (file?.results ?? []).filter((r) => r.variant !== "lens" && r.variant !== "lens-broken").map((r) => r.letterId),
   );
   const count = letters.filter((l) => measured.has(l.id)).length;
+  const results = file?.results ?? [];
+  const twins = twinTally(letters, results);
+  const glyphs = buildRows(letters, results).flatMap((r) => r.glyphs);
+  const byState = (s: GlyphState) => glyphs.filter((g) => g.state === s).length;
   const date = file ? new Date(file.takenAt) : null;
   const when =
     date && !Number.isNaN(date.getTime())
@@ -34,6 +39,18 @@ function RunFacts() {
       <p data-testid="about-measured">
         {count} of {letters.length} letters measured.
       </p>
+      {file && (
+        <>
+          <p data-testid="about-totals">
+            The readings file holds {results.length} readings: {twins.total} twin readings,{" "}
+            {twins.correct} of them correct, and {results.length - twins.total} lens readings.
+          </p>
+          <p data-testid="about-letters">
+            Letters: {byState("read")} read correctly, {byState("misread")} misread,{" "}
+            {byState("blocked")} blocked, {byState("unread")} not read yet.
+          </p>
+        </>
+      )}
     </>
   );
 }

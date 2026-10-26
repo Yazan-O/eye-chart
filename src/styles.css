@@ -2468,3 +2468,49 @@ a {
 .dock .dials-list {
   align-items: flex-start;
 }
+
+.dock .dial {
+  width: 112px;
+}
+
+.dock .dial-name {
+  display: block;
+  -webkit-line-clamp: none;
+  max-width: none;
+  overflow: visible;
+}
+
+@media (min-width: 861px) {
+  .hero:has(.dial-detail) .stage {
+    bottom: 300px;
+  }
+}
+
+.dock .dials-head {
+  width: 100%;
+  justify-content: center;
+}
+
+.retina-count {
+  white-space: normal;
+}
+
+.hud .summary + .summary {
+  margin-top: 4px;
+}
+
+@media (min-width: 861px) {
+  .dock {
+    width: min(940px, calc(100% - 2 * var(--margin)));
+  }
+
+  .hero:has(.dial-detail) .stage {
+    bottom: 340px;
+  }
+}
+
+@media (min-width: 861px) {
+  .hero .stage {
+    top: 72px;
+  }
+}
