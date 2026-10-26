@@ -10,7 +10,7 @@ The product: an eye exam for TestSprite's AI tester agent. A chart of real UI wi
 
 ## Letter registry (`src/letters/registry.ts`, owned by the letters lane)
 ```ts
-export type Variant = 'works' | 'broken' | 'lens'
+export type Variant = 'works' | 'broken' | 'lens' | 'lens-broken'
 export interface Letter {
   id: string
   row: number
@@ -25,7 +25,7 @@ export interface Letter {
 export const letters: Letter[]
 ```
 - Row 1 is the easiest for an AI tester (plain buttons), higher rows are harder (motion, hover-only, shadow DOM, canvas, WebGL, real-time).
-- Each twin is served at its own route: `#/l/<id>/works`, `#/l/<id>/broken`, `#/l/<id>/lens`. A twin page renders the widget alone, full page, with no chart chrome, so the agent tests only the widget.
+- Each twin is served at its own route: `#/l/<id>/works`, `#/l/<id>/broken`, `#/l/<id>/lens` (the working twin with the lens), `#/l/<id>/lens-broken` (the broken twin with the lens). A twin page renders the widget alone, full page, with no chart chrome, so the agent tests only the widget.
 
 ## Readings (`public/readings/latest.json` plus dated copies, owned by the letters lane)
 ```json
@@ -49,6 +49,7 @@ export const letters: Letter[]
 ```
 - Every value comes from a real TestSprite run. No invented or sample verdicts anywhere, ever. A letter with no reading shows "not read yet".
 - A reading is correct when (truth pass, verdict passed) or (truth fail, verdict failed). Blocked is always counted separately.
+- With a lens on, the chart reads the letter from two twins: `lens` in place of `works`, and `lens-broken` in place of `broken`, each only when that reading exists. A lens fixes a letter when the letter reads correctly with it on.
 
 ## Credits
 The account has 150 credits and no top-ups. A frontend test run costs 0.5. Budget: calibration at most 50 credits in total, product suite at most 85. Check `testsprite usage` before and after every batch and log the balance.

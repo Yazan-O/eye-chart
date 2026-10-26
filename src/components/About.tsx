@@ -16,7 +16,7 @@ function RunFacts() {
   const { letters } = useLetters();
   const { file } = useReadings();
   const measured = new Set(
-    (file?.results ?? []).filter((r) => r.variant !== "lens").map((r) => r.letterId),
+    (file?.results ?? []).filter((r) => r.variant !== "lens" && r.variant !== "lens-broken").map((r) => r.letterId),
   );
   const count = letters.filter((l) => measured.has(l.id)).length;
   const date = file ? new Date(file.takenAt) : null;

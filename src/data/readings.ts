@@ -6,7 +6,7 @@ import type {
   Variant,
 } from "./types";
 
-const VARIANTS: Variant[] = ["works", "broken", "lens"];
+const VARIANTS: Variant[] = ["works", "broken", "lens", "lens-broken"];
 const TRUTHS = ["pass", "fail"];
 const VERDICTS = ["passed", "failed", "blocked"];
 
@@ -78,12 +78,11 @@ export function letterState(
   lensOn = false,
 ): GlyphState {
   const lens = lensOn ? findReading(results, letter.id, "lens") : null;
-  const variants: Variant[] = !lens
-    ? ["works", "broken"]
-    : lens.truth === "pass"
-      ? ["lens", "broken"]
-      : ["works", "lens"];
-  const readings = variants.map((v) => findReading(results, letter.id, v));
+  const lensBroken = lensOn ? findReading(results, letter.id, "lens-broken") : null;
+  const readings = [
+    lens?.truth === "pass" ? lens : findReading(results, letter.id, "works"),
+    lensBroken ?? (lens?.truth === "fail" ? lens : findReading(results, letter.id, "broken")),
+  ];
   if (readings.some((r) => r && r.verdict !== "blocked" && !isCorrect(r))) {
     return "misread";
   }

@@ -120,7 +120,7 @@ describe("App routing", () => {
     expect(screen.getByTestId("frame-broken")).toHaveAttribute("src", "/#/l/canvas-slider/broken");
     expect(screen.getByTestId("reading-works-verdict")).toHaveTextContent("Not read yet");
     expect(screen.getByTestId("reading-broken-verdict")).toHaveTextContent("Not read yet");
-    expect(screen.getByTestId("lens-name")).toHaveTextContent("Lens: Slider role");
+    expect(screen.getByTestId("lens-name")).toHaveTextContent("Lens on F: Slider role");
     expect(screen.getByTestId("reading-lens-verdict")).toHaveTextContent("Not read yet");
     expect(screen.getByTestId("prev-letter")).toHaveAttribute("href", "/letter/plain-button");
   });

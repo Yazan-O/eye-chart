@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
-import { STATE_WORDS } from "../data/readings";
+import { letterState, STATE_WORDS } from "../data/readings";
 import type { GlyphState } from "../data/types";
 import { lensResult } from "../core/derive";
 import { introMode, markIntroShown } from "../core/intro";
@@ -118,6 +118,10 @@ export default function ChartPage() {
         on: lensOn.has(l.id),
         demo: demo === l.id,
         measured: lensResult(l.id, file?.results ?? []) !== "none",
+        without: STATE_WORDS[letterState(l, file?.results ?? [], false)],
+        with: STATE_WORDS[letterState(l, file?.results ?? [], true)],
+        summary: l.lens?.summary ?? "",
+        letter: l.name,
       })),
     [withLens, lensOn, file, demo],
   );
