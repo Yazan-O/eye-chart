@@ -106,6 +106,17 @@ describe("App routing", () => {
     expect(screen.getByTestId("not-found")).toBeInTheDocument();
   });
 
+  it("opens a station with both twins embedded and no invented verdicts", () => {
+    renderAt("/letter/canvas-slider");
+    expect(screen.getByTestId("station-heading")).toHaveTextContent("Canvas slider");
+    expect(screen.getByTestId("frame-works")).toHaveAttribute("src", "/#/l/canvas-slider/works");
+    expect(screen.getByTestId("frame-broken")).toHaveAttribute("src", "/#/l/canvas-slider/broken");
+    expect(screen.getByTestId("reading-works-verdict")).toHaveTextContent("Not read yet");
+    expect(screen.getByTestId("reading-broken-verdict")).toHaveTextContent("Not read yet");
+    expect(screen.getByTestId("lens-none")).toBeInTheDocument();
+    expect(screen.getByTestId("prev-letter")).toHaveAttribute("href", "/letter/plain-button");
+  });
+
   it("renders the not-found page with a link home on unknown routes", () => {
     renderAt("/does-not-exist");
     expect(screen.getByTestId("not-found-heading")).toHaveTextContent("Page not found");
