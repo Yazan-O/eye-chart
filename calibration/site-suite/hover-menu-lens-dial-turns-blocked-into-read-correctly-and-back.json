@@ -1,0 +1,34 @@
+{
+  "testId": "714221fc-95a0-4735-a103-f73e7d7e3d5d",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Hover menu lens dial turns Blocked into Read correctly and back",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "assertion",
+      "description": "In the lens bar at the bottom, verify the Hover menu dial ('Menu button') shows Off and its reading line says 'Blocked'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Menu button' lens dial"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line now says 'Blocked → Read correctly' and the reading summary begins 'With 1 lens on.'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Menu button' lens dial again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line says 'Blocked' again and the reading summary no longer mentions a lens"
+    }
+  ]
+}

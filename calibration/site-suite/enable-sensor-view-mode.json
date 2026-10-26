@@ -1,0 +1,26 @@
+{
+  "testId": "83313106-da7a-44e1-8234-616c65d44a46",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Enable sensor view mode",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the Eye Chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the control to enable sensor view mode"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page shows the sensor view status line"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the sensor view reports page coverage information"
+    }
+  ]
+}

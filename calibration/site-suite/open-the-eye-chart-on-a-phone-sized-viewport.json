@@ -1,0 +1,22 @@
+{
+  "testId": "b4b60f1e-5a0d-4a35-a229-7aedfe6d62f2",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Open the eye chart on a phone-sized viewport",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the Eye Chart page"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the main chart experience is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page fits the viewport without horizontal scrolling"
+    }
+  ]
+}

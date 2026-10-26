@@ -1,0 +1,26 @@
+{
+  "testId": "4beb34ab-2dbb-42ce-b687-3b6d97aad318",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Open a letter station from the chart",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the link for a letter on the chart"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the letter station details page is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page shows the station explanation and the working and broken versions"
+    }
+  ]
+}

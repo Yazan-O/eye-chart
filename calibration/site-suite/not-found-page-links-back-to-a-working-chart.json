@@ -1,0 +1,26 @@
+{
+  "testId": "5b19f0a9-49dd-4639-8515-7394bff625d6",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Not-found page links back to a working chart",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site at hash #/no-such-page (base URL followed by #/no-such-page)"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the page says 'Page not found' and shows a link 'Back to the chart'"
+    },
+    {
+      "type": "action",
+      "description": "Click 'Back to the chart'"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the 'Eye Chart' heading and the 'Read correctly' tally are visible and the URL hash is '#/'"
+    }
+  ]
+}

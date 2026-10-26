@@ -1,0 +1,34 @@
+{
+  "testId": "c447af35-304f-44d0-a4ba-982f5ddce9e2",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Toast lens dial turns Misread into Read correctly and back",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "assertion",
+      "description": "In the lens bar at the bottom, verify the Toast dial ('Status that stays') shows Off and its reading line says 'Misread'"
+    },
+    {
+      "type": "action",
+      "description": "Click the Toast lens dial ('Status that stays')"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line now says 'Misread → Read correctly', the reading summary begins 'With 1 lens on.', and the URL contains 'lens=toast'"
+    },
+    {
+      "type": "action",
+      "description": "Click the Toast lens dial again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line says 'Misread' again and the reading summary no longer mentions a lens"
+    }
+  ]
+}

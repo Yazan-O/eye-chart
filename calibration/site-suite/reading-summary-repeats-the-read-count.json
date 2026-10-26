@@ -1,0 +1,18 @@
+{
+  "testId": "74030ecc-9e84-4d79-9748-b91fc06fec39",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Reading summary repeats the read count",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the reading summary says 'Read correctly: N of 24 letters' and that N is exactly the number shown in the 'Read correctly' tally"
+    }
+  ]
+}

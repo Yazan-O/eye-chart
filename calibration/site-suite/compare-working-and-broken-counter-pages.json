@@ -1,0 +1,34 @@
+{
+  "testId": "44564114-50ec-482c-b6a5-f3d11c1a857d",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Compare working and broken counter pages",
+  "type": "frontend",
+  "priority": "Medium",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the working counter standalone page"
+    },
+    {
+      "type": "action",
+      "description": "Click the increment button three times"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the working page shows the expected accumulated count"
+    },
+    {
+      "type": "action",
+      "description": "Navigate to the broken counter standalone page"
+    },
+    {
+      "type": "action",
+      "description": "Click the increment button three times"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the broken page shows a different count outcome than the working page"
+    }
+  ]
+}

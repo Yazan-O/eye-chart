@@ -1,0 +1,26 @@
+{
+  "testId": "715b1328-ec7f-4b6d-a8d5-68c3c877a2ef",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Autocomplete station shows the misread broken twin",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "cli",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Open the site at hash #/letter/autocomplete (base URL followed by #/letter/autocomplete)"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the station heading is 'Autocomplete' and the state line ends with 'Misread.'"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the broken version's reading shows truth 'Should fail' and TestSprite's verdict 'Passed'"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the working version's reading shows truth 'Should pass' and verdict 'Passed'"
+    }
+  ]
+}

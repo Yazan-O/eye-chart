@@ -1,0 +1,34 @@
+{
+  "testId": "acf11c7e-fc8e-4ade-be5f-04829bc890e0",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Move between letters from a letter station",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the link for a letter on the chart"
+    },
+    {
+      "type": "action",
+      "description": "Click the next letter link"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the next letter station details page is displayed"
+    },
+    {
+      "type": "action",
+      "description": "Click the previous letter link"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the original letter station details page is displayed again"
+    }
+  ]
+}

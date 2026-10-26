@@ -1,0 +1,26 @@
+{
+  "testId": "8a49470c-f4e7-4b54-9369-5cc4377c7aa3",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Enable multiple lenses independently",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the lens machine page"
+    },
+    {
+      "type": "action",
+      "description": "Turn on one lens dial for a letter with a lens"
+    },
+    {
+      "type": "action",
+      "description": "Turn on another lens dial for a different letter with a lens"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify both selected letters display their lens readings"
+    }
+  ]
+}

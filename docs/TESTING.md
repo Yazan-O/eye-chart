@@ -17,8 +17,19 @@ Two TestSprite projects watch this repo. They answer different questions.
 
 | Suite | Runs where | What it proves |
 |---|---|---|
-| TestSprite site suite | TestSprite cloud, on every PR preview | A real AI tester can use the site end to end: the chart loads, stations open, lenses turn, the sensor view opens and closes, routes recover. It checks that each journey works from the outside. |
+| TestSprite site suite | TestSprite cloud, on every PR preview | A real AI tester can use the site end to end: the chart loads, stations open, lenses turn, the sensor view opens and closes, routes recover. 21 journey tests plus 10 tests that assert exact values the PRD guarantees (listed below). |
 | Playwright suite (`e2e/`) | The required `verify` check, Chromium against `vite preview` of the built site | The numbers on screen are the numbers in `public/readings/latest.json`. It asserts exact values, not presence. |
+
+The 10 exact-value tests in the TestSprite site suite (each passed once against the live site before joining the gate; all 31 site plans are exported to `calibration/site-suite/` by `calibration/export-site-suite.mjs`):
+- the four tally counts add to 24, the About panel repeats them, and its totals line adds up and matches the twin summary;
+- the reading summary's N equals the Read correctly tally;
+- the toast dial reads "Misread", then "Misread → Read correctly" with "With 1 lens on.", then "Misread" again;
+- the hover menu dial does the same from "Blocked", and the virtual list dial from "Misread";
+- the autocomplete station shows the broken twin as "Should fail" and "Passed", and the letter as Misread;
+- the toast station's Lens pane presses its button and reads "Fixed with lens.";
+- the lens-broken twin route `#/l/virtual-list/lens-broken` renders the widget alone;
+- the sensor view reports a part count above 0, and Escape removes the status line;
+- an unknown route shows "Page not found", and "Back to the chart" returns to the chart with its tally.
 
 The Playwright suite checks:
 - the four tally counts add up to 24 and equal the counts computed from the readings file, and the reading summary repeats the read count;

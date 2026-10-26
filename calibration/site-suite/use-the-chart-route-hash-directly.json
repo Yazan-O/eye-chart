@@ -1,0 +1,22 @@
+{
+  "testId": "f6b469aa-2821-4189-badc-c973c4929694",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Use the chart route hash directly",
+  "type": "frontend",
+  "priority": "Medium",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate directly to the chart hash route"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the chart page is displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the main eye chart content is displayed"
+    }
+  ]
+}

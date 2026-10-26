@@ -1,0 +1,30 @@
+{
+  "testId": "28e17fd3-4aa7-4b18-90fa-ac53281ee576",
+  "projectId": "aca2323a-9450-40b3-ab92-6ad21f4d77ff",
+  "name": "Motion can be paused and resumed",
+  "type": "frontend",
+  "priority": "High",
+  "createdFrom": "portal",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to the eye chart page"
+    },
+    {
+      "type": "action",
+      "description": "Click the motion toggle"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify motion is paused and the control indicates the paused state"
+    },
+    {
+      "type": "action",
+      "description": "Click the motion toggle again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify motion resumes and the paused indicator is removed"
+    }
+  ]
+}
