@@ -181,7 +181,7 @@ export default function ChartPage() {
       setDemo(null);
     };
   }, [landed, still, view, demoId, lensOn]);
-  const all = rows.slice(1).flatMap((r) => r.glyphs);
+  const all = rows.flatMap((r) => r.glyphs);
   const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
   const taken = file ? formatDate(file.takenAt) : "";
   const twins = twinTally(letters, file?.results ?? []);
