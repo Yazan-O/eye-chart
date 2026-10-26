@@ -14,6 +14,8 @@ on:
 permissions:
   contents: read
   actions: read
+  pull-requests: write
+  issues: write
 
 concurrency:
   group: re-examination
@@ -61,7 +63,25 @@ jobs:
           echo "::error::$TARGET did not answer 200 within 10 minutes"
           exit 1
       - name: Re-examine the headline twins
-        run: node calibration/ci.mjs "$TARGET" re-examination.json
+        env:
+          REEXAM_COMMENT_FILE: re-examination.md
+        run: |
+          echo "<!-- eye-chart-re-examination -->" > re-examination.md
+          node calibration/ci.mjs "$TARGET" re-examination.json
+      - name: Post or update the pull request comment
+        if: always() && github.event_name == 'pull_request' && hashFiles('re-examination.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.number }}
+        run: |
+          echo "" >> re-examination.md
+          echo "Commit ${{ github.event.pull_request.head.sha }}, run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> re-examination.md
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate --jq '.[] | select(.body | startswith("<!-- eye-chart-re-examination -->")) | .id' | tail -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@re-examination.md > /dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -F body=@re-examination.md > /dev/null
+          fi
       - if: always()
         uses: actions/upload-artifact@v4
         with:

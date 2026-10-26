@@ -12,7 +12,7 @@ const MAX_CREDITS = 3;
 
 const [base, outFile] = process.argv.slice(2);
 const project = process.env.TESTSPRITE_CALIBRATION_PROJECT_ID;
-const minCredits = Number(process.env.CALIBRATION_MIN_CREDITS ?? "60");
+const minCredits = Number(process.env.CALIBRATION_MIN_CREDITS ?? "8");
 if (!base || !outFile || !project) {
   console.error("usage: TESTSPRITE_CALIBRATION_PROJECT_ID=<id> node calibration/ci.mjs <preview base url> <out.json>");
   process.exit(2);
@@ -24,6 +24,7 @@ const shell = process.platform === "win32";
 const root = base.endsWith("/") ? base : `${base}/`;
 const work = mkdtempSync(join(tmpdir(), "eye-chart-ci-"));
 const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+const commentFile = process.env.REEXAM_COMMENT_FILE;
 
 function q(a) {
   return shell && /[\s"]/.test(a) ? `"${a}"` : a;
@@ -40,6 +41,7 @@ function cli(args, { allowFail = false } = {}) {
 
 function summary(text) {
   if (summaryFile) appendFileSync(summaryFile, `${text}\n`);
+  if (commentFile) appendFileSync(commentFile, `${text}\n`);
   console.log(text);
 }
 
