@@ -1,6 +1,6 @@
 {
-  "takenAt": "2026-10-26T15:32:13.146Z",
-  "commit": "965166d",
+  "takenAt": "2026-10-26T16:12:45.192Z",
+  "commit": "2263ef5",
   "engine": "TestSprite cloud agent, CLI 0.15.0",
   "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
   "results": [
@@ -215,6 +215,26 @@
       "screenshot": "readings/shots/ddcbaf20-d7b8-48a0-921e-63bac293c0a9.png"
     },
     {
+      "letterId": "copy-button",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "b624308f-9f45-49ef-b9c2-5ccedb7896b4",
+      "runId": "05b199ae-62c3-4443-8860-d95f7f1ff4f9",
+      "reason": "The “Paste here” field contains DEMO-4821 after the copy-and-paste action.",
+      "screenshot": "readings/shots/05b199ae-62c3-4443-8860-d95f7f1ff4f9.png"
+    },
+    {
+      "letterId": "copy-button",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "3a7bf543-4521-4cbd-a27b-cbfd5530b741",
+      "runId": "e5412cf5-2887-4350-be9b-3d4ec9c4dda2",
+      "reason": "The host-side implementation likely only changes the UI state to “Copied!” but does not actually copy the invite code into the system clipboard. As a result, when the test sends Ctrl+V, there is nothing on the clipboard for the “Paste here” field to receive. Another possible contributing issue is that the target field may not be properly focused, enabled, or editable for paste events, but the main symptom points to clipboard write failure or missing clipboard API fallback. Underlying error: TEST FAILURE\n\nPasting the copied invite code did not populate the “Paste here” box. The expected text DEMO-4821 was not present.\n\nObservations:\n- The displayed invite code was DEMO-4821.\n- The Copy button changed to “Copied!” after it was clicked.\n- The “Paste here” field remained empty after Ctrl+V was sent.",
+      "screenshot": "readings/shots/e5412cf5-2887-4350-be9b-3d4ec9c4dda2.png"
+    },
+    {
       "letterId": "shadow-form",
       "variant": "works",
       "truth": "pass",
@@ -235,6 +255,26 @@
       "screenshot": "readings/shots/883c0708-3713-401d-ad9b-046bf3a0996a.png"
     },
     {
+      "letterId": "iframe",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "76bad6c9-1b49-4752-9cf5-360f9d9f4c40",
+      "runId": "7159dbf7-f913-43a5-86ac-0dd57c8a8593",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/7159dbf7-f913-43a5-86ac-0dd57c8a8593.png"
+    },
+    {
+      "letterId": "iframe",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "15421357-9a6c-47d5-8314-0618b7137f8e",
+      "runId": "ef1cba1f-d0cd-40e5-b171-9488f0e62ccf",
+      "reason": "The host is likely serving inconsistent data between the main page and the embedded document. The visible page status is showing one state ('Approved') while the embedded document is rendering another ('Declined'), which suggests a stale cache, race condition, incorrect environment mapping, or a data-binding bug where the page status and embedded document are sourced from different records or different versions of the same record. Underlying error: TEST FAILURE\n\nThe embedded Document check result did not match the page status.\n\nObservations:\n- The page displayed “Status: Approved”\n- The embedded Document check displayed “Declined”",
+      "screenshot": "readings/shots/ef1cba1f-d0cd-40e5-b171-9488f0e62ccf.png"
+    },
+    {
       "letterId": "label-mismatch",
       "variant": "works",
       "truth": "pass",
@@ -253,6 +293,26 @@
       "runId": "7d324c44-dfab-4bb4-b9cb-524e2d025356",
       "reason": "The host is likely serving an incorrect or stale frontend build, or the Save button is bound to the wrong state transition on the deployed app. As a result, clicking Save triggers the discard/reset code path or fails to persist the draft, so the UI falls back to \"Discarded\" rather than showing \"Saved\". Underlying error: TEST FAILURE\n\nSaving did not show the required “Saved” status. The page displayed “Discarded” after the Save control was clicked.\n\nObservations:\n- The draft value was “Agenda: review the garden plan.”\n- The page status shown after the click was “Discarded.”",
       "screenshot": "readings/shots/7d324c44-dfab-4bb4-b9cb-524e2d025356.png"
+    },
+    {
+      "letterId": "pseudo-chip",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "77a300f8-1e23-42b9-9eb5-d1dda17ef434",
+      "runId": "56be4f88-1d31-48aa-a6fc-bd83ff68e94b",
+      "reason": "The status chip says “Done” alongside the “3 of 3 steps” line.",
+      "screenshot": "readings/shots/56be4f88-1d31-48aa-a6fc-bd83ff68e94b.png"
+    },
+    {
+      "letterId": "pseudo-chip",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "82b7e077-2a10-449f-aa09-7889f31caead",
+      "runId": "8260bd8b-23a6-40f9-a173-618239c7a273",
+      "reason": "The page is likely rendering two related pieces of UI from inconsistent sources of truth: the steps line is showing the real progress count (2 of 3), while the status chip is reading an outdated, default, or independently computed completion state (\"Done\"). This can happen if the hosting side serves stale data, a mismatched API payload, a race condition in state hydration, or a UI bug where the chip is not updated when progress changes. Underlying error: TEST FAILURE\n\nThe status chip says “Done” even though the steps line reads “Setup: 2 of 3 steps.” The chip and the line do not agree.\n\nObservations:\n- The steps line reads “Setup: 2 of 3 steps”\n- The adjacent status chip says “Done”",
+      "screenshot": "readings/shots/8260bd8b-23a6-40f9-a173-618239c7a273.png"
     },
     {
       "letterId": "canvas-slider",
@@ -278,11 +338,11 @@
       "letterId": "canvas-slider",
       "variant": "lens",
       "truth": "pass",
-      "verdict": "failed",
+      "verdict": "passed",
       "testId": "2277e8f2-100e-4881-ae83-411528084591",
-      "runId": "a835a766-d0d8-4529-8c8a-d23551a3fcc0",
-      "reason": "The most likely hosting-side issue is a mismatch between the visual slider position and the internal value calculation on the deployed page. This can happen when the canvas coordinate math is wrong (for example, using the canvas width instead of the actual rendered track length, not accounting for scaling/DPR, or miscomputing pointer offsets), so pointer automation moves the thumb but the app converts the position to an incorrect value. Another possibility is that the page relies on a custom canvas control without standard form semantics, causing the test harness’s simulated drag to not fully register or to register at the wrong location, leaving the readout stuck at 58 instead of updating to 70. Underlying error: TEST FAILURE\n\nThe slider was not adjusted to the requested mark. The readout remained at Value: 58 instead of Value: 70.\n\nObservations:\n- The Canvas slider page showed a 0–100 scale.\n- The visible readout showed “Value: 58.”",
-      "screenshot": "readings/shots/a835a766-d0d8-4529-8c8a-d23551a3fcc0.png"
+      "runId": "e3a3f1f6-0bfb-4dcd-b1dc-8d875360aece",
+      "reason": "The slider readout shows “Value: 70.”",
+      "screenshot": "readings/shots/e3a3f1f6-0bfb-4dcd-b1dc-8d875360aece.png"
     },
     {
       "letterId": "webgl-knob",
@@ -313,6 +373,66 @@
       "runId": "5ee31e9c-f748-47a9-8e16-55c2d675f5c6",
       "reason": "The readout shows “Volume: 7.”",
       "screenshot": "readings/shots/5ee31e9c-f748-47a9-8e16-55c2d675f5c6.png"
+    },
+    {
+      "letterId": "canvas-chart",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "a714cbd6-0426-406b-b733-a463d7a22acb",
+      "runId": "ac8027e6-29c8-4c26-b3df-475b3f834801",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/ac8027e6-29c8-4c26-b3df-475b3f834801.png"
+    },
+    {
+      "letterId": "canvas-chart",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "b4d08cc8-7ee6-4784-b9a2-182d03d1e97d",
+      "runId": "2c64dc37-dbb5-4741-8aaa-bc0c5859a99c",
+      "reason": "The most likely cause is a data binding or transformation bug in the hosted app: Tuesday’s bar is being rendered from an incorrect value or with an inverted scale while its label still shows 80%. Because Monday and Wednesday match, the issue is probably not the chart library globally but a per-item mapping problem, such as a bad array index, swapped Tuesday/Friday data, or a CSS/style override applied only to Tuesday’s bar. Underlying error: TEST FAILURE\n\nThe Tuesday bar does not reach the percentage printed above it. It reaches about 20% on the left axis, while its label says 80%.\n\nObservations:\n- Monday’s bar reaches 40%, matching its 40% label.\n- Tuesday’s bar reaches about 20%, not its 80% label.\n- Wednesday’s bar reaches 60%, matching its 60% label.",
+      "screenshot": "readings/shots/2c64dc37-dbb5-4741-8aaa-bc0c5859a99c.png"
+    },
+    {
+      "letterId": "icon-status",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "5f20f4a8-0b40-4932-ba69-ca9290144131",
+      "runId": "263dffd7-425e-42b6-a9d8-dcd5f2f0f4e7",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/263dffd7-425e-42b6-a9d8-dcd5f2f0f4e7.png"
+    },
+    {
+      "letterId": "icon-status",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "873ce7bd-f34f-4196-b18a-b55df284da0e",
+      "runId": "17b34265-3712-4be4-aeaf-4d19fd2f117f",
+      "reason": "The hosted page likely has a client-side rendering bug or stale data mapping issue where the Lint row’s status is computed incorrectly. A common cause is using a boolean such as \"has any checks\" to decide the icon, which would make 1/3 still render as passed. Another possibility is that the host is serving outdated JavaScript/assets or an incorrect test fixture for the Lint row, causing the UI to display a green tick despite an incomplete check set. Underlying error: TEST FAILURE\n\nThe Lint row shows a green tick despite having only 1/3 checks. Rows with fewer than 3/3 checks should show a red cross.\n\nObservations:\n- Build shows 3/3 checks and a green tick.\n- Lint shows 1/3 checks and a green tick.",
+      "screenshot": "readings/shots/17b34265-3712-4be4-aeaf-4d19fd2f117f.png"
+    },
+    {
+      "letterId": "clipped-label",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "cc32e085-1473-4004-b44b-14a8b6fdba01",
+      "runId": "55395e86-35b0-4fae-aee6-70c8aab37e16",
+      "reason": "The notice displays the full sentence “Free trial ends today” without any words cut off.",
+      "screenshot": "readings/shots/55395e86-35b0-4fae-aee6-70c8aab37e16.png"
+    },
+    {
+      "letterId": "clipped-label",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "76c616c2-463c-4db6-ad32-dab50d165b8a",
+      "runId": "a989e0e6-11d7-4fac-8c0e-995ba83bbe51",
+      "reason": "The notice is likely constrained by a hosting-side CSS/layout issue: a fixed-width or overflow-clipped container is truncating the text, so only “Free trial ends” fits while “today” is pushed out of view. This can happen from a build regression, incorrect responsive styles, or font scaling differences on the deployed environment. Underlying error: TEST FAILURE\n\nThe notice cuts off the final word and does not show the full sentence.\n\nObservations:\n- The notice visibly reads “Free trial ends”\n- “today” is not visible in the notice",
+      "screenshot": "readings/shots/a989e0e6-11d7-4fac-8c0e-995ba83bbe51.png"
     },
     {
       "letterId": "hidden-note",
@@ -355,6 +475,26 @@
       "screenshot": "readings/shots/0fd91c49-a9b0-47dd-8cad-4fa5a27b70d0.png"
     },
     {
+      "letterId": "ghost-text",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "227c04cd-6a46-4034-8f52-3b59356a291b",
+      "runId": "e8b41863-65a2-45df-a639-b3ebcee0fafd",
+      "reason": "The upload completed with progress at 100%.",
+      "screenshot": "readings/shots/e8b41863-65a2-45df-a639-b3ebcee0fafd.png"
+    },
+    {
+      "letterId": "ghost-text",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "91a2c13a-cca6-406d-a25d-bbfc3abbaf86",
+      "runId": "544e5b90-d4df-4e48-b059-8e2625c45bda",
+      "reason": "The service likely marks the upload as complete too early, before the final 100% progress update is propagated to the UI. This can happen if the upload completion callback updates the status text immediately while the progress value is only updated up to 80% due to a missing final progress event, incorrect total/loaded calculation, or a race between the completion response and the last client-side progress state update. Underlying error: TEST FAILURE\n\nThe upload did not reach 100% progress after three seconds. The page displayed “Upload complete,” but the progress remained at 80%.\n\nObservations:\n- Progress showed 80% after the upload and wait.\n- The page text included “Upload complete.”",
+      "screenshot": "readings/shots/544e5b90-d4df-4e48-b059-8e2625c45bda.png"
+    },
+    {
       "letterId": "leftover-error",
       "variant": "works",
       "truth": "pass",
@@ -373,6 +513,26 @@
       "runId": "290604d9-6406-43f3-97a8-e18466522295",
       "reason": "The hosted app likely has a broken save integration: clicking Save does not produce a successful persisted update, so the UI never receives data to replace \"Last saved: never\" with \"just now.\" Because no error message appears, the failure is probably happening silently due to a missing/incorrect API configuration, an unreachable backend on the host, or a client-side success handler that is never triggered after the save request. Underlying error: TEST FAILURE\n\nSaving did not update the page to show “Last saved: just now.” No error message was visible.\n\nObservations:\n- The page still showed “Last saved: never” after Save was clicked.\n- No error message was visible.",
       "screenshot": "readings/shots/290604d9-6406-43f3-97a8-e18466522295.png"
+    },
+    {
+      "letterId": "zero-width-code",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6d3e380b-8c13-414c-b52f-929de0108853",
+      "runId": "88b61a36-62c4-4dc2-8efa-914890af27b8",
+      "reason": "The page displays “Trial: 7 days added.”",
+      "screenshot": "readings/shots/88b61a36-62c4-4dc2-8efa-914890af27b8.png"
+    },
+    {
+      "letterId": "zero-width-code",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "959f92e5-756a-4200-9d1d-5ef11f9102a4",
+      "runId": "d8918e4d-7446-48b6-a548-50ac983f5e12",
+      "reason": "The access code is likely being compared as a raw string, and the hosted page is including an invisible Unicode character in the rendered or copied code (TRIAL​7). Because that hidden character is not part of the actual intended code, the backend rejects it as unrecognized. Another possible hosting-side cause is a stale deployment or misconfigured validation config causing the service to expect a different code than the one displayed. Underlying error: TEST FAILURE\n\nApplying the displayed access code did not add the trial. The page showed “Code not recognised” instead of “Trial: 7 days added.”\n\nObservations:\n- The page displayed the access code TRIAL​7.\n- After Apply was clicked, the page displayed “Code not recognised.”",
+      "screenshot": "readings/shots/d8918e4d-7446-48b6-a548-50ac983f5e12.png"
     }
   ]
 }
