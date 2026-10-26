@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
@@ -115,6 +115,18 @@ describe("App routing", () => {
     expect(screen.getByTestId("reading-broken-verdict")).toHaveTextContent("Not read yet");
     expect(screen.getByTestId("lens-none")).toBeInTheDocument();
     expect(screen.getByTestId("prev-letter")).toHaveAttribute("href", "/letter/plain-button");
+  });
+
+  it("switches to the agent view from the chart and back", () => {
+    renderAt("/");
+    const toggle = screen.getByTestId("agent-toggle");
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("agent-overlay")).toBeInTheDocument();
+    expect(screen.getByTestId("agent-summary")).toHaveTextContent("What a page-structure reader gets here");
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByTestId("agent-overlay")).not.toBeInTheDocument();
   });
 
   it("renders the not-found page with a link home on unknown routes", () => {

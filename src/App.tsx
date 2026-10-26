@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { AgentViewProvider } from "./agent/AgentView";
 import ScrollToTop from "./components/ScrollToTop";
 import ChartPage from "./chart/ChartPage";
 import StationPage from "./station/StationPage";
@@ -7,7 +8,7 @@ import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
-    <>
+    <AgentViewProvider>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<ChartPage />} />
@@ -15,6 +16,6 @@ export default function App() {
         <Route path="/l/:id/:variant" element={<TwinPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </AgentViewProvider>
   );
 }
