@@ -1,0 +1,636 @@
+{
+  "takenAt": "2026-10-26T19:40:42.654Z",
+  "commit": "431ef21",
+  "engine": "TestSprite cloud agent, CLI 0.15.0",
+  "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
+  "results": [
+    {
+      "letterId": "counter",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "e00e8fd8-de87-4dab-a81d-9ddc3e9af465",
+      "runId": "40da5e5c-6f1d-49b0-92ef-44f5bb71c21d",
+      "reason": "The counter displays “Count: 3” after three clicks on “Add one.”",
+      "screenshot": "readings/shots/40da5e5c-6f1d-49b0-92ef-44f5bb71c21d.png"
+    },
+    {
+      "letterId": "counter",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "86bdf5a4-8d31-4d34-b973-06bf0c1449d9",
+      "runId": "8bc513ab-f2de-4ef9-ade8-6580e6019fac",
+      "reason": "The hosted service is likely serving a build where the counter state is not isolated correctly, so the same state is being incremented twice per click or starts from a pre-existing value of 3. Common causes include duplicated onClick handlers, React Strict Mode side effects in a non-idempotent update, shared module-level state across requests/users, or a stale/cached production bundle that differs from the intended source. As a result, three clicks produce 6 instead of 3. Underlying error: TEST FAILURE\n\nThe counter shows 6 after the “Add one” button was clicked three times, instead of the expected count of 3.\n\nObservations:\n- The page displays “Count: 6”\n- The “Add one” button is visible on the counter page",
+      "screenshot": "readings/shots/8bc513ab-f2de-4ef9-ade8-6580e6019fac.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "1089581b-0df8-4365-98d1-3aefd96d9031",
+      "runId": "22f8d972-2606-42a8-afd1-9298b547a639",
+      "reason": "The hosted app likely has a broken or missing save-notification flow: the Save button may not be invoking the toast state update, the toast component may not be mounted or styled incorrectly, or the production build may be swallowing the async success callback/error. As a result, clicking Save leaves the page unchanged and no transient \"Saved\" confirmation is displayed, even though the UI copy mentions it. Underlying error: TEST FAILURE\n\nThe “Saved” confirmation notice was not observed after clicking Save.\n\nObservations:\n- The page remained on the Toast screen with the Save button visible.\n- The screenshot after clicking Save showed no confirmation notice.\n- “Saved” appeared in the page search only as part of the instructional text, “A Saved notice appears briefly.”",
+      "screenshot": "readings/shots/22f8d972-2606-42a8-afd1-9298b547a639.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "268b45a0-5cbb-42dd-8e1d-cc615199adc9",
+      "runId": "4c8a427e-fc7a-4410-a79b-a6a404515a35",
+      "reason": "The hosted app likely isn’t reflecting the post-save success state, so clicking Save does not trigger or complete the UI update that should display the \"Saved\" notice. This can happen if the Save handler is broken in the deployed bundle, the save API call fails silently, the component state never changes to \"saved\", or the notice exists in the DOM but is hidden/never mounted due to a production-side rendering or styling issue. Underlying error: TEST FAILURE\n\nThe “Saved” notice did not appear after clicking Save.\n\nObservations:\n- The page shows “Draft: Quarterly notes” and the Save button.\n- No notice with the text “Saved” is visible.",
+      "screenshot": "readings/shots/4c8a427e-fc7a-4410-a79b-a6a404515a35.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "2fb86333-b784-4fa0-95f2-9c36dbc5ea4b",
+      "runId": "8c5d9bb5-c918-4452-8079-53afb24ab826",
+      "reason": "A “Saved” notice appears after clicking Save.",
+      "screenshot": "readings/shots/8c5d9bb5-c918-4452-8079-53afb24ab826.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "a7caa9f9-9a2e-4261-917b-f22d505df43e",
+      "runId": "cdf71f6e-8bbf-48d0-96ea-db8e341445e7",
+      "reason": "The hosted app likely has a broken or misconfigured success-notification path: the Save button may be wired, but the toast is never mounted/triggered in production, or the notification is being suppressed/hidden by styling or missing provider setup. Another common cause is an environment-specific failure in the save request, preventing the success callback from firing, so the \"Saved\" notice never appears. Underlying error: TEST FAILURE\n\nThe “Saved” notice was not visible after clicking Save, so the expected notice could not be verified.\n\nObservations:\n- The toast page instructed that a “Saved” notice would appear after clicking Save.\n- After Save was clicked, the page view showed no “Saved” notice.",
+      "screenshot": "readings/shots/cdf71f6e-8bbf-48d0-96ea-db8e341445e7.png"
+    },
+    {
+      "letterId": "optimistic",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "c67d93d6-1d43-4388-98d0-e649b1150952",
+      "runId": "ee038291-0a06-469e-a118-8f2e8d29a806",
+      "reason": "The page displays a likes count after Like is clicked.",
+      "screenshot": "readings/shots/ee038291-0a06-469e-a118-8f2e8d29a806.png"
+    },
+    {
+      "letterId": "optimistic",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "0341dfc6-9a9e-4837-bf08-2c30ed619862",
+      "runId": "262c0aa4-27c5-456e-8da1-fd3d5fc5e937",
+      "reason": "The most likely hosting-side issue is that the like increment endpoint is returning stale data or the client is not receiving/applying the updated state after the action. This can happen if the API response is cached, the database write is failing silently, the server-side increment is never committed, or the frontend is keeping an old local state snapshot and never revalidating. The fact that no error is shown suggests the click handler may succeed superficially, but the actual count update is not propagated to the displayed UI within the expected time. Underlying error: TEST FAILURE\n\nThe Like count did not increase to 6 after the button was clicked and the page was checked after three seconds.\n\nObservations:\n- The page displayed “Likes: 5” after the wait.\n- No error message was visible.",
+      "screenshot": "readings/shots/262c0aa4-27c5-456e-8da1-fd3d5fc5e937.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "2e46cd3f-1582-48e0-860f-a8a67a24e31c",
+      "runId": "53a48205-62e8-41ae-a88f-4cc7b66737cf",
+      "reason": "The site likely implements the Settings menu as a hover-only interaction (e.g., CSS :hover or mouseenter events) with no equivalent click, focus, or keyboard fallback. In a headless/test browser session that cannot perform hover, the menu never opens, so the Settings option is effectively inaccessible and the test is blocked. Underlying error: TEST BLOCKED\n\nThe Settings selection could not be tested because opening the menu requires hovering, and a hover action is not available in this browser session.\n\nObservations:\n- The page shows “Menu” and “Current page: Home.”\n- Clicking the page and keyboard activation did not reveal the menu options.",
+      "screenshot": "readings/shots/53a48205-62e8-41ae-a88f-4cc7b66737cf.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "6c1f5b76-9cf8-4dce-928b-ae5974a225f9",
+      "runId": "b601adca-5b22-45a7-9f64-711aedde75af",
+      "reason": "The hosted page likely has a broken or inaccessible menu implementation: the Menu trigger may not be focusable/clickable, may rely on mouse-only behavior, or the menu items may be hidden by CSS/overlay/portal issues. As a result, automated keyboard interaction (Tab then Enter) cannot open the menu, so the Settings option never appears and navigation does not occur. Underlying error: TEST FAILURE\n\nThe Menu control did not open, so Settings could not be selected and the page did not change to “Current page: Settings.”\n\nObservations:\n- The page showed “Current page: Home.”\n- Clicking the visible page area and pressing Tab followed by Enter did not reveal menu options.\n- No Settings option appeared in the visible page content.",
+      "screenshot": "readings/shots/b601adca-5b22-45a7-9f64-711aedde75af.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "3c5ba094-dba4-4d8a-8b22-3aa1d1b8dd09",
+      "runId": "40ea1b80-c645-437f-bb37-a54f58f3b38c",
+      "reason": "The page shows “Current page: Settings.”",
+      "screenshot": "readings/shots/40ea1b80-c645-437f-bb37-a54f58f3b38c.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "e80aaef0-496d-4bd0-b18b-dd4692fdbf12",
+      "runId": "b3c7415e-8892-4668-90ab-f80fc2cc1b4c",
+      "reason": "The hosting-side app configuration appears to have a navigation mismatch: the Settings menu item is either bound to the wrong route/component or its label is being read from an incorrect state value. As a result, selecting Settings updates the UI to show \"Current page: Sign out\" instead of the Settings page label. This could be caused by an incorrect href/path, a swapped menu mapping, or a build/deploy artifact serving an outdated frontend bundle. Underlying error: TEST FAILURE\n\nSelecting “Settings” did not show the expected page label. The page displays “Current page: Sign out.”\n\nObservations:\n- The Settings menu item was selected.\n- The visible page label reads “Current page: Sign out.”",
+      "screenshot": "readings/shots/b3c7415e-8892-4668-90ab-f80fc2cc1b4c.png"
+    },
+    {
+      "letterId": "custom-select",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6ba21e2b-0041-44e3-804c-148ed0d853b4",
+      "runId": "f70940c2-9525-41a4-9015-081bca51f227",
+      "reason": "The selected size is Large, and its portion line reads “Serves 4.”",
+      "screenshot": "readings/shots/f70940c2-9525-41a4-9015-081bca51f227.png"
+    },
+    {
+      "letterId": "custom-select",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "c47b6d02-feab-4eaa-b6fc-56d41b4d05aa",
+      "runId": "8c453117-60a3-46e0-966a-4a277251fdc7",
+      "reason": "The most likely cause is that the size picker updates only the visible size label but not the dependent servings value, suggesting a broken state linkage or mapping on the host app. The serving text is likely coming from a separate field that remains at its default ('Serves 1') because the Large option is missing the correct servings metadata, the change handler doesn't update that field, or the component is not re-rendering after the size change due to a state management or hydration bug. Underlying error: TEST FAILURE\n\nSelecting Large changed the size label, but the portion line remained “Serves 1” instead of updating to “Serves 4.”\n\nObservations:\n- The picker displayed “Size: Large” after selection\n- The portion line displayed “Serves 1”",
+      "screenshot": "readings/shots/8c453117-60a3-46e0-966a-4a277251fdc7.png"
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "231b64ab-8c86-4466-a0ef-fb43e53a20b5",
+      "runId": "490e041a-2a51-49b8-93fc-24c23001342c",
+      "reason": "The page shows “Chosen: Rochester” after selecting Rochester.",
+      "screenshot": "readings/shots/490e041a-2a51-49b8-93fc-24c23001342c.png",
+      "howUsed": "Recorded actions: fill 'Rochester' into the text field, then click the Rochester suggestion. No paste. Its own page snapshot right after the fill already lists the suggestions, so its fill delivers key events, and a paste-only bug never shows to it."
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "38989869-4caa-4224-bd55-a23cb4709e47",
+      "runId": "22a1826e-af2b-492d-a44a-00662a76a8b6",
+      "reason": "After selecting Rochester, the page displays “Chosen: Rochester.”",
+      "screenshot": "readings/shots/22a1826e-af2b-492d-a44a-00662a76a8b6.png",
+      "howUsed": "Recorded actions: fill 'Rochester' into the text field, then click the Rochester suggestion. No paste. Its own page snapshot right after the fill already lists the suggestions, so its fill delivers key events, and a paste-only bug never shows to it."
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "0a3efdf6-1034-4dea-bc43-b153effde723",
+      "runId": "3e7afa2c-cf45-46e2-a35e-141326210576",
+      "reason": "The page shows “Chosen: Rochester.”",
+      "screenshot": "readings/shots/3e7afa2c-cf45-46e2-a35e-141326210576.png",
+      "howUsed": "Recorded actions: fill 'Rochester' into the text field, then click the Rochester suggestion. No paste. Its own page snapshot right after the fill already lists the suggestions, so its fill delivers key events, and a paste-only bug never shows to it."
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "f7e767d6-702b-42f5-944d-53c2c9e281eb",
+      "runId": "7d4a9156-755e-475e-a966-d137f5e1f79d",
+      "reason": "The page shows “Chosen: Rochester” after selecting the suggestion.",
+      "screenshot": "readings/shots/7d4a9156-755e-475e-a966-d137f5e1f79d.png",
+      "howUsed": "Recorded actions: fill 'Rochester' into the text field, then click the Rochester suggestion. No paste. Its own page snapshot right after the fill already lists the suggestions, so its fill delivers key events, and a paste-only bug never shows to it."
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "8b952300-4392-4af3-a207-fa0cbc668fe8",
+      "runId": "5cd27be6-4df9-4a1d-8133-01929745e452",
+      "reason": "The Consent scrim flow shows Step 2 of 3.",
+      "screenshot": "readings/shots/5cd27be6-4df9-4a1d-8133-01929745e452.png",
+      "howUsed": "Recorded actions: click Accept, then click Continue. No keyboard step."
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "c2fa065b-4811-439f-a798-428a0c0d6abe",
+      "runId": "e8e39dad-c128-45a9-a3b4-bd475bd46ff3",
+      "reason": "The page shows “Step 2 of 3.”",
+      "screenshot": "readings/shots/e8e39dad-c128-45a9-a3b4-bd475bd46ff3.png",
+      "howUsed": "Recorded actions: click Accept, then click Continue. No keyboard step. Its own page snapshot at the end still has the faded layer over the whole page, yet the step reads 2 of 3, so its click reached Continue through a layer that stops a real mouse."
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "876b75ca-a58b-4e6a-b3f9-eb34da8bbf4b",
+      "runId": "31eb985a-211a-4b33-a4e6-01a9433f5650",
+      "reason": "The page displays “Step 2 of 3.”",
+      "screenshot": "readings/shots/31eb985a-211a-4b33-a4e6-01a9433f5650.png",
+      "howUsed": "Recorded actions: click Accept, then click Continue. No keyboard step."
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "bfea7a82-be5a-44b7-8a27-844e0ae275b2",
+      "runId": "7b15789a-d424-4d67-9b3a-103a60e02d2f",
+      "reason": "The page displays “Step 2 of 3.”",
+      "screenshot": "readings/shots/7b15789a-d424-4d67-9b3a-103a60e02d2f.png",
+      "howUsed": "Recorded actions: click Accept, then click Continue. No keyboard step. Its own page snapshot at the end still has the faded layer over the whole page, yet the step reads 2 of 3, so its click reached Continue through a layer that stops a real mouse. Here the page behind the layer was also inert, which takes Continue out of keyboard reach too."
+    },
+    {
+      "letterId": "animated-total",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "c1da41fd-6fa0-4307-8b94-b4c25263fda4",
+      "runId": "3a910c24-b38e-4e25-8c5a-7c2225a6d669",
+      "reason": "After clicking “Load total,” the displayed total reaches 1,250.",
+      "screenshot": "readings/shots/3a910c24-b38e-4e25-8c5a-7c2225a6d669.png"
+    },
+    {
+      "letterId": "animated-total",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "8629baa6-d966-4305-a3ea-f4291b59c052",
+      "runId": "1590d0db-8dc9-47be-90b2-efb523e5a1f5",
+      "reason": "The hosting-side service is likely returning an incomplete or stale total (1,205 instead of 1,250) due to a backend aggregation bug, missing records in the deployed dataset, or a caching/state issue causing the page to load an outdated value rather than the full computed total. Underlying error: TEST FAILURE\n\nThe displayed total did not reach the expected value of 1,250.\n\nObservations:\n- The “Load total” button was clicked.\n- The total remained at 1,205 after waiting.",
+      "screenshot": "readings/shots/1590d0db-8dc9-47be-90b2-efb523e5a1f5.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "984301da-3dcd-49fc-8111-c91a50d360a2",
+      "runId": "d947bb5a-b0d7-46d9-b59d-eff124f24b7f",
+      "reason": "The virtual list’s scroll math or state synchronization is likely broken on the host page: after attempting to navigate to Item 7777, the component stayed around Items 9528–9548 and only selected Item 9548, which suggests the list is not honoring the requested index. A common root cause is an incorrect item-size assumption, a miscomputed scroll offset, or a virtualization library receiving the wrong container dimensions/scroll event, so the rendered window jumps to the wrong region instead of the target item. Underlying error: TEST FAILURE\n\nThe virtual list did not reach Item 7777, so it could not be selected and the required “Selected: Item 7777” message was not verified.\n\nObservations:\n- The page displays a virtual list with 10,000 items.\n- The visible range remained around Items 9528–9548 after attempted scrolling.\n- The selection status showed “Selected: Item 9548.”",
+      "screenshot": "readings/shots/d947bb5a-b0d7-46d9-b59d-eff124f24b7f.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "4f91f799-6ff7-4091-83e3-fa111e9f7cab",
+      "runId": "f3430e3d-22b4-4c6c-8856-c07b51334488",
+      "reason": "The hosting app likely has a broken or misconfigured virtual list/scroll container, so scrolling does not advance the rendered window beyond the first visible items. This can happen if the list container has no fixed height or overflow, the virtualization library is not wired to the scrollable parent, item heights are incorrect, or event handling/state updates are blocked. As a result, the page stays on Items 1–17 and never reaches Item 7777, leaving the selection as none. Underlying error: TEST FAILURE\n\nThe virtual list did not scroll to “Item 7777,” so the selection result could not be verified.\n\nObservations:\n- The list remained at Items 1–17 after repeated scroll attempts.\n- The page continued to show “Selected: none.”",
+      "screenshot": "readings/shots/f3430e3d-22b4-4c6c-8856-c07b51334488.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "fcd4e1e2-3bc4-43b4-b91d-f2f392c43e9e",
+      "runId": "ddcbaf20-d7b8-48a0-921e-63bac293c0a9",
+      "reason": "The page shows that Item 7777 is selected.",
+      "screenshot": "readings/shots/ddcbaf20-d7b8-48a0-921e-63bac293c0a9.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "9f5dfdb3-d342-48ac-b60f-f307ae7c5bd3",
+      "runId": "b445fbc6-6a54-49dc-a8f4-f950cee4f009",
+      "reason": "The page likely reuses DOM rows or keys by array index, so clicking Item 7777 is resolving to the wrong underlying record and the previous selection (Item 7778) remains active. This can happen when a virtualized list, memoized row component, or stale event/state closure causes the selection state to map to the visible row position instead of the actual item identity. Underlying error: TEST FAILURE\n\nSelecting Item 7777 did not update the selection. The page continued to show Item 7778 as selected.\n\nObservations:\n- The status read “Selected: Item 7778” after Item 7777 was clicked.\n- Item 7778 was marked selected; Item 7777 was not.",
+      "screenshot": "readings/shots/b445fbc6-6a54-49dc-a8f4-f950cee4f009.png"
+    },
+    {
+      "letterId": "copy-button",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "b624308f-9f45-49ef-b9c2-5ccedb7896b4",
+      "runId": "05b199ae-62c3-4443-8860-d95f7f1ff4f9",
+      "reason": "The “Paste here” field contains DEMO-4821 after the copy-and-paste action.",
+      "screenshot": "readings/shots/05b199ae-62c3-4443-8860-d95f7f1ff4f9.png"
+    },
+    {
+      "letterId": "copy-button",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "3a7bf543-4521-4cbd-a27b-cbfd5530b741",
+      "runId": "e5412cf5-2887-4350-be9b-3d4ec9c4dda2",
+      "reason": "The host-side implementation likely only changes the UI state to “Copied!” but does not actually copy the invite code into the system clipboard. As a result, when the test sends Ctrl+V, there is nothing on the clipboard for the “Paste here” field to receive. Another possible contributing issue is that the target field may not be properly focused, enabled, or editable for paste events, but the main symptom points to clipboard write failure or missing clipboard API fallback. Underlying error: TEST FAILURE\n\nPasting the copied invite code did not populate the “Paste here” box. The expected text DEMO-4821 was not present.\n\nObservations:\n- The displayed invite code was DEMO-4821.\n- The Copy button changed to “Copied!” after it was clicked.\n- The “Paste here” field remained empty after Ctrl+V was sent.",
+      "screenshot": "readings/shots/e5412cf5-2887-4350-be9b-3d4ec9c4dda2.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6934e9da-0140-4252-be7f-0d2abad7f081",
+      "runId": "0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b",
+      "reason": "The page displays “Hello, Ada!” after the greeting is submitted.",
+      "screenshot": "readings/shots/0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "33a4ac62-eb9c-457d-87e9-51cd41a522eb",
+      "runId": "883c0708-3713-401d-ad9b-046bf3a0996a",
+      "reason": "The hosted page is likely using a broken or stale frontend build where the name input value is not being captured into state before generating the greeting, so the click handler falls back to an empty string. Another possible hosting-side issue is serving an outdated/cached bundle or misconfigured hydration/state initialization, causing the UI to display \"Hello, !\" even though the input contains \"Ada\". Underlying error: TEST FAILURE\n\nThe greeting did not include the entered name. The page displayed “Hello, !” instead of “Hello, Ada!”.\n\nObservations:\n- The “Your name” field contained “Ada”\n- After clicking “Greet,” the page showed “Hello, !”",
+      "screenshot": "readings/shots/883c0708-3713-401d-ad9b-046bf3a0996a.png"
+    },
+    {
+      "letterId": "iframe",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "76bad6c9-1b49-4752-9cf5-360f9d9f4c40",
+      "runId": "7159dbf7-f913-43a5-86ac-0dd57c8a8593",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/7159dbf7-f913-43a5-86ac-0dd57c8a8593.png"
+    },
+    {
+      "letterId": "iframe",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "15421357-9a6c-47d5-8314-0618b7137f8e",
+      "runId": "ef1cba1f-d0cd-40e5-b171-9488f0e62ccf",
+      "reason": "The host is likely serving inconsistent data between the main page and the embedded document. The visible page status is showing one state ('Approved') while the embedded document is rendering another ('Declined'), which suggests a stale cache, race condition, incorrect environment mapping, or a data-binding bug where the page status and embedded document are sourced from different records or different versions of the same record. Underlying error: TEST FAILURE\n\nThe embedded Document check result did not match the page status.\n\nObservations:\n- The page displayed “Status: Approved”\n- The embedded Document check displayed “Declined”",
+      "screenshot": "readings/shots/ef1cba1f-d0cd-40e5-b171-9488f0e62ccf.png"
+    },
+    {
+      "letterId": "label-mismatch",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "02e89042-b18a-405b-abb6-5f9908f4e7e6",
+      "runId": "cb83a813-129e-48c5-b218-53433a7670ab",
+      "reason": "The page confirms the save completed.",
+      "screenshot": "readings/shots/cb83a813-129e-48c5-b218-53433a7670ab.png"
+    },
+    {
+      "letterId": "label-mismatch",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "38dc6b7d-b99c-4d24-862f-8448be55a799",
+      "runId": "7d324c44-dfab-4bb4-b9cb-524e2d025356",
+      "reason": "The host is likely serving an incorrect or stale frontend build, or the Save button is bound to the wrong state transition on the deployed app. As a result, clicking Save triggers the discard/reset code path or fails to persist the draft, so the UI falls back to \"Discarded\" rather than showing \"Saved\". Underlying error: TEST FAILURE\n\nSaving did not show the required “Saved” status. The page displayed “Discarded” after the Save control was clicked.\n\nObservations:\n- The draft value was “Agenda: review the garden plan.”\n- The page status shown after the click was “Discarded.”",
+      "screenshot": "readings/shots/7d324c44-dfab-4bb4-b9cb-524e2d025356.png"
+    },
+    {
+      "letterId": "pseudo-chip",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "77a300f8-1e23-42b9-9eb5-d1dda17ef434",
+      "runId": "56be4f88-1d31-48aa-a6fc-bd83ff68e94b",
+      "reason": "The status chip says “Done” alongside the “3 of 3 steps” line.",
+      "screenshot": "readings/shots/56be4f88-1d31-48aa-a6fc-bd83ff68e94b.png"
+    },
+    {
+      "letterId": "pseudo-chip",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "82b7e077-2a10-449f-aa09-7889f31caead",
+      "runId": "8260bd8b-23a6-40f9-a173-618239c7a273",
+      "reason": "The page is likely rendering two related pieces of UI from inconsistent sources of truth: the steps line is showing the real progress count (2 of 3), while the status chip is reading an outdated, default, or independently computed completion state (\"Done\"). This can happen if the hosting side serves stale data, a mismatched API payload, a race condition in state hydration, or a UI bug where the chip is not updated when progress changes. Underlying error: TEST FAILURE\n\nThe status chip says “Done” even though the steps line reads “Setup: 2 of 3 steps.” The chip and the line do not agree.\n\nObservations:\n- The steps line reads “Setup: 2 of 3 steps”\n- The adjacent status chip says “Done”",
+      "screenshot": "readings/shots/8260bd8b-23a6-40f9-a173-618239c7a273.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "17a2fe4e-f388-4e31-a437-d513e799b4a4",
+      "runId": "a63f4514-e4ab-4ed1-83cc-557130243bf8",
+      "reason": "The hosted page likely renders the slider as a custom canvas widget that is not actually focusable or keyboard-operable, or its event listeners are attached incorrectly so the automation cannot drag it or change it with ArrowRight. The readout staying at 50 suggests the interaction handlers are missing, blocked, or not wired to the underlying state on the hosting build. Underlying error: TEST BLOCKED\n\nThe slider could not be dragged to the 70 mark using the available browser interaction, so the readout could not be verified at 70.\n\nObservations:\n- The page shows a canvas slider with a 0–100 scale and the readout “Value: 50”\n- Clicking the page container and pressing ArrowRight did not change the readout",
+      "screenshot": "readings/shots/a63f4514-e4ab-4ed1-83cc-557130243bf8.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "blocked",
+      "testId": "6089667e-c5b7-4445-aaf9-670eefdfd0de",
+      "runId": "833f6eb5-abb4-45b4-9d6c-6cab08480b22",
+      "reason": "The page likely implements the slider purely as a canvas visualization or a custom-drawn control without an exposed DOM element or accessible drag target. As a result, the test framework cannot locate a draggable handle or generate a valid drag interaction, leaving the value stuck at 50 instead of allowing it to be moved to 70. Underlying error: TEST BLOCKED\n\nThe slider test could not be completed because the round handle could not be dragged to 70 with the available interaction controls. The readout remained at “Value: 50,” so “Value: 70” could not be verified.\n\nObservations:\n- The Canvas slider page loaded and showed a scale from 0 to 100.\n- The round handle was positioned at 50 and the readout showed “Value: 50.”\n- No drag-capable slider control was exposed for interaction.",
+      "screenshot": "readings/shots/833f6eb5-abb4-45b4-9d6c-6cab08480b22.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "2277e8f2-100e-4881-ae83-411528084591",
+      "runId": "e3a3f1f6-0bfb-4dcd-b1dc-8d875360aece",
+      "reason": "The slider readout shows “Value: 70.”",
+      "screenshot": "readings/shots/e3a3f1f6-0bfb-4dcd-b1dc-8d875360aece.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "64d62ffa-de58-4bcc-b649-797a7badae05",
+      "runId": "ea915309-8d52-48b6-99f0-8992c1faef98",
+      "reason": "The slider control itself is updating to 70, but the visible text is likely driven by a separate state variable or DOM node that is not being updated when the slider changes. This usually indicates a broken binding between the input handler and the readout component, a stale cached bundle, or code that reads the initial value only once and never listens for subsequent changes. Underlying error: TEST FAILURE\n\nThe slider handle moved to 70, but the readout did not update to “Value: 70.” It shows “Value: 30.”\n\nObservations:\n- The round handle is positioned at the 70 mark.\n- The slider control reports a value of 70.\n- The visible readout says “Value: 30.”",
+      "screenshot": "readings/shots/ea915309-8d52-48b6-99f0-8992c1faef98.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "0bbe4605-3972-4ce4-9d1d-247b846be9d6",
+      "runId": "7cf89bdf-e224-4b87-9f6b-6ce8aa100b34",
+      "reason": "The host page likely depends on a drag gesture to change the knob value, but the browser/test environment cannot generate the required drag/pointer positioning for that control. As a result, the interaction never starts or never receives move events, so the volume remains at 0 and the expected value cannot be reached. Underlying error: TEST BLOCKED\n\nThe requested knob interaction could not be completed because the available browser controls do not provide a drag gesture or pointer positioning. The volume stayed at 0, so the requested reading of 7 could not be verified.\n\nObservations:\n- The page instructs users to press the knob and drag upward.\n- The visible readout showed “Volume: 0” after the attempted page click.",
+      "screenshot": "readings/shots/7cf89bdf-e224-4b87-9f6b-6ce8aa100b34.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "blocked",
+      "testId": "6ae9751e-28c0-4b50-aa1d-2d3fd1596c8e",
+      "runId": "6808f90d-5ab3-40ec-bb23-ba15220162a5",
+      "reason": "The knob interaction is likely implemented in a way that the hosting/browser environment cannot actually drag it—commonly due to using unsupported drag-and-drop semantics, touch-only handlers, or custom event handling that requires a real pointer device. As a result, the click is registered but the drag never fires, leaving the state at 'Volume: 0' instead of updating to 'Volume: 7'. Underlying error: TEST BLOCKED\n\nThe knob drag test could not be completed — the available browser interaction does not support dragging. The knob feature is present, but the readout remained at “Volume: 0,” so “Volume: 7” could not be verified.\n\nObservations:\n- The page instructs users to press the knob and drag upward.\n- The visible readout showed “Volume: 0” after the page click.",
+      "screenshot": "readings/shots/6808f90d-5ab3-40ec-bb23-ba15220162a5.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "315a6e8b-5b8a-427b-84a4-5de705ebb5bf",
+      "runId": "5ee31e9c-f748-47a9-8e16-55c2d675f5c6",
+      "reason": "The readout shows “Volume: 7.”",
+      "screenshot": "readings/shots/5ee31e9c-f748-47a9-8e16-55c2d675f5c6.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "541f8d34-87eb-4240-b06a-3f2ad458639b",
+      "runId": "29b08c1f-194c-4168-998a-1a9b7e617cde",
+      "reason": "The volume slider/input is changing to 7, but the displayed text remains at the initial default of 0, which suggests the UI state is not being updated or re-rendered after the control event. This can happen if the event handler is missing, attached to the wrong event, uses the wrong variable, or the hosting service is delivering an outdated/incorrectly built bundle where the binding between the control and the readout is broken. Underlying error: TEST FAILURE\n\nThe volume readout did not update to the required value.\n\nObservations:\n- The control value is 7.\n- The page readout still shows “Volume: 0.”",
+      "screenshot": "readings/shots/29b08c1f-194c-4168-998a-1a9b7e617cde.png"
+    },
+    {
+      "letterId": "canvas-chart",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "a714cbd6-0426-406b-b733-a463d7a22acb",
+      "runId": "ac8027e6-29c8-4c26-b3df-475b3f834801",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/ac8027e6-29c8-4c26-b3df-475b3f834801.png"
+    },
+    {
+      "letterId": "canvas-chart",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "b4d08cc8-7ee6-4784-b9a2-182d03d1e97d",
+      "runId": "2c64dc37-dbb5-4741-8aaa-bc0c5859a99c",
+      "reason": "The most likely cause is a data binding or transformation bug in the hosted app: Tuesday’s bar is being rendered from an incorrect value or with an inverted scale while its label still shows 80%. Because Monday and Wednesday match, the issue is probably not the chart library globally but a per-item mapping problem, such as a bad array index, swapped Tuesday/Friday data, or a CSS/style override applied only to Tuesday’s bar. Underlying error: TEST FAILURE\n\nThe Tuesday bar does not reach the percentage printed above it. It reaches about 20% on the left axis, while its label says 80%.\n\nObservations:\n- Monday’s bar reaches 40%, matching its 40% label.\n- Tuesday’s bar reaches about 20%, not its 80% label.\n- Wednesday’s bar reaches 60%, matching its 60% label.",
+      "screenshot": "readings/shots/2c64dc37-dbb5-4741-8aaa-bc0c5859a99c.png"
+    },
+    {
+      "letterId": "icon-status",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "5f20f4a8-0b40-4932-ba69-ca9290144131",
+      "runId": "263dffd7-425e-42b6-a9d8-dcd5f2f0f4e7",
+      "reason": "Test passed. Target: environment default (http://127.0.0.1:4173).",
+      "screenshot": "readings/shots/263dffd7-425e-42b6-a9d8-dcd5f2f0f4e7.png"
+    },
+    {
+      "letterId": "icon-status",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "873ce7bd-f34f-4196-b18a-b55df284da0e",
+      "runId": "17b34265-3712-4be4-aeaf-4d19fd2f117f",
+      "reason": "The hosted page likely has a client-side rendering bug or stale data mapping issue where the Lint row’s status is computed incorrectly. A common cause is using a boolean such as \"has any checks\" to decide the icon, which would make 1/3 still render as passed. Another possibility is that the host is serving outdated JavaScript/assets or an incorrect test fixture for the Lint row, causing the UI to display a green tick despite an incomplete check set. Underlying error: TEST FAILURE\n\nThe Lint row shows a green tick despite having only 1/3 checks. Rows with fewer than 3/3 checks should show a red cross.\n\nObservations:\n- Build shows 3/3 checks and a green tick.\n- Lint shows 1/3 checks and a green tick.",
+      "screenshot": "readings/shots/17b34265-3712-4be4-aeaf-4d19fd2f117f.png"
+    },
+    {
+      "letterId": "clipped-label",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "cc32e085-1473-4004-b44b-14a8b6fdba01",
+      "runId": "55395e86-35b0-4fae-aee6-70c8aab37e16",
+      "reason": "The notice displays the full sentence “Free trial ends today” without any words cut off.",
+      "screenshot": "readings/shots/55395e86-35b0-4fae-aee6-70c8aab37e16.png"
+    },
+    {
+      "letterId": "clipped-label",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "76c616c2-463c-4db6-ad32-dab50d165b8a",
+      "runId": "a989e0e6-11d7-4fac-8c0e-995ba83bbe51",
+      "reason": "The notice is likely constrained by a hosting-side CSS/layout issue: a fixed-width or overflow-clipped container is truncating the text, so only “Free trial ends” fits while “today” is pushed out of view. This can happen from a build regression, incorrect responsive styles, or font scaling differences on the deployed environment. Underlying error: TEST FAILURE\n\nThe notice cuts off the final word and does not show the full sentence.\n\nObservations:\n- The notice visibly reads “Free trial ends”\n- “today” is not visible in the notice",
+      "screenshot": "readings/shots/a989e0e6-11d7-4fac-8c0e-995ba83bbe51.png"
+    },
+    {
+      "letterId": "hidden-note",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "a03a8d58-b735-4708-aa71-9cb901963346",
+      "runId": "7c539280-535e-43bf-8858-f8416ddc1ea9",
+      "reason": "The page confirms the project was created as Garden without displaying an error.",
+      "screenshot": "readings/shots/7c539280-535e-43bf-8858-f8416ddc1ea9.png"
+    },
+    {
+      "letterId": "hidden-note",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "46fcb36e-d763-4973-a7f9-c523572b5cea",
+      "runId": "80efec42-af51-47b4-9684-277b7e1b094c",
+      "reason": "The create action is likely failing due to a server-side error in the hosted service, such as a broken API route, missing/incorrect environment configuration, database connectivity issue, or an unhandled exception during project creation. Because the UI shows a generic \"Something went wrong. Try again.\" message, the frontend is probably receiving a non-OK response or exception from the host rather than completing the creation flow successfully. Underlying error: TEST FAILURE\n\nCreating the project did not succeed — the page displayed an error instead of the requested confirmation.\n\nObservations:\n- The Project name field contained “Garden”\n- After clicking “Create,” the page showed “Something went wrong. Try again.”\n- “Created: Garden” was not shown",
+      "screenshot": "readings/shots/80efec42-af51-47b4-9684-277b7e1b094c.png"
+    },
+    {
+      "letterId": "comment-note",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "be6efbc5-7d04-43e6-8a7c-709b653d5ff8",
+      "runId": "a3f401a6-b80b-43ca-960f-ba2a2fac8c93",
+      "reason": "The Tasks list contains “Water plants”.",
+      "screenshot": "readings/shots/a3f401a6-b80b-43ca-960f-ba2a2fac8c93.png"
+    },
+    {
+      "letterId": "comment-note",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "9c8e2bb2-93a2-4b5a-b6dc-65532973cf1f",
+      "runId": "0fd91c49-a9b0-47dd-8cad-4fa5a27b70d0",
+      "reason": "The hosted page likely has a frontend implementation issue where clicking Add does not correctly read the input value or update the tasks state. Since the field is empty after clicking Add and the list stays on “No tasks yet,” the add-task handler may be missing, miswired, or failing in production due to a form-submit/preventDefault bug, an incorrect state binding, or an outdated/deployed build that does not include the task-adding logic. Underlying error: TEST FAILURE\n\nAdding “Water plants” did not place it in the Tasks list.\n\nObservations:\n- The Task field was empty after clicking “Add.”\n- The Tasks section still displayed “No tasks yet.”",
+      "screenshot": "readings/shots/0fd91c49-a9b0-47dd-8cad-4fa5a27b70d0.png"
+    },
+    {
+      "letterId": "ghost-text",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "227c04cd-6a46-4034-8f52-3b59356a291b",
+      "runId": "e8b41863-65a2-45df-a639-b3ebcee0fafd",
+      "reason": "The upload completed with progress at 100%.",
+      "screenshot": "readings/shots/e8b41863-65a2-45df-a639-b3ebcee0fafd.png"
+    },
+    {
+      "letterId": "ghost-text",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "91a2c13a-cca6-406d-a25d-bbfc3abbaf86",
+      "runId": "544e5b90-d4df-4e48-b059-8e2625c45bda",
+      "reason": "The service likely marks the upload as complete too early, before the final 100% progress update is propagated to the UI. This can happen if the upload completion callback updates the status text immediately while the progress value is only updated up to 80% due to a missing final progress event, incorrect total/loaded calculation, or a race between the completion response and the last client-side progress state update. Underlying error: TEST FAILURE\n\nThe upload did not reach 100% progress after three seconds. The page displayed “Upload complete,” but the progress remained at 80%.\n\nObservations:\n- Progress showed 80% after the upload and wait.\n- The page text included “Upload complete.”",
+      "screenshot": "readings/shots/544e5b90-d4df-4e48-b059-8e2625c45bda.png"
+    },
+    {
+      "letterId": "leftover-error",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "24aefbc1-5b12-4c27-97f2-83a25757144d",
+      "runId": "0cd38487-6a0a-4f5e-addd-a7c28ba3c4d9",
+      "reason": "The page shows “Last saved: just now” after saving.",
+      "screenshot": "readings/shots/0cd38487-6a0a-4f5e-addd-a7c28ba3c4d9.png"
+    },
+    {
+      "letterId": "leftover-error",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "ea0c7480-09fc-4791-b261-aa2bb3dc3a27",
+      "runId": "290604d9-6406-43f3-97a8-e18466522295",
+      "reason": "The hosted app likely has a broken save integration: clicking Save does not produce a successful persisted update, so the UI never receives data to replace \"Last saved: never\" with \"just now.\" Because no error message appears, the failure is probably happening silently due to a missing/incorrect API configuration, an unreachable backend on the host, or a client-side success handler that is never triggered after the save request. Underlying error: TEST FAILURE\n\nSaving did not update the page to show “Last saved: just now.” No error message was visible.\n\nObservations:\n- The page still showed “Last saved: never” after Save was clicked.\n- No error message was visible.",
+      "screenshot": "readings/shots/290604d9-6406-43f3-97a8-e18466522295.png"
+    },
+    {
+      "letterId": "zero-width-code",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6d3e380b-8c13-414c-b52f-929de0108853",
+      "runId": "88b61a36-62c4-4dc2-8efa-914890af27b8",
+      "reason": "The page displays “Trial: 7 days added.”",
+      "screenshot": "readings/shots/88b61a36-62c4-4dc2-8efa-914890af27b8.png"
+    },
+    {
+      "letterId": "zero-width-code",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "959f92e5-756a-4200-9d1d-5ef11f9102a4",
+      "runId": "d8918e4d-7446-48b6-a548-50ac983f5e12",
+      "reason": "The access code is likely being compared as a raw string, and the hosted page is including an invisible Unicode character in the rendered or copied code (TRIAL​7). Because that hidden character is not part of the actual intended code, the backend rejects it as unrecognized. Another possible hosting-side cause is a stale deployment or misconfigured validation config causing the service to expect a different code than the one displayed. Underlying error: TEST FAILURE\n\nApplying the displayed access code did not add the trial. The page showed “Code not recognised” instead of “Trial: 7 days added.”\n\nObservations:\n- The page displayed the access code TRIAL​7.\n- After Apply was clicked, the page displayed “Code not recognised.”",
+      "screenshot": "readings/shots/d8918e4d-7446-48b6-a548-50ac983f5e12.png"
+    }
+  ]
+}
