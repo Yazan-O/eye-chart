@@ -152,6 +152,24 @@
       ]
     },
     {
+      "id": "copy-button",
+      "name": "Copy puts the code on the clipboard",
+      "steps": [
+        [
+          "action",
+          "Click the 'Copy' button"
+        ],
+        [
+          "action",
+          "Click into the 'Paste here' box and paste the clipboard (Ctrl+V)"
+        ],
+        [
+          "assertion",
+          "Verify the 'Paste here' box contains 'DEMO-4821'"
+        ]
+      ]
+    },
+    {
       "id": "shadow-form",
       "name": "Greeting form greets by name",
       "steps": [
@@ -170,6 +188,20 @@
       ]
     },
     {
+      "id": "iframe",
+      "name": "Frame and page agree on the result",
+      "steps": [
+        [
+          "action",
+          "Click the 'Run check' button"
+        ],
+        [
+          "assertion",
+          "Verify the result shown inside the embedded Document check frame says the same thing as the page status 'Status: Approved'"
+        ]
+      ]
+    },
+    {
       "id": "label-mismatch",
       "name": "Save keeps the draft",
       "steps": [
@@ -180,6 +212,16 @@
         [
           "assertion",
           "Verify the Draft box still contains 'Agenda: review the garden plan' and the page says 'Saved'"
+        ]
+      ]
+    },
+    {
+      "id": "pseudo-chip",
+      "name": "Chip agrees with the steps line",
+      "steps": [
+        [
+          "assertion",
+          "Verify the status chip next to the steps line says 'Done' only if the line reads '3 of 3 steps'; the chip and the line must agree"
         ]
       ]
     },
@@ -208,6 +250,36 @@
         [
           "assertion",
           "Verify the readout shows 'Volume: 7'"
+        ]
+      ]
+    },
+    {
+      "id": "canvas-chart",
+      "name": "Bars match their labels",
+      "steps": [
+        [
+          "assertion",
+          "Verify each bar in the chart reaches the height of the percentage printed above it, reading the height against the % axis on the left"
+        ]
+      ]
+    },
+    {
+      "id": "icon-status",
+      "name": "Icons match the check counts",
+      "steps": [
+        [
+          "assertion",
+          "Verify each row's icon matches its count: a green tick only on a row with 3/3 checks, a red cross on any row with fewer"
+        ]
+      ]
+    },
+    {
+      "id": "clipped-label",
+      "name": "Notice shows its full sentence",
+      "steps": [
+        [
+          "assertion",
+          "Verify the notice box shows the full sentence 'Free trial ends today', with no words cut off"
         ]
       ]
     },
@@ -248,6 +320,24 @@
       ]
     },
     {
+      "id": "ghost-text",
+      "name": "Upload completes",
+      "steps": [
+        [
+          "action",
+          "Click the 'Upload' button"
+        ],
+        [
+          "action",
+          "Wait 3 seconds"
+        ],
+        [
+          "assertion",
+          "Verify the progress shows 100% and the message 'Upload complete' is visible"
+        ]
+      ]
+    },
+    {
       "id": "leftover-error",
       "name": "Save updates Last saved",
       "steps": [
@@ -258,6 +348,24 @@
         [
           "assertion",
           "Verify the page shows 'Last saved: just now' and no error message is present"
+        ]
+      ]
+    },
+    {
+      "id": "zero-width-code",
+      "name": "Access code is accepted",
+      "steps": [
+        [
+          "action",
+          "Enter the access code shown on the page into the 'Enter code' field"
+        ],
+        [
+          "action",
+          "Click the 'Apply' button"
+        ],
+        [
+          "assertion",
+          "Verify the page shows 'Trial: 7 days added'"
         ]
       ]
     }
