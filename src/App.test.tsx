@@ -133,7 +133,8 @@ describe("App routing", () => {
     expect(toggle).toHaveTextContent("See it like TestSprite");
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(toggle).toHaveTextContent("See it like TestSprite");
+    expect(toggle).toHaveTextContent("Back to human eyes");
+    expect(toggle).toHaveAttribute("data-state", "on");
     expect(document.documentElement.dataset.view).toBe("robot");
     expect(await screen.findByTestId("agent-overlay")).toBeInTheDocument();
     expect(screen.getByTestId("agent-summary")).toHaveTextContent(/Sensor view\. \d+ parts found\./);

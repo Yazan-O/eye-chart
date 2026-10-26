@@ -25,8 +25,8 @@ function useSensorNodes(): AgentNode[] {
   useEffect(() => {
     let frame = 0;
     const read = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setNodes(readPage(document.body, { skip })));
+      window.clearTimeout(frame);
+      frame = window.setTimeout(() => setNodes(readPage(document.body, { skip })), 0);
     };
     read();
     const timer = window.setInterval(read, 1000);
@@ -35,7 +35,7 @@ function useSensorNodes(): AgentNode[] {
     window.addEventListener("scroll", read, { capture: true, passive: true });
     window.addEventListener("resize", read);
     return () => {
-      cancelAnimationFrame(frame);
+      window.clearTimeout(frame);
       window.clearInterval(timer);
       observer.disconnect();
       window.removeEventListener("scroll", read, { capture: true });

@@ -80,8 +80,9 @@ export function AgentToggle() {
       onMouseEnter={prefetch}
       onFocus={prefetch}
       data-testid="agent-toggle"
+      data-state={on ? "on" : "off"}
     >
-      See it like TestSprite
+      {on ? "Back to human eyes" : "See it like TestSprite"}
     </button>
   );
 }
