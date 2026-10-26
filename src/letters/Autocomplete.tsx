@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 export const CITIES = [
@@ -21,8 +22,8 @@ export default function Autocomplete({ variant }: LetterProps) {
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
   const [chosen, setChosen] = useState<string | null>(null);
-  const keysOnly = variant === "broken";
-  const lens = variant === "lens";
+  const keysOnly = isBroken(variant);
+  const lens = hasLens(variant);
   const matches = chosen ? [] : suggest(query);
 
   return (

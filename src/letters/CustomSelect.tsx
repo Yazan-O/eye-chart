@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const SIZES = [
@@ -11,7 +12,7 @@ export default function CustomSelect({ variant }: LetterProps) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const size = SIZES[index] ?? SIZES[0];
-  const serves = variant === "broken" ? SIZES[0].serves : size.serves;
+  const serves = isBroken(variant) ? SIZES[0].serves : size.serves;
 
   return (
     <div className="letter-widget">

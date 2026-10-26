@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const TOTAL = 1250;
@@ -14,7 +15,7 @@ function prefersReducedMotion() {
 export default function AnimatedTotal({ variant }: LetterProps) {
   const [value, setValue] = useState(0);
   const frame = useRef<number | undefined>(undefined);
-  const target = variant === "broken" ? 1205 : TOTAL;
+  const target = isBroken(variant) ? 1205 : TOTAL;
 
   useEffect(() => () => cancelAnimationFrame(frame.current ?? 0), []);
 

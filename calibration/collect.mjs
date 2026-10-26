@@ -77,7 +77,7 @@ for (const t of tests) {
   results.push({
     letterId,
     variant,
-    truth: variant === "broken" ? "fail" : "pass",
+    truth: variant.endsWith("broken") ? "fail" : "pass",
     verdict: run.status,
     testId: t.testId,
     runId,
@@ -87,8 +87,8 @@ for (const t of tests) {
 }
 
 const order = JSON.parse(readFileSync(new URL("./tests.json", import.meta.url), "utf8")).letters.map((l) => l.id);
-const variants = ["works", "broken", "lens"];
-const rank = (r) => order.indexOf(r.letterId) * 3 + variants.indexOf(r.variant);
+const variants = ["works", "broken", "lens", "lens-broken"];
+const rank = (r) => order.indexOf(r.letterId) * 4 + variants.indexOf(r.variant);
 
 const takenAt = runs.map((r) => r.finishedAt).filter(Boolean).sort().at(-1) ?? new Date().toISOString();
 const head = { takenAt, commit, engine: `TestSprite cloud agent, CLI ${cliVersion}`, projectId };

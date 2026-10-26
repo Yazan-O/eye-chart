@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 function frameDoc(result: string) {
@@ -8,7 +9,7 @@ function frameDoc(result: string) {
 
 export default function FrameResult({ variant }: LetterProps) {
   const [checked, setChecked] = useState(false);
-  const result = variant === "broken" ? "Declined" : "Approved";
+  const result = isBroken(variant) ? "Declined" : "Approved";
 
   return (
     <div className="letter-widget">

@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export default function LeftoverError({ variant }: LetterProps) {
   const [saved, setSaved] = useState(false);
-  const broken = variant === "broken";
+  const broken = isBroken(variant);
 
   return (
     <div className="letter-widget">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const CODE = "TRIAL7";
@@ -8,7 +9,7 @@ export function clean(s: string) {
 }
 
 export default function ZeroWidthCode({ variant }: LetterProps) {
-  const broken = variant === "broken";
+  const broken = isBroken(variant);
   const shown = broken ? "TRIAL\u200B7" : CODE;
   const [entry, setEntry] = useState("");
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);

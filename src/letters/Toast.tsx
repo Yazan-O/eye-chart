@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 export const TOAST_MS = 1500;
@@ -11,7 +12,7 @@ export default function Toast({ variant }: LetterProps) {
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   function save() {
-    if (variant === "broken") return;
+    if (isBroken(variant)) return;
     window.clearTimeout(timer.current);
     setShown(true);
     setSaved(true);
@@ -26,7 +27,7 @@ export default function Toast({ variant }: LetterProps) {
       </button>
       <div className="letter-toast-slot" role="status">
         {shown ? <span className="letter-toast">Saved</span> : null}
-        {variant === "lens" && saved && !shown ? <span className="letter-sr">Saved</span> : null}
+        {hasLens(variant) && saved && !shown ? <span className="letter-sr">Saved</span> : null}
       </div>
     </div>
   );

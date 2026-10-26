@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 const WIDTH = 640;
@@ -60,8 +61,8 @@ export default function CanvasSlider({ variant }: LetterProps) {
     setValue(valueAt(((e.clientX - rect.left) * WIDTH) / rect.width));
   }
 
-  const shown = variant === "broken" ? 100 - value : value;
-  const lens = variant === "lens";
+  const shown = isBroken(variant) ? 100 - value : value;
+  const lens = hasLens(variant);
 
   function key(e: React.KeyboardEvent<HTMLCanvasElement>) {
     const step = STEP_KEYS[e.key];

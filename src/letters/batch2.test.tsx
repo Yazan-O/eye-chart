@@ -26,6 +26,13 @@ describe("fix lenses", () => {
     fireEvent.click(screen.getByRole("button", { name: "Accept" }));
     expect(container.querySelector(".letter-scrim")).toBeNull();
   });
+
+  it("lensed broken consent keeps its layer and makes the page inert", () => {
+    const { container } = render(<ConsentScrim variant="lens-broken" />);
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
+    expect(container.querySelector(".letter-scrim")).not.toBeNull();
+    expect(screen.getByText("Continue").parentElement).toHaveAttribute("inert");
+  });
 });
 
 afterEach(() => {

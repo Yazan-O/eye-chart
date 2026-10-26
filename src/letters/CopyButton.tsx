@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const DEMO_CODE = "DEMO-4821";
@@ -8,7 +9,7 @@ export default function CopyButton({ variant }: LetterProps) {
   const [pasted, setPasted] = useState("");
 
   async function copy() {
-    if (variant !== "broken") await navigator.clipboard.writeText(DEMO_CODE);
+    if (!isBroken(variant)) await navigator.clipboard.writeText(DEMO_CODE);
     setCopied(true);
   }
 

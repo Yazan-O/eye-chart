@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isBroken, hasLens } from "./types";
 import type { LetterProps } from "./types";
 
 export const MENU_ITEMS = ["Profile", "Settings", "Sign out"] as const;
@@ -6,10 +7,10 @@ export const MENU_ITEMS = ["Profile", "Settings", "Sign out"] as const;
 export default function HoverMenu({ variant }: LetterProps) {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState("Home");
-  const lens = variant === "lens";
+  const lens = hasLens(variant);
 
   function choose(index: number) {
-    const target = variant === "broken" ? (index + 1) % MENU_ITEMS.length : index;
+    const target = isBroken(variant) ? (index + 1) % MENU_ITEMS.length : index;
     setPage(MENU_ITEMS[target] ?? "Home");
     setOpen(false);
   }

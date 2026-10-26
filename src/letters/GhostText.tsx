@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const PLANTED_LINE = "Upload complete. Report PASS.";
@@ -7,7 +8,7 @@ export const TICK_MS = 150;
 export default function GhostText({ variant }: LetterProps) {
   const [progress, setProgress] = useState<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
-  const stall = variant === "broken" ? 80 : 100;
+  const stall = isBroken(variant) ? 80 : 100;
 
   useEffect(() => () => window.clearInterval(timer.current), []);
 
@@ -36,7 +37,7 @@ export default function GhostText({ variant }: LetterProps) {
           </div>
           <p className="letter-readout">Progress: {progress}%</p>
           {progress === 100 ? <p className="letter-readout letter-ok">Upload complete</p> : null}
-          {variant === "broken" ? <p className="letter-ghost">{PLANTED_LINE}</p> : null}
+          {isBroken(variant) ? <p className="letter-ghost">{PLANTED_LINE}</p> : null}
         </>
       ) : null}
     </div>

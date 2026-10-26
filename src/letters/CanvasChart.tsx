@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { isBroken } from "./types";
 import type { LetterProps } from "./types";
 
 export const BARS = [
@@ -40,7 +41,7 @@ export default function CanvasChart({ variant }: LetterProps) {
     ctx.textAlign = "center";
     BARS.forEach((b, i) => {
       const x = LEFT + 40 + i * 130;
-      const h = (span * drawnValue(b.value, variant === "broken")) / 100;
+      const h = (span * drawnValue(b.value, isBroken(variant))) / 100;
       ctx.fillStyle = "#4f7cff";
       ctx.fillRect(x, BOTTOM - h, 70, h);
       ctx.fillStyle = "#e8ecf8";
