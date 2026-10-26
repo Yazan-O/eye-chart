@@ -96,6 +96,19 @@ export default function CanvasSlider({ variant }: LetterProps) {
           dragging.current = false;
         }}
       />
+      {lens ? (
+        <label className="letter-sr">
+          Value slider
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={value}
+            onChange={(e) => setValue(Number(e.currentTarget.value))}
+          />
+        </label>
+      ) : null}
       <p className="letter-readout">Value: {shown}</p>
     </div>
   );

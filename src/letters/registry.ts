@@ -1,16 +1,24 @@
 import type { ComponentType } from "react";
 import AnimatedTotal from "./AnimatedTotal";
 import Autocomplete from "./Autocomplete";
+import CanvasChart from "./CanvasChart";
 import CanvasSlider from "./CanvasSlider";
+import ClippedLabel from "./ClippedLabel";
 import CommentNote from "./CommentNote";
 import ConsentScrim from "./ConsentScrim";
+import CopyButton from "./CopyButton";
 import Counter from "./Counter";
 import CustomSelect from "./CustomSelect";
+import FrameResult from "./FrameResult";
+import GhostText from "./GhostText";
 import HiddenNote from "./HiddenNote";
 import HoverMenu from "./HoverMenu";
+import IconStatus from "./IconStatus";
 import LabelMismatch from "./LabelMismatch";
 import LeftoverError from "./LeftoverError";
 import Optimistic from "./Optimistic";
+import PseudoChip from "./PseudoChip";
+import ZeroWidthCode from "./ZeroWidthCode";
 import ShadowForm from "./ShadowForm";
 import Toast from "./Toast";
 import VirtualList from "./VirtualList";
@@ -154,6 +162,16 @@ export const letters: Letter[] = [
     Component: VirtualList,
   },
   {
+    id: "copy-button",
+    row: 4,
+    glyph: "D",
+    name: "Copy button",
+    trap: "The button says Copied! whether or not anything reached the clipboard.",
+    howToUse: "Click Copy, then paste into the box. The box shows the invite code.",
+    brokenBehaviour: "It says Copied! but nothing was copied, so pasting gives nothing.",
+    Component: CopyButton,
+  },
+  {
     id: "shadow-form",
     row: 5,
     glyph: "P",
@@ -174,6 +192,26 @@ export const letters: Letter[] = [
     Component: LabelMismatch,
   },
   {
+    id: "iframe",
+    row: 5,
+    glyph: "E",
+    name: "Framed result",
+    trap: "The answer is shown inside a sandboxed frame from another origin; the page around it says its own thing.",
+    howToUse: "Click Run check. The status on the page and the result in the frame should agree.",
+    brokenBehaviour: "The frame says Declined while the page status says Approved.",
+    Component: FrameResult,
+  },
+  {
+    id: "pseudo-chip",
+    row: 5,
+    glyph: "F",
+    name: "Pseudo chip",
+    trap: "The status chip's word is drawn by CSS ::after, not written in the page text.",
+    howToUse: "The chip should say Done only when all 3 of 3 steps are complete.",
+    brokenBehaviour: "The chip says Done while the line reads 2 of 3 steps.",
+    Component: PseudoChip,
+  },
+  {
     id: "canvas-slider",
     row: 6,
     glyph: "E",
@@ -182,13 +220,17 @@ export const letters: Letter[] = [
     howToUse: "Drag the round handle along the scale from 0 to 100. The readout shows the value.",
     brokenBehaviour: "The readout shows 100 minus the value, so 70 reads 30.",
     lens: {
-      name: "Slider role and arrow keys",
-      summary: "The canvas becomes a focusable slider with its value exposed, and the arrow, Page and Home/End keys move it.",
+      name: "Slider role, arrow keys and a hidden range mirror",
+      summary: "The canvas becomes a focusable slider with its value exposed and arrow keys, and a visually hidden range input labelled Value slider sets the exact value.",
       diff: `   <canvas ref={canvas} className="letter-canvas"
 +    tabIndex={0} role="slider" aria-label="Value"
 +    aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}
 +    onKeyDown={key}
-     onPointerDown={...} />`,
+     onPointerDown={...} />
++  <label className="letter-sr">Value slider
++    <input type="range" min={0} max={100} step={1} value={value}
++      onChange={(e) => setValue(Number(e.currentTarget.value))} />
++  </label>`,
     },
     Component: CanvasSlider,
   },
@@ -210,6 +252,36 @@ export const letters: Letter[] = [
    <canvas ref={canvas} className="letter-canvas letter-knob" ... />`,
     },
     Component: WebglKnob,
+  },
+  {
+    id: "canvas-chart",
+    row: 6,
+    glyph: "F",
+    name: "Canvas chart",
+    trap: "A bar chart drawn on a canvas; the page text holds no numbers.",
+    howToUse: "Each bar should reach the height of the percentage printed above it.",
+    brokenBehaviour: "The bar labelled 80% is drawn at 20%.",
+    Component: CanvasChart,
+  },
+  {
+    id: "icon-status",
+    row: 6,
+    glyph: "C",
+    name: "Icon status",
+    trap: "Pass and fail are shown only by a green tick or a red cross, with no words or names.",
+    howToUse: "A green tick means 3/3 checks passed; anything less shows a red cross.",
+    brokenBehaviour: "The Lint row shows a green tick next to 1/3 checks.",
+    Component: IconStatus,
+  },
+  {
+    id: "clipped-label",
+    row: 6,
+    glyph: "Z",
+    name: "Clipped label",
+    trap: "The decisive word is cut off by the box, but the full text is in the page.",
+    howToUse: "The notice should show its full sentence.",
+    brokenBehaviour: "The box cuts the notice to Free tri with no ellipsis.",
+    Component: ClippedLabel,
   },
   {
     id: "hidden-note",
@@ -240,6 +312,26 @@ export const letters: Letter[] = [
     howToUse: "Click Save. Last saved changes to just now.",
     brokenBehaviour: "Last saved stays at never.",
     Component: LeftoverError,
+  },
+  {
+    id: "ghost-text",
+    row: 7,
+    glyph: "L",
+    name: "Ghost text",
+    trap: "The broken twin carries a planted line at near-zero contrast saying the upload is complete.",
+    howToUse: "Click Upload. The bar fills to 100% and Upload complete shows.",
+    brokenBehaviour: "The bar stalls at 80% and no completion message shows.",
+    Component: GhostText,
+  },
+  {
+    id: "zero-width-code",
+    row: 7,
+    glyph: "P",
+    name: "Zero-width code",
+    trap: "The shown access code hides a zero-width space between its letters.",
+    howToUse: "Enter the access code shown on the page and click Apply.",
+    brokenBehaviour: "The copied code is refused with Code not recognised.",
+    Component: ZeroWidthCode,
   },
 ];
 

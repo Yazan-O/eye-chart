@@ -274,3 +274,55 @@
 .letter-list-plain {
   margin: 0 0 16px;
 }
+
+.letter-frame {
+  border: 1px solid #2a3354;
+  border-radius: 6px;
+  background: #f4f6fb;
+}
+
+.letter-chip::after {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.letter-chip-done::after {
+  content: "Done";
+  background: #1f8f4e;
+  color: #fff;
+}
+
+.letter-notice {
+  width: 120px;
+  padding: 10px 12px;
+  border: 1px solid #4f7cff;
+  border-radius: 6px;
+  font-size: 1.25rem;
+}
+
+.letter-notice-clipped {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.letter-progress {
+  width: 360px;
+  height: 14px;
+  margin-top: 16px;
+  border-radius: 7px;
+  background: #2a3354;
+  overflow: hidden;
+}
+
+.letter-progress-bar {
+  height: 100%;
+  background: #4f7cff;
+  transition: width 0.12s linear;
+}
+
+.letter-ghost {
+  color: #0e1424;
+  margin: 0;
+}
