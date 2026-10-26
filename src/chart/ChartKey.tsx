@@ -35,6 +35,7 @@ export default function ChartKey({ rows, activeId, onActive }: ChartKeyProps) {
                   to={`/letter/${g.id}`}
                   className={`chart-key-link${activeId === g.id ? " is-active" : ""}`}
                   data-testid={`letter-link-${g.id}`}
+                  data-letter-id={g.id}
                   data-state={g.state}
                   aria-label={`${g.name}: ${STATE_WORDS[g.state]}`}
                   onMouseEnter={() => onActive(g.id)}

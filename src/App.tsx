@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { AgentViewProvider } from "./agent/AgentView";
+import RootHooks from "./components/RootHooks";
 import ScrollToTop from "./components/ScrollToTop";
 import ChartPage from "./chart/ChartPage";
 import StationPage from "./station/StationPage";
@@ -10,6 +11,7 @@ export default function App() {
   return (
     <AgentViewProvider>
       <ScrollToTop />
+      <RootHooks />
       <Routes>
         <Route path="/" element={<ChartPage />} />
         <Route path="/letter/:id" element={<StationPage />} />

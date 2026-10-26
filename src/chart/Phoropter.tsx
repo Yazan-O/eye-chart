@@ -10,6 +10,7 @@ export interface LensDial {
   glyph: string;
   name: string;
   on: boolean;
+  measured: boolean;
 }
 
 const PITCH = 0.46;
@@ -95,7 +96,7 @@ function Dial({
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.15, 0.15, 0.08, 40]} />
           <meshStandardMaterial
-            color={dial.on ? ACCENT : "#2b333c"}
+            color={dial.on ? (dial.measured ? ACCENT : "#3a4a5a") : "#2b333c"}
             metalness={0.55}
             roughness={0.35}
           />
@@ -139,11 +140,11 @@ export default function Phoropter({
     <group position={[0, y, 0.55]} scale={PHOROPTER_SCALE}>
       <mesh>
         <boxGeometry args={[width, 0.66, 0.3]} />
-        <meshStandardMaterial color="#1d242b" metalness={0.5} roughness={0.45} />
+        <meshStandardMaterial color="#1b2733" metalness={0.35} roughness={0.5} emissive="#0e1822" />
       </mesh>
       <mesh position={[0, -0.02, 0.155]}>
         <boxGeometry args={[width - 0.86, 0.56, 0.02]} />
-        <meshStandardMaterial color="#c9d3dc" metalness={0.2} roughness={0.6} />
+        <meshStandardMaterial color="#6bb4ee" metalness={0.3} roughness={0.45} emissive="#1d3a52" />
       </mesh>
       {[-eye, eye].map((ex) => (
         <group key={ex} position={[ex, 0, 0.16]}>
@@ -170,7 +171,7 @@ export default function Phoropter({
       ))}
       <mesh position={[0, -0.75, -0.05]}>
         <cylinderGeometry args={[0.05, 0.05, 0.84, 16]} />
-        <meshStandardMaterial color="#1d242b" metalness={0.6} roughness={0.4} />
+        <meshStandardMaterial color="#1b2733" metalness={0.5} roughness={0.4} />
       </mesh>
     </group>
   );

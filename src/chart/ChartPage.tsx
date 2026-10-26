@@ -1,10 +1,13 @@
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
 import { STATE_WORDS } from "../data/readings";
 import type { GlyphState } from "../data/types";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
+import { lensResult } from "../core/derive";
+import { introMode, markIntroShown } from "../core/intro";
+import { useStillMotion } from "../core/motion";
+import { ui, useUi } from "../core/store";
 import GlyphMark from "../components/GlyphMark";
 import SceneBoundary from "../components/SceneBoundary";
 import TopBar from "../components/TopBar";
@@ -27,14 +30,57 @@ function formatDate(iso: string): string {
   });
 }
 
+function useWideScreen(): boolean {
+  const query = "(min-width: 861px)";
+  const [wide, setWide] = useState(
+    () => typeof window.matchMedia !== "function" || window.matchMedia(query).matches,
+  );
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const list = window.matchMedia(query);
+    const on = (e: MediaQueryListEvent) => setWide(e.matches);
+    list.addEventListener("change", on);
+    return () => list.removeEventListener("change", on);
+  }, []);
+  return wide;
+}
+
+function Fallback({ onReady }: { onReady: () => void }) {
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
+  return <div className="chart-flat" data-testid="chart-flat" />;
+}
+
 export default function ChartPage() {
   const { letters } = useLetters();
   const { file, ready } = useReadings();
-  const reduced = usePrefersReducedMotion();
+  const still = useStillMotion();
+  const { view, paused } = useUi();
+  const wide = useWideScreen();
   const navigate = useNavigate();
+  const [intro] = useState(() => introMode(still));
+  const [skipAt, setSkipAt] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [params, setParams] = useSearchParams();
   const lensParam = params.get("lens") ?? "";
+
+  useEffect(() => {
+    markIntroShown();
+    if (ui.get().view === "human") ui.setReady(false);
+  }, []);
+
+  useEffect(() => {
+    if (intro !== "full" || skipAt !== null) return;
+    const skip = () => setSkipAt(performance.now());
+    const events = ["keydown", "pointerdown", "wheel", "touchstart"] as const;
+    events.forEach((e) => window.addEventListener(e, skip, { once: true, passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, skip));
+  }, [intro, skipAt]);
+
+  const markReady = useCallback(() => {
+    if (ui.get().view === "human") ui.setReady(true);
+  }, []);
 
   const withLens = useMemo(() => letters.filter((l) => l.lens), [letters]);
   const lensOn = useMemo(() => {
@@ -48,8 +94,9 @@ export default function ChartPage() {
         glyph: l.glyph,
         name: l.lens?.name ?? "",
         on: lensOn.has(l.id),
+        measured: lensResult(l.id, file?.results ?? []) !== "none",
       })),
-    [withLens, lensOn],
+    [withLens, lensOn, file],
   );
 
   const setLenses = useCallback(
@@ -74,7 +121,7 @@ export default function ChartPage() {
     [letters, file, lensOn],
   );
   const all = rows.flatMap((r) => r.glyphs);
-  const readCount = all.filter((g) => g.state === "read").length;
+  const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
   const taken = file ? formatDate(file.takenAt) : "";
 
   let summary = "Not read yet.";
@@ -82,65 +129,82 @@ export default function ChartPage() {
   else if (file && all.length > 0) {
     const lensWords =
       lensOn.size === 0 ? "" : lensOn.size === 1 ? "With 1 lens on. " : `With ${lensOn.size} lenses on. `;
-    summary = `${lensWords}Read correctly: ${readCount} of ${all.length} letters${taken ? `, measured ${taken}` : ""}.`;
+    summary = `${lensWords}Read correctly: ${count("read")} of ${all.length} letters${taken ? `, measured ${taken}` : ""}.`;
   }
-
-  const flatFallback = <div className="chart-flat" data-testid="chart-flat" />;
+  const plaque = file
+    ? `Recorded run of ${taken}${file.commit ? `, commit ${file.commit.slice(0, 7)}` : ""}`
+    : "No run recorded yet";
 
   return (
-    <div className="room" data-testid="chart-page">
+    <div className="chart" data-testid="chart-page" data-intro={intro}>
+      <section
+        className="stage"
+        aria-label="Lit eye chart"
+        data-testid="scene"
+        data-reduced={String(still)}
+      >
+        <SceneBoundary fallback={<Fallback onReady={markReady} />}>
+          <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
+            <ChartScene
+              rows={rows}
+              activeId={activeId}
+              still={still}
+              frozen={view === "robot"}
+              intro={intro}
+              skipAt={skipAt}
+              shift={wide ? 0.36 : 0}
+              onActive={setActiveId}
+              onOpen={(id) => navigate(`/letter/${id}`)}
+              onReady={markReady}
+              dials={dials}
+              onToggleLens={toggleLens}
+            />
+          </Suspense>
+        </SceneBoundary>
+      </section>
       <TopBar />
-      <main className="room-main">
-        <section className="room-head">
-          <h1 className="display" data-testid="heading">
-            Eye Chart
-          </h1>
-          <p className="lead" data-testid="tagline">
-            An eye exam for TestSprite&rsquo;s AI tester. Every letter is a live widget, built
-            twice: once working, once broken.
-          </p>
-          <p className="summary" data-testid="reading-summary">
-            {summary}
-          </p>
-        </section>
-        <section className="room-key" aria-label="Chart key">
-          <ul className="legend" aria-label="How to read the chart" data-testid="legend">
-            {LEGEND.map((s) => (
-              <li key={s}>
+      <main className="rail">
+        <h1 className="display" data-testid="heading">
+          Eye Chart.
+        </h1>
+        <p className="lead" data-testid="tagline">
+          An eye exam for TestSprite&rsquo;s AI tester. Every letter is a real widget, built once
+          working and once broken.
+        </p>
+        <dl className="tally" data-testid="tally" aria-label="Letters by result">
+          {LEGEND.map((s) => (
+            <div key={s} data-state={s} data-testid={`tally-${s}`}>
+              <dt>
                 <GlyphMark glyph="E" state={s} />
-                <span>{STATE_WORDS[s]}</span>
-              </li>
-            ))}
-          </ul>
-          <ChartKey rows={rows} activeId={activeId} onActive={setActiveId} />
-        </section>
-        <section
-          className="room-chart"
-          aria-label="Lit eye chart"
-          data-testid="scene"
-          data-reduced={String(reduced)}
+                {STATE_WORDS[s]}
+              </dt>
+              <dd>{ready && file ? count(s) : 0}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="summary" data-testid="reading-summary">
+          {summary}
+        </p>
+        <p className="plaque" data-testid="plaque">
+          {plaque}
+        </p>
+        <button
+          type="button"
+          className="quiet-toggle"
+          aria-pressed={paused}
+          onClick={() => ui.setPaused(!paused)}
+          data-testid="motion-toggle"
         >
-          <SceneBoundary fallback={flatFallback}>
-            <Suspense fallback={flatFallback}>
-              <ChartScene
-                rows={rows}
-                activeId={activeId}
-                reduced={reduced}
-                onActive={setActiveId}
-                onOpen={(id) => navigate(`/letter/${id}`)}
-                dials={dials}
-                onToggleLens={toggleLens}
-              />
-            </Suspense>
-          </SceneBoundary>
-          <LensDials
-            dials={dials}
-            activeId={activeId}
-            onToggle={toggleLens}
-            onReset={() => setLenses(new Set())}
-            onActive={setActiveId}
-          />
-        </section>
+          {paused ? "Motion paused" : "Pause motion"}
+        </button>
+        <ChartKey rows={rows} activeId={activeId} onActive={setActiveId} />
+        <LensDials
+          dials={dials}
+          activeId={activeId}
+          onToggle={toggleLens}
+          onReset={() => setLenses(new Set())}
+          onActive={setActiveId}
+        />
       </main>
     </div>
   );

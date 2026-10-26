@@ -34,6 +34,7 @@ export default function LensDials({
             <li key={d.id}>
               <button
                 type="button"
+                data-measured={String(d.measured)}
                 className={`dial${d.on ? " is-on" : ""}${activeId === d.id ? " is-active" : ""}`}
                 aria-pressed={d.on}
                 aria-label={`${d.name} lens on ${d.glyph}`}
@@ -48,7 +49,10 @@ export default function LensDials({
                 <span className="dial-text">
                   <span className="dial-glyph">{d.glyph}</span>
                   <span className="dial-name">{d.name}</span>
-                  <span className="dial-state">{d.on ? "On" : "Off"}</span>
+                  <span className="dial-state">
+                    {d.on ? "On" : "Off"}
+                    {d.measured ? "" : ", not measured"}
+                  </span>
                 </span>
               </button>
             </li>

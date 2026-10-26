@@ -6,8 +6,8 @@ import { resetReadingsCache } from "./data/readings";
 import type { Letter, Variant } from "./data/types";
 
 vi.mock("./chart/ChartScene", () => ({
-  default: ({ reduced }: { reduced: boolean }) => (
-    <div data-testid="scene-mock" data-reduced={String(reduced)} />
+  default: ({ still }: { still: boolean }) => (
+    <div data-testid="scene-mock" data-reduced={String(still)} />
   ),
 }));
 

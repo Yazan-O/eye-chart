@@ -12,6 +12,17 @@ export interface AgentNode {
   role: string;
   name: string;
   box: Box;
+  letterId?: string;
+  state?: string;
+}
+
+function letterOf(el: Element): { letterId?: string; state?: string } {
+  const host = el.closest("[data-letter-id]");
+  if (!host) return {};
+  return {
+    letterId: host.getAttribute("data-letter-id") ?? undefined,
+    state: host.getAttribute("data-state") ?? undefined,
+  };
 }
 
 const INPUT_ROLES: Record<string, string> = {
@@ -228,7 +239,7 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
     const role = roleOf(el);
     if (role && CONTROL_ROLES.has(role)) {
       const box = place(el);
-      if (box) out.push({ kind: "control", role, name: nameOf(el), box });
+      if (box) out.push({ kind: "control", role, name: nameOf(el), box, ...letterOf(el) });
       if (role !== "group" && role !== "dialog" && role !== "listbox" && role !== "menu" && role !== "tablist") {
         el.querySelectorAll("canvas").forEach((c) => visit(c));
         return;
@@ -237,7 +248,7 @@ export function readPage(root: Element, options: ReadOptions = {}): AgentNode[] 
       const text = ownText(el);
       if (text) {
         const box = place(el);
-        if (box) out.push({ kind: "text", role: "text", name: text, box });
+        if (box) out.push({ kind: "text", role: "text", name: text, box, ...letterOf(el) });
       }
     }
 
