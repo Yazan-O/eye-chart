@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { LensDial } from "./Phoropter";
 
 export default function LensDials({
@@ -53,12 +54,29 @@ export default function LensDials({
                     {d.on ? "On" : "Off"}
                     {d.measured ? "" : ", not measured"}
                   </span>
+                  <span className="dial-reading" data-testid={`lens-dial-reading-${d.id}`}>
+                    {d.on ? `${d.without} → ${d.with}` : d.without}
+                  </span>
                 </span>
               </button>
+              {d.on && (
+                <p className="dial-detail" data-testid={`lens-dial-detail-${d.id}`}>
+                  {d.summary}{" "}
+                  <Link to={`/letter/${d.id}`} data-testid={`lens-dial-open-${d.id}`}>
+                    See the code change on the {d.glyph} station
+                  </Link>
+                </p>
+              )}
             </li>
           ))}
         </ul>
       )}
+      <p className="dials-live" role="status" aria-live="polite" data-testid="lens-live">
+        {dials
+          .filter((d) => d.on)
+          .map((d) => `${d.name} on ${d.glyph}: ${d.without} becomes ${d.with}.`)
+          .join(" ")}
+      </p>
     </section>
   );
 }
