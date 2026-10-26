@@ -1,6 +1,6 @@
 {
-  "takenAt": "2026-10-26T14:23:50.461Z",
-  "commit": "ca8b520",
+  "takenAt": "2026-10-26T15:21:20.932Z",
+  "commit": "03c22f4",
   "engine": "TestSprite cloud agent, CLI 0.15.0",
   "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
   "results": [
@@ -45,6 +45,36 @@
       "screenshot": "readings/shots/4c8a427e-fc7a-4410-a79b-a6a404515a35.png"
     },
     {
+      "letterId": "toast",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "2fb86333-b784-4fa0-95f2-9c36dbc5ea4b",
+      "runId": "8c5d9bb5-c918-4452-8079-53afb24ab826",
+      "reason": "A “Saved” notice appears after clicking Save.",
+      "screenshot": "readings/shots/8c5d9bb5-c918-4452-8079-53afb24ab826.png"
+    },
+    {
+      "letterId": "optimistic",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "c67d93d6-1d43-4388-98d0-e649b1150952",
+      "runId": "ee038291-0a06-469e-a118-8f2e8d29a806",
+      "reason": "The page displays a likes count after Like is clicked.",
+      "screenshot": "readings/shots/ee038291-0a06-469e-a118-8f2e8d29a806.png"
+    },
+    {
+      "letterId": "optimistic",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "0341dfc6-9a9e-4837-bf08-2c30ed619862",
+      "runId": "262c0aa4-27c5-456e-8da1-fd3d5fc5e937",
+      "reason": "The most likely hosting-side issue is that the like increment endpoint is returning stale data or the client is not receiving/applying the updated state after the action. This can happen if the API response is cached, the database write is failing silently, the server-side increment is never committed, or the frontend is keeping an old local state snapshot and never revalidating. The fact that no error is shown suggests the click handler may succeed superficially, but the actual count update is not propagated to the displayed UI within the expected time. Underlying error: TEST FAILURE\n\nThe Like count did not increase to 6 after the button was clicked and the page was checked after three seconds.\n\nObservations:\n- The page displayed “Likes: 5” after the wait.\n- No error message was visible.",
+      "screenshot": "readings/shots/262c0aa4-27c5-456e-8da1-fd3d5fc5e937.png"
+    },
+    {
       "letterId": "hover-menu",
       "variant": "works",
       "truth": "pass",
@@ -65,24 +95,74 @@
       "screenshot": "readings/shots/b601adca-5b22-45a7-9f64-711aedde75af.png"
     },
     {
-      "letterId": "shadow-form",
+      "letterId": "hover-menu",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "3c5ba094-dba4-4d8a-8b22-3aa1d1b8dd09",
+      "runId": "40ea1b80-c645-437f-bb37-a54f58f3b38c",
+      "reason": "The page shows “Current page: Settings.”",
+      "screenshot": "readings/shots/40ea1b80-c645-437f-bb37-a54f58f3b38c.png"
+    },
+    {
+      "letterId": "custom-select",
       "variant": "works",
       "truth": "pass",
       "verdict": "passed",
-      "testId": "6934e9da-0140-4252-be7f-0d2abad7f081",
-      "runId": "0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b",
-      "reason": "The page displays “Hello, Ada!” after the greeting is submitted.",
-      "screenshot": "readings/shots/0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b.png"
+      "testId": "6ba21e2b-0041-44e3-804c-148ed0d853b4",
+      "runId": "f70940c2-9525-41a4-9015-081bca51f227",
+      "reason": "The selected size is Large, and its portion line reads “Serves 4.”",
+      "screenshot": "readings/shots/f70940c2-9525-41a4-9015-081bca51f227.png"
     },
     {
-      "letterId": "shadow-form",
+      "letterId": "custom-select",
       "variant": "broken",
       "truth": "fail",
       "verdict": "failed",
-      "testId": "33a4ac62-eb9c-457d-87e9-51cd41a522eb",
-      "runId": "883c0708-3713-401d-ad9b-046bf3a0996a",
-      "reason": "The hosted page is likely using a broken or stale frontend build where the name input value is not being captured into state before generating the greeting, so the click handler falls back to an empty string. Another possible hosting-side issue is serving an outdated/cached bundle or misconfigured hydration/state initialization, causing the UI to display \"Hello, !\" even though the input contains \"Ada\". Underlying error: TEST FAILURE\n\nThe greeting did not include the entered name. The page displayed “Hello, !” instead of “Hello, Ada!”.\n\nObservations:\n- The “Your name” field contained “Ada”\n- After clicking “Greet,” the page showed “Hello, !”",
-      "screenshot": "readings/shots/883c0708-3713-401d-ad9b-046bf3a0996a.png"
+      "testId": "c47b6d02-feab-4eaa-b6fc-56d41b4d05aa",
+      "runId": "8c453117-60a3-46e0-966a-4a277251fdc7",
+      "reason": "The most likely cause is that the size picker updates only the visible size label but not the dependent servings value, suggesting a broken state linkage or mapping on the host app. The serving text is likely coming from a separate field that remains at its default ('Serves 1') because the Large option is missing the correct servings metadata, the change handler doesn't update that field, or the component is not re-rendering after the size change due to a state management or hydration bug. Underlying error: TEST FAILURE\n\nSelecting Large changed the size label, but the portion line remained “Serves 1” instead of updating to “Serves 4.”\n\nObservations:\n- The picker displayed “Size: Large” after selection\n- The portion line displayed “Serves 1”",
+      "screenshot": "readings/shots/8c453117-60a3-46e0-966a-4a277251fdc7.png"
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "231b64ab-8c86-4466-a0ef-fb43e53a20b5",
+      "runId": "490e041a-2a51-49b8-93fc-24c23001342c",
+      "reason": "The page shows “Chosen: Rochester” after selecting Rochester.",
+      "screenshot": "readings/shots/490e041a-2a51-49b8-93fc-24c23001342c.png"
+    },
+    {
+      "letterId": "autocomplete",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "38989869-4caa-4224-bd55-a23cb4709e47",
+      "runId": "22a1826e-af2b-492d-a44a-00662a76a8b6",
+      "reason": "After selecting Rochester, the page displays “Chosen: Rochester.”",
+      "screenshot": "readings/shots/22a1826e-af2b-492d-a44a-00662a76a8b6.png"
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "8b952300-4392-4af3-a207-fa0cbc668fe8",
+      "runId": "5cd27be6-4df9-4a1d-8133-01929745e452",
+      "reason": "The Consent scrim flow shows Step 2 of 3.",
+      "screenshot": "readings/shots/5cd27be6-4df9-4a1d-8133-01929745e452.png"
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "c2fa065b-4811-439f-a798-428a0c0d6abe",
+      "runId": "e8e39dad-c128-45a9-a3b4-bd475bd46ff3",
+      "reason": "The page shows “Step 2 of 3.”",
+      "screenshot": "readings/shots/e8e39dad-c128-45a9-a3b4-bd475bd46ff3.png"
     },
     {
       "letterId": "animated-total",
@@ -125,6 +205,56 @@
       "screenshot": "readings/shots/f3430e3d-22b4-4c6c-8856-c07b51334488.png"
     },
     {
+      "letterId": "virtual-list",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "fcd4e1e2-3bc4-43b4-b91d-f2f392c43e9e",
+      "runId": "750faeb6-c336-4f8d-9223-1fb1c06f5f6d",
+      "reason": "The most likely hosting-side issue is that the page’s item selection logic is not persisting or propagating the selection state for Item 7777. This can happen if the click event is attached to the wrong element, the handler updates a local variable instead of reactive state, the item ID comparison fails due to a type mismatch, or a hydration/runtime issue prevents the client-side state update from taking effect. As a result, the UI remains on \"Selected: none\" and the item is not marked selected. Underlying error: TEST FAILURE\n\nSelecting Item 7777 did not update the page’s selected status.\n\nObservations:\n- The page shows “Selected: none” after the click.\n- Item 7777 is not marked as selected.",
+      "screenshot": "readings/shots/750faeb6-c336-4f8d-9223-1fb1c06f5f6d.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6934e9da-0140-4252-be7f-0d2abad7f081",
+      "runId": "0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b",
+      "reason": "The page displays “Hello, Ada!” after the greeting is submitted.",
+      "screenshot": "readings/shots/0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "33a4ac62-eb9c-457d-87e9-51cd41a522eb",
+      "runId": "883c0708-3713-401d-ad9b-046bf3a0996a",
+      "reason": "The hosted page is likely using a broken or stale frontend build where the name input value is not being captured into state before generating the greeting, so the click handler falls back to an empty string. Another possible hosting-side issue is serving an outdated/cached bundle or misconfigured hydration/state initialization, causing the UI to display \"Hello, !\" even though the input contains \"Ada\". Underlying error: TEST FAILURE\n\nThe greeting did not include the entered name. The page displayed “Hello, !” instead of “Hello, Ada!”.\n\nObservations:\n- The “Your name” field contained “Ada”\n- After clicking “Greet,” the page showed “Hello, !”",
+      "screenshot": "readings/shots/883c0708-3713-401d-ad9b-046bf3a0996a.png"
+    },
+    {
+      "letterId": "label-mismatch",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "02e89042-b18a-405b-abb6-5f9908f4e7e6",
+      "runId": "cb83a813-129e-48c5-b218-53433a7670ab",
+      "reason": "The page confirms the save completed.",
+      "screenshot": "readings/shots/cb83a813-129e-48c5-b218-53433a7670ab.png"
+    },
+    {
+      "letterId": "label-mismatch",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "38dc6b7d-b99c-4d24-862f-8448be55a799",
+      "runId": "7d324c44-dfab-4bb4-b9cb-524e2d025356",
+      "reason": "The host is likely serving an incorrect or stale frontend build, or the Save button is bound to the wrong state transition on the deployed app. As a result, clicking Save triggers the discard/reset code path or fails to persist the draft, so the UI falls back to \"Discarded\" rather than showing \"Saved\". Underlying error: TEST FAILURE\n\nSaving did not show the required “Saved” status. The page displayed “Discarded” after the Save control was clicked.\n\nObservations:\n- The draft value was “Agenda: review the garden plan.”\n- The page status shown after the click was “Discarded.”",
+      "screenshot": "readings/shots/7d324c44-dfab-4bb4-b9cb-524e2d025356.png"
+    },
+    {
       "letterId": "canvas-slider",
       "variant": "works",
       "truth": "pass",
@@ -145,6 +275,16 @@
       "screenshot": "readings/shots/833f6eb5-abb4-45b4-9d6c-6cab08480b22.png"
     },
     {
+      "letterId": "canvas-slider",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "2277e8f2-100e-4881-ae83-411528084591",
+      "runId": "a835a766-d0d8-4529-8c8a-d23551a3fcc0",
+      "reason": "The most likely hosting-side issue is a mismatch between the visual slider position and the internal value calculation on the deployed page. This can happen when the canvas coordinate math is wrong (for example, using the canvas width instead of the actual rendered track length, not accounting for scaling/DPR, or miscomputing pointer offsets), so pointer automation moves the thumb but the app converts the position to an incorrect value. Another possibility is that the page relies on a custom canvas control without standard form semantics, causing the test harness’s simulated drag to not fully register or to register at the wrong location, leaving the readout stuck at 58 instead of updating to 70. Underlying error: TEST FAILURE\n\nThe slider was not adjusted to the requested mark. The readout remained at Value: 58 instead of Value: 70.\n\nObservations:\n- The Canvas slider page showed a 0–100 scale.\n- The visible readout showed “Value: 58.”",
+      "screenshot": "readings/shots/a835a766-d0d8-4529-8c8a-d23551a3fcc0.png"
+    },
+    {
       "letterId": "webgl-knob",
       "variant": "works",
       "truth": "pass",
@@ -163,6 +303,76 @@
       "runId": "6808f90d-5ab3-40ec-bb23-ba15220162a5",
       "reason": "The knob interaction is likely implemented in a way that the hosting/browser environment cannot actually drag it—commonly due to using unsupported drag-and-drop semantics, touch-only handlers, or custom event handling that requires a real pointer device. As a result, the click is registered but the drag never fires, leaving the state at 'Volume: 0' instead of updating to 'Volume: 7'. Underlying error: TEST BLOCKED\n\nThe knob drag test could not be completed — the available browser interaction does not support dragging. The knob feature is present, but the readout remained at “Volume: 0,” so “Volume: 7” could not be verified.\n\nObservations:\n- The page instructs users to press the knob and drag upward.\n- The visible readout showed “Volume: 0” after the page click.",
       "screenshot": "readings/shots/6808f90d-5ab3-40ec-bb23-ba15220162a5.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "315a6e8b-5b8a-427b-84a4-5de705ebb5bf",
+      "runId": "5ee31e9c-f748-47a9-8e16-55c2d675f5c6",
+      "reason": "The readout shows “Volume: 7.”",
+      "screenshot": "readings/shots/5ee31e9c-f748-47a9-8e16-55c2d675f5c6.png"
+    },
+    {
+      "letterId": "hidden-note",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "a03a8d58-b735-4708-aa71-9cb901963346",
+      "runId": "7c539280-535e-43bf-8858-f8416ddc1ea9",
+      "reason": "The page confirms the project was created as Garden without displaying an error.",
+      "screenshot": "readings/shots/7c539280-535e-43bf-8858-f8416ddc1ea9.png"
+    },
+    {
+      "letterId": "hidden-note",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "46fcb36e-d763-4973-a7f9-c523572b5cea",
+      "runId": "80efec42-af51-47b4-9684-277b7e1b094c",
+      "reason": "The create action is likely failing due to a server-side error in the hosted service, such as a broken API route, missing/incorrect environment configuration, database connectivity issue, or an unhandled exception during project creation. Because the UI shows a generic \"Something went wrong. Try again.\" message, the frontend is probably receiving a non-OK response or exception from the host rather than completing the creation flow successfully. Underlying error: TEST FAILURE\n\nCreating the project did not succeed — the page displayed an error instead of the requested confirmation.\n\nObservations:\n- The Project name field contained “Garden”\n- After clicking “Create,” the page showed “Something went wrong. Try again.”\n- “Created: Garden” was not shown",
+      "screenshot": "readings/shots/80efec42-af51-47b4-9684-277b7e1b094c.png"
+    },
+    {
+      "letterId": "comment-note",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "be6efbc5-7d04-43e6-8a7c-709b653d5ff8",
+      "runId": "a3f401a6-b80b-43ca-960f-ba2a2fac8c93",
+      "reason": "The Tasks list contains “Water plants”.",
+      "screenshot": "readings/shots/a3f401a6-b80b-43ca-960f-ba2a2fac8c93.png"
+    },
+    {
+      "letterId": "comment-note",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "9c8e2bb2-93a2-4b5a-b6dc-65532973cf1f",
+      "runId": "0fd91c49-a9b0-47dd-8cad-4fa5a27b70d0",
+      "reason": "The hosted page likely has a frontend implementation issue where clicking Add does not correctly read the input value or update the tasks state. Since the field is empty after clicking Add and the list stays on “No tasks yet,” the add-task handler may be missing, miswired, or failing in production due to a form-submit/preventDefault bug, an incorrect state binding, or an outdated/deployed build that does not include the task-adding logic. Underlying error: TEST FAILURE\n\nAdding “Water plants” did not place it in the Tasks list.\n\nObservations:\n- The Task field was empty after clicking “Add.”\n- The Tasks section still displayed “No tasks yet.”",
+      "screenshot": "readings/shots/0fd91c49-a9b0-47dd-8cad-4fa5a27b70d0.png"
+    },
+    {
+      "letterId": "leftover-error",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "24aefbc1-5b12-4c27-97f2-83a25757144d",
+      "runId": "0cd38487-6a0a-4f5e-addd-a7c28ba3c4d9",
+      "reason": "The page shows “Last saved: just now” after saving.",
+      "screenshot": "readings/shots/0cd38487-6a0a-4f5e-addd-a7c28ba3c4d9.png"
+    },
+    {
+      "letterId": "leftover-error",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "ea0c7480-09fc-4791-b261-aa2bb3dc3a27",
+      "runId": "290604d9-6406-43f3-97a8-e18466522295",
+      "reason": "The hosted app likely has a broken save integration: clicking Save does not produce a successful persisted update, so the UI never receives data to replace \"Last saved: never\" with \"just now.\" Because no error message appears, the failure is probably happening silently due to a missing/incorrect API configuration, an unreachable backend on the host, or a client-side success handler that is never triggered after the save request. Underlying error: TEST FAILURE\n\nSaving did not update the page to show “Last saved: just now.” No error message was visible.\n\nObservations:\n- The page still showed “Last saved: never” after Save was clicked.\n- No error message was visible.",
+      "screenshot": "readings/shots/290604d9-6406-43f3-97a8-e18466522295.png"
     }
   ]
 }
