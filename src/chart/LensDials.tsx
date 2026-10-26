@@ -62,8 +62,8 @@ export default function LensDials({
               {d.on && (
                 <p className="dial-detail" data-testid={`lens-dial-detail-${d.id}`}>
                   {d.summary}{" "}
-                  <Link to={`/letter/${d.id}`} data-testid={`lens-dial-open-${d.id}`}>
-                    See the code change on the {d.glyph} station
+                  <Link to={`/letter/${d.id}?pane=lens&focus=lens`} data-testid={`lens-dial-open-${d.id}`}>
+                    See the code change: letter {d.glyph}, {d.letter}
                   </Link>
                 </p>
               )}

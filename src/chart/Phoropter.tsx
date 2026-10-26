@@ -14,6 +14,7 @@ export interface LensDial {
   without: string;
   with: string;
   summary: string;
+  letter: string;
 }
 
 const PITCH = 0.46;

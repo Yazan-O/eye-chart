@@ -99,6 +99,7 @@ export default function ChartPage() {
         without: STATE_WORDS[letterState(l, file?.results ?? [], false)],
         with: STATE_WORDS[letterState(l, file?.results ?? [], true)],
         summary: l.lens?.summary ?? "",
+        letter: l.name,
       })),
     [withLens, lensOn, file],
   );

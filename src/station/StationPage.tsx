@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { buildRows, fractionOfLetter } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
@@ -87,6 +87,11 @@ export default function StationPage() {
   const order = rows.flatMap((r) => r.glyphs.map((g) => g.id));
   const still = useStillMotion();
   const [params, setParams] = useSearchParams();
+  const lensRef = useRef<HTMLElement>(null);
+  const focusLens = params.get("focus") === "lens";
+  useEffect(() => {
+    if (ready && focusLens) lensRef.current?.scrollIntoView({ block: "start" });
+  }, [ready, focusLens]);
 
   if (!ready) return null;
   const letter = findLetter(letters, id);
@@ -188,11 +193,11 @@ export default function StationPage() {
           )}
         </div>
 
-        <section className="lens" data-testid="station-lens">
+        <section className="lens" data-testid="station-lens" ref={lensRef}>
           {letter.lens ? (
             <>
               <h2 className="lens-title" data-testid="lens-name">
-                Lens: {letter.lens.name}
+                Lens on {letter.glyph}: {letter.lens.name}
               </h2>
               <p className="lens-summary" data-testid="lens-summary">
                 {letter.lens.summary}
