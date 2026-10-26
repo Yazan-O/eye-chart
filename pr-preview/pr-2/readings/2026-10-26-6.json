@@ -1,0 +1,48 @@
+{
+  "takenAt": "2026-10-26T16:48:33.627Z",
+  "commit": "431ef21",
+  "engine": "TestSprite cloud agent, CLI 0.15.0",
+  "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
+  "results": [
+    {
+      "letterId": "autocomplete",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "f7e767d6-702b-42f5-944d-53c2c9e281eb",
+      "runId": "7d4a9156-755e-475e-a966-d137f5e1f79d",
+      "reason": "The page shows “Chosen: Rochester” after selecting the suggestion.",
+      "screenshot": "readings/shots/7d4a9156-755e-475e-a966-d137f5e1f79d.png"
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "passed",
+      "testId": "bfea7a82-be5a-44b7-8a27-844e0ae275b2",
+      "runId": "7b15789a-d424-4d67-9b3a-103a60e02d2f",
+      "reason": "The page displays “Step 2 of 3.”",
+      "screenshot": "readings/shots/7b15789a-d424-4d67-9b3a-103a60e02d2f.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "64d62ffa-de58-4bcc-b649-797a7badae05",
+      "runId": "ea915309-8d52-48b6-99f0-8992c1faef98",
+      "reason": "The slider control itself is updating to 70, but the visible text is likely driven by a separate state variable or DOM node that is not being updated when the slider changes. This usually indicates a broken binding between the input handler and the readout component, a stale cached bundle, or code that reads the initial value only once and never listens for subsequent changes. Underlying error: TEST FAILURE\n\nThe slider handle moved to 70, but the readout did not update to “Value: 70.” It shows “Value: 30.”\n\nObservations:\n- The round handle is positioned at the 70 mark.\n- The slider control reports a value of 70.\n- The visible readout says “Value: 30.”",
+      "screenshot": "readings/shots/ea915309-8d52-48b6-99f0-8992c1faef98.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "lens-broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "541f8d34-87eb-4240-b06a-3f2ad458639b",
+      "runId": "29b08c1f-194c-4168-998a-1a9b7e617cde",
+      "reason": "The volume slider/input is changing to 7, but the displayed text remains at the initial default of 0, which suggests the UI state is not being updated or re-rendered after the control event. This can happen if the event handler is missing, attached to the wrong event, uses the wrong variable, or the hosting service is delivering an outdated/incorrectly built bundle where the binding between the control and the readout is broken. Underlying error: TEST FAILURE\n\nThe volume readout did not update to the required value.\n\nObservations:\n- The control value is 7.\n- The page readout still shows “Volume: 0.”",
+      "screenshot": "readings/shots/29b08c1f-194c-4168-998a-1a9b7e617cde.png"
+    }
+  ]
+}
