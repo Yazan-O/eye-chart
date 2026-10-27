@@ -10,12 +10,16 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-5b6878"></a>
 </p>
 
+<p align="center"><a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/c85b8a73-aa97-4470-84b3-053eb1d1a94a">TestSprite report for the PR 8 fix run: 31 of 31 tests passed</a></p>
+
 <p align="center">
   <a href="https://yazan-o.github.io/eye-chart/"><img src="docs/media/eye-chart-tour.gif" width="800" alt="The live chart: 24 letters in 7 rows, misread letters slashed, blocked letters hatched. The sensor view shows what an agent can find on the page, then the Toast lens turns on and the chart recounts."></a>
   <br><sub>Recorded with Playwright from the live site on 2026-10-26: landing, the one-time lens demo, the sensor view, and the Toast lens dial.</sub>
 </p>
 
-An eye chart has rows of letters, large and easy at the top, smaller and harder below. Eye Chart uses **24 real web widgets as the letters**. Each letter is built twice: a **working twin** that does what it says, and a **broken twin** that looks fine and is visibly broken to a person. TestSprite's cloud agent runs the same test plan on both. Because we built the bug, the right verdict is known before the run. A reading is right when the verdict matches that built-in truth.
+**Try it in 60 seconds:** open the [live chart](https://yazan-o.github.io/eye-chart/), click a slashed letter (Toast is the `F` in row 2), press **Works** and **Broken**, use both twins with your own hands, then press **Lens**.
+
+An eye chart has rows of letters, easy at the top and harder below. Eye Chart uses **24 real web widgets as the letters**, each built twice: a **working twin** and a visibly broken **broken twin**, so the right verdict is known before TestSprite's cloud agent runs the same test plan on both.
 
 When TestSprite misreads a letter, we give it a **lens**: a small change to the page's hidden structure that leaves the widget's behaviour alone. Then we measure again, on the working twin with the lens and on the broken twin with the lens.
 
@@ -26,11 +30,9 @@ When TestSprite misreads a letter, we give it a **lens**: a small change to the 
 | Hidden-text row (row 7) read right | **10 of 10 twins** | The agent ignored every planted "this works" note |
 | Lenses that fix their letter | **5 of 7** | 2 do not, and we show both |
 | Site suite on every PR | **31 of 31**, required check | Went red 3 times on PR 1 before it went green |
-| Planted bug in PR 8 | **Blocked by 2 Playwright tests** | TestSprite's suite passed the buggy commit 31 of 31, which is logged as a finding |
+| Planted bug in PR 8 | **Blocked by the required checks** | 2 Playwright tests caught it; it was fixed and merged |
 
 Every number above is computed from [`public/readings/latest.json`](public/readings/latest.json) (TestSprite cloud agent, CLI 0.15.0, 62 readings, 2026-10-26) or read from the PR check statuses linked below.
-
-**Try it in 60 seconds:** open the [live chart](https://yazan-o.github.io/eye-chart/), click a slashed letter (Toast is the `F` in row 2), press **Works** and **Broken**, use both twins with your own hands, then press **Lens**.
 
 ---
 
@@ -73,7 +75,8 @@ flowchart LR
 
 <sub>Generated from `latest.json` and `src/letters/registry.ts` by a script; no number in it was typed by hand.</sub>
 
-### All 24 letters, row by row
+<details>
+<summary><b>All 24 letters, row by row</b></summary>
 
 Row 1 is the easiest for an AI tester. Each row down adds a harder way to hide the truth: timing, hover-only controls, invisible layers, closed shadow roots, pixels on a canvas, planted hidden text.
 
@@ -106,6 +109,8 @@ Row 1 is the easiest for an AI tester. Each row down adds a harder way to hide t
 
 Traps are quoted from [`src/letters/registry.ts`](src/letters/registry.ts). Verdicts are from [`public/readings/latest.json`](public/readings/latest.json).
 
+</details>
+
 ### The seven lenses
 
 | Letter | Lens | Lens twin (should pass) | Lens-broken twin (should fail) | Fixes the letter? |
@@ -132,7 +137,7 @@ Every lens aimed at a timing, hover, long-list or drawn-pixel problem fixed its 
 
 > The "Saved" confirmation notice was not observed after clicking Save.
 
-It also noted that "Saved" appeared in the page only inside the instruction text. By the time it looked, the notice was gone.
+Its stated reason, from the same run: "clicking Save leaves the page unchanged and no transient 'Saved' confirmation is displayed, even though the UI copy mentions it" (quotation marks inside the quote changed from double to single).
 
 **The lens.** One added line, quoted from the registry. After the notice fades, the status region keeps "Saved" as text that is hidden from the eye but present in the page. What a person sees does not change.
 
@@ -190,7 +195,7 @@ Every pull request runs three kinds of check against its own preview deploy. Two
 flowchart TD
   PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, 109 Playwright tests, build"]
   PR --> DEP["Deploy job, pages.yml<br/>preview at /eye-chart/pr-preview/pr-N/<br/>finishes only when the preview serves this build"]
-  DEP --> APP["TestSprite GitHub App<br/>21-test site suite on the preview"]
+  DEP --> APP["TestSprite GitHub App<br/>31-test site suite on the preview"]
   PR --> RX["Re-examination job, calibration.yml<br/>waits for the preview, then the TestSprite CLI<br/>re-reads 5 headline twins"]
   DEP -. "preview URL" .-> RX
   RX --> CM["PR comment: truth vs verdict table<br/>updated in place on every push"]
@@ -203,34 +208,44 @@ flowchart TD
 | Suite | What it tests | What it asserts | When | Holds the merge? |
 |---|---|---|---|---|
 | **Site suite**: TestSprite project "Eye Chart site", 31 tests, planned from [`docs/PRD.md`](docs/PRD.md) | The Eye Chart site itself | Chart, letter stations, lens machine, sensor view, routes, twin pages and phone width. The PRD it is planned from states checkable facts, for example: the four tally counts add up to 24, the summary line equals the read-correctly tally, and each lens letter's link carries `data-lens="on"` or `"off"`. | Every PR, through the TestSprite GitHub App, on that PR's preview | **Yes.** `main` requires the "TestSprite V3" check. |
-| **Re-examination**: TestSprite calibration project, CLI 0.15.0 | TestSprite itself, on 5 headline twins: `toast/works`, `hover-menu/works`, `hover-menu/lens`, `autocomplete/broken`, `consent-scrim/broken` | Each verdict against the twin's built-in truth, posted as a table on the PR | Every same-repo PR while at least 8 credits remain; below that it posts a "skipped" note and starts no run | **No, by design.** A misread is a finding about the tester, not a bug in the site. |
+| **Re-examination**: TestSprite calibration project, CLI 0.15.0 | TestSprite itself, on 5 headline twins: `toast/works`, `hover-menu/works`, `hover-menu/lens`, `autocomplete/broken`, `consent-scrim/broken` | Each verdict against the twin's built-in truth, posted as a table on the PR | Same-repo PRs, while at least 8 credits remain; below that it posts a "skipped" note and starts no run | **No, by design.** A misread is a finding about the tester, not a bug in the site. |
 | **Unit tests**: Vitest, 13 files, 109 tests | Data rules and widgets | Readings parsing and scoring, lens logic, chart rows and layout, the sensor view's accessibility scan, routing, and the twins of each letter | Every PR and every push to `main` | **Yes.** `main` requires "verify". |
 | **End-to-end tests**: Playwright, 109 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
 
 <details>
-<summary><b>The first 21 site-suite tests</b> (names from TestSprite's comment on PR 1; the suite is now 31)</summary>
+<summary><b>The 31 site-suite tests</b> (names from <code>calibration/site-suite/</code>)</summary>
 
-1. Chart landing page shows results overview
-2. Open a letter station from the chart
-3. Move between letters from a letter station
-4. Review the truth and verdicts for a letter
-5. Open a working variant alone from a letter station
-6. Open a broken variant alone from a letter station
-7. Reach count three on the working counter
-8. Compare working and broken counter pages
-9. Load lens machine with all dials off
-10. Toggle a lens on and off
-11. Enable multiple lenses independently
-12. View lens details on a letter station with a lens
-13. Enable sensor view mode
-14. Exit sensor view mode
-15. Close sensor view with Escape
-16. About panel opens and closes
-17. Motion can be paused and resumed
-18. Use the chart route hash directly
-19. Open a missing hash route
-20. Return to the chart from not found
-21. Open the eye chart on a phone-sized viewport
+1. About panel opens and closes
+2. Autocomplete station shows the misread broken twin
+3. Chart landing page shows results overview
+4. Close sensor view with Escape
+5. Compare working and broken counter pages
+6. Enable multiple lenses independently
+7. Enable sensor view mode
+8. Exit sensor view mode
+9. Hover menu lens dial turns Blocked into Read correctly and back
+10. Lens-broken twin route renders the widget alone
+11. Load lens machine with all dials off
+12. Motion can be paused and resumed
+13. Move between letters from a letter station
+14. Not-found page links back to a working chart
+15. Open a broken variant alone from a letter station
+16. Open a letter station from the chart
+17. Open a missing hash route
+18. Open a working variant alone from a letter station
+19. Open the eye chart on a phone-sized viewport
+20. Reach count three on the working counter
+21. Reading summary repeats the read count
+22. Return to the chart from not found
+23. Review the truth and verdicts for a letter
+24. Sensor view counts parts and Escape leaves it
+25. Tally counts add to 24 and match the About totals
+26. Toast lens dial turns Misread into Read correctly and back
+27. Toast station lens pane reads Fixed with lens
+28. Toggle a lens on and off
+29. Use the chart route hash directly
+30. View lens details on a letter station with a lens
+31. Virtual list lens dial turns Misread into Read correctly and back
 
 </details>
 
