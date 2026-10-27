@@ -156,7 +156,7 @@ export default function About({ children }: { children?: ReactNode }) {
               tested again. Turn a dial to see the chart with that lens on. A dial with no
               recorded reading says &ldquo;not measured&rdquo; and changes nothing.
             </p>
-            <h3>TestSprite view</h3>
+            <h3>TestSprite vision</h3>
             <p>
               A camera that only sees change, built from the page&rsquo;s own structure. It is
               one half of what an agent reads (it also reads screenshots), and an illustration,
@@ -173,7 +173,7 @@ export default function About({ children }: { children?: ReactNode }) {
               <GithubLink />
             </p>
             <p className="about-credit">
-              The mark on the TestSprite view button is TestSprite&rsquo;s own logo, from
+              The mark on the TestSprite vision button is TestSprite&rsquo;s own logo, from
               testsprite.com, used here to name the agent under test.
             </p>
             <p>

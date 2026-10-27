@@ -173,6 +173,10 @@ button {
   gap: 1px;
 }
 
+.agent-toggle-word::before {
+  content: attr(data-word);
+}
+
 .agent-toggle .sprite-mark {
   width: 30px;
   height: 30px;
@@ -330,6 +334,34 @@ button {
   0%, 15%, 85%, 100% { transform: rotate(0deg); }
   25%, 45% { transform: rotate(-4deg); }
   55%, 75% { transform: rotate(4deg); }
+}
+
+.robot-mark {
+  overflow: visible;
+}
+
+.robot-arm {
+  opacity: 0;
+  animation: robot-arm 12s ease-in-out infinite;
+}
+
+.robot-glasses {
+  animation: robot-glasses 12s ease-in-out infinite;
+}
+
+@keyframes robot-arm {
+  0%, 52% { opacity: 0; transform: translate(70px, 0); }
+  58% { opacity: 1; transform: translate(34px, 0); }
+  64%, 68% { opacity: 1; transform: translate(0, 0); }
+  76%, 84% { opacity: 1; transform: translate(44px, -4px); }
+  90%, 92% { opacity: 1; transform: translate(0, 0); }
+  97% { opacity: 1; transform: translate(34px, 0); }
+  100% { opacity: 0; transform: translate(70px, 0); }
+}
+
+@keyframes robot-glasses {
+  0%, 68%, 90%, 100% { transform: translate(0, 0); }
+  76%, 84% { transform: translate(44px, -4px); }
 }
 
 @keyframes robot-blink {
