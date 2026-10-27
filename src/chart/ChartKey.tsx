@@ -63,7 +63,7 @@ function ChartKey({ rows, boxes, activeId, onActive, onOpen }: ChartKeyProps) {
                     onFocus={() => onActive(g.id)}
                     onBlur={() => onActive(null)}
                     onClick={(e) => {
-                      if (!placed || !plainClick(e)) return;
+                      if (!plainClick(e)) return;
                       e.preventDefault();
                       onOpen(g.id);
                     }}

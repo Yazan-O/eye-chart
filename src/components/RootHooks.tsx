@@ -17,7 +17,8 @@ export default function RootHooks() {
     root.dataset.view = view;
     root.dataset.ready = String(ready);
     root.dataset.motion = still ? "paused" : "on";
-  }, [view, ready, still]);
+    root.dataset.page = pathname === "/" ? "chart" : "other";
+  }, [view, ready, still, pathname]);
 
   return null;
 }

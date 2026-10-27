@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { buildRows, fractionOfLetter } from "../data/chart";
+import { Link, useSearchParams } from "react-router-dom";
+import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
 import { letterState, STATE_WORDS, twinTally } from "../data/readings";
 import type { GlyphState } from "../data/types";
@@ -8,19 +8,26 @@ import { lensResult } from "../core/derive";
 import { introMode, markIntroShown } from "../core/intro";
 import { useStillMotion } from "../core/motion";
 import { ui, useUi } from "../core/store";
+import { AgentToggle } from "../agent/AgentView";
+import About from "../components/About";
 import GlyphMark from "../components/GlyphMark";
 import { RobotMark } from "../components/Marks";
 import SceneBoundary from "../components/SceneBoundary";
-import { TopBarActions } from "../components/TopBar";
 import ChartKey from "./ChartKey";
-import Demo from "./Demo";
 import type { ScreenBox } from "./layout";
 import LensDials from "./LensDials";
+import LetterCard from "./LetterCard";
 import type { LensDial } from "./Phoropter";
 
 const ChartScene = lazy(() => import("./ChartScene"));
 
 const LEGEND: GlyphState[] = ["read", "misread", "blocked", "unread"];
+const MEANING: Record<GlyphState, (n: number) => string> = {
+  read: (n) => `${n === 1 ? "letter" : "letters"} TestSprite read right`,
+  misread: (n) => `${n === 1 ? "letter" : "letters"} it misread`,
+  blocked: (n) => `${n === 1 ? "letter" : "letters"} it could not test`,
+  unread: (n) => `${n === 1 ? "letter" : "letters"} not read yet`,
+};
 const NO_DIALS: LensDial[] = [];
 const DEMO_KEY = "eye-chart-lens-demo";
 
@@ -63,11 +70,11 @@ export default function ChartPage() {
   const { file, ready } = useReadings();
   const still = useStillMotion();
   const { view, paused, ready: landed, compare } = useUi();
-  const [demoLens, setDemoLens] = useState(false);
-  const [autoplay, setAutoplay] = useState(false);
+  const [card, setCard] = useState<{ id: string; playing: boolean } | null>(null);
+  const [cardLens, setCardLens] = useState(false);
+  const [pulse, setPulse] = useState<{ id: string; at: number } | null>(null);
+  const onMark = useCallback((id: string) => setPulse({ id, at: performance.now() }), []);
   const [boxes, setBoxes] = useState<Record<string, ScreenBox> | null>(null);
-  const [focusId, setFocusId] = useState<string | null>(null);
-  const navigate = useNavigate();
   const [intro] = useState(() => introMode(still));
   const [skipAt, setSkipAt] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -117,10 +124,16 @@ export default function ChartPage() {
     const results = file?.results ?? [];
     const order = buildRows(letters, results).flatMap((r) => r.glyphs);
     const fixable = order.find((g) => g.state === "misread" && lensResult(g.id, results) === "fixed");
-    const id = fixable?.id ?? withLens[0]?.id;
-    return withLens.find((l) => l.id === id) ?? null;
-  }, [letters, withLens, file]);
-  const demo = demoLens && demoLetter ? demoLetter.id : null;
+    const first = letters.find((l) => l.lens);
+    const id = fixable?.id ?? first?.id;
+    return letters.find((l) => l.id === id && l.lens) ?? null;
+  }, [letters, file]);
+  const cardId = card?.id ?? demoLetter?.id ?? null;
+  const cardLetter = useMemo(
+    () => (cardId ? (letters.find((l) => l.id === cardId) ?? null) : null),
+    [cardId, letters],
+  );
+  const demo = cardLens && cardLetter?.lens ? cardLetter.id : null;
   const sceneRows = useMemo(
     () => (demo ? buildRows(letters, file?.results ?? [], new Set([...chartLens, demo])) : rows),
     [demo, rows, letters, file, chartLens],
@@ -164,17 +177,31 @@ export default function ChartPage() {
     toggleRef.current = toggleLens;
   }, [toggleLens]);
   const sceneToggle = useCallback((id: string) => toggleRef.current(id), []);
-  const openLetter = useCallback((id: string) => navigate(`/letter/${id}`), [navigate]);
-  const focusLetter = useCallback((id: string) => setFocusId(id), []);
+  const openCard = useCallback((id: string) => setCard({ id, playing: false }), []);
+  const stopCard = useCallback(() => setCard((c) => (c && c.playing ? { ...c, playing: false } : c)), []);
   const onPlaced = useCallback((next: Record<string, ScreenBox>) => setBoxes(next), []);
 
   useEffect(() => {
     if (!landed || still || view !== "human" || !demoLetter || !ready || demoShown()) return;
     markDemoShown();
     if (lensOn.size > 0) return;
-    const id = window.setTimeout(() => setAutoplay(true), 300);
-    return () => window.clearTimeout(id);
+    const id = demoLetter.id;
+    const timer = window.setTimeout(() => setCard((c) => c ?? { id, playing: true }), 300);
+    return () => window.clearTimeout(timer);
   }, [landed, still, view, demoLetter, ready, lensOn]);
+
+  useEffect(() => {
+    if (!card?.playing) return;
+    const stop = () => stopCard();
+    window.addEventListener("pointerdown", stop, { passive: true });
+    window.addEventListener("keydown", stop);
+    return () => {
+      window.removeEventListener("pointerdown", stop);
+      window.removeEventListener("keydown", stop);
+    };
+  }, [card?.playing, stopCard]);
+
+  if (card?.playing && (view === "robot" || lensOn.size > 0)) setCard({ ...card, playing: false });
 
   const all = rows.flatMap((r) => r.glyphs);
   const count = (s: GlyphState) => all.filter((g) => g.state === s).length;
@@ -194,7 +221,7 @@ export default function ChartPage() {
     : "No run recorded yet";
 
   return (
-    <div className="chart" data-testid="chart-page" data-intro={intro} data-leaving={focusId ? "true" : undefined}>
+    <div className="chart" data-testid="chart-page" data-intro={intro}>
       <header className="topbar" data-testid="topbar">
         <h1 className="brand" data-testid="heading">
           <Link to="/" className="wordmark" data-testid="wordmark" aria-label="Eye Chart, home">
@@ -202,10 +229,66 @@ export default function ChartPage() {
             <span className="wordmark-text">Eye Chart</span>
           </Link>
         </h1>
-        <TopBarActions />
+        <div className="topbar-actions">
+          <AgentToggle />
+          <About>
+            <h3>The result</h3>
+            <dl className="tally" data-testid="tally" aria-label="Letters by result">
+              {LEGEND.map((s) => (
+                <div key={s} data-state={s} data-testid={`tally-${s}`}>
+                  <dt>
+                    <GlyphMark glyph="E" state={s} />
+                    {STATE_WORDS[s]}
+                  </dt>
+                  <dd>{ready && file ? count(s) : 0}</dd>
+                  <span className="tally-meaning">{MEANING[s](ready && file ? count(s) : 0)}</span>
+                </div>
+              ))}
+            </dl>
+            <p className="summary" data-testid="reading-summary">
+              {summary}
+            </p>
+            {ready && file && (
+              <p className="summary" data-testid="twin-summary">
+                Twin readings correct: {twins.correct} of {twins.total}.
+              </p>
+            )}
+            <p className="plaque" data-testid="plaque">
+              {plaque}
+            </p>
+            <h3>Lenses</h3>
+            <LensDials
+              dials={dials}
+              activeId={activeId}
+              onToggle={toggleLens}
+              onReset={() => setLenses(new Set())}
+              onActive={setActiveId}
+            />
+            <h3>Motion</h3>
+            <p>
+              <button
+                type="button"
+                className="quiet-toggle"
+                aria-pressed={paused}
+                onClick={() => ui.setPaused(!paused)}
+                data-testid="motion-toggle"
+              >
+                {paused ? "Motion paused" : "Pause motion"}
+              </button>
+            </p>
+          </About>
+        </div>
       </header>
 
-      <div className="chart-left">
+      <div className="chart-intro">
+        <p className="what" data-testid="what-testsprite">
+          An eye exam for TestSprite, the AI agent that tests web pages.
+        </p>
+        <p className="tagline" data-testid="tagline">
+          Each letter is a real widget, built once working and once broken. Click one.
+        </p>
+      </div>
+
       <section
         className="stage"
         aria-label="Lit eye chart"
@@ -216,15 +299,15 @@ export default function ChartPage() {
           <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
             <ChartScene
               rows={sceneRows}
-              activeId={chartActive}
+              activeId={chartActive ?? card?.id ?? null}
               still={still}
               frozen={view === "robot"}
               intro={intro}
               skipAt={skipAt}
               shift={0}
-              focusId={focusId}
+              pulse={pulse}
               onActive={setActiveId}
-              onOpen={openLetter}
+              onOpen={openCard}
               onReady={markReady}
               onPlaced={onPlaced}
               dials={NO_DIALS}
@@ -232,78 +315,23 @@ export default function ChartPage() {
             />
           </Suspense>
         </SceneBoundary>
-        <ChartKey rows={rows} boxes={boxes} activeId={chartActive} onActive={setActiveId} onOpen={focusLetter} />
+        <ChartKey rows={rows} boxes={boxes} activeId={chartActive ?? card?.id ?? null} onActive={setActiveId} onOpen={openCard} />
       </section>
 
-      <div className="dock">
-        <p className="dock-hint">Click a letter to open it. Turn a dial to add its lens.</p>
-        <LensDials
-          dials={dials}
-          activeId={activeId}
-          onToggle={toggleLens}
-          onReset={() => setLenses(new Set())}
-          onActive={setActiveId}
-        />
-      </div>
-      </div>
-
-      <main className="panel-top">
-        <p className="what" data-testid="what-testsprite">
-          An eye exam for TestSprite, the AI agent that tests web pages.
-        </p>
-        <p className="tagline" data-testid="tagline">
-          Each letter is a real widget, built once working and once broken.
-        </p>
-        <dl className="tally" data-testid="tally" aria-label="Letters by result">
-          {LEGEND.map((s) => (
-            <div key={s} data-state={s} data-testid={`tally-${s}`}>
-              <dt>
-                <GlyphMark glyph="E" state={s} />
-                {STATE_WORDS[s]}
-              </dt>
-              <dd>{ready && file ? count(s) : 0}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="summary" data-testid="reading-summary">
-          {summary}
-        </p>
-        {ready && file && (
-          <p className="summary" data-testid="twin-summary">
-            Twin readings correct: {twins.correct} of {twins.total}.
-          </p>
-        )}
-      </main>
-
-      <div className="panel-demo">
-        {demoLetter && (
-          <Demo
-            letter={demoLetter}
-            fraction={fractionOfLetter(rows, demoLetter.id)}
-            state={letterState(demoLetter, results, chartLens.has(demoLetter.id))}
+      {cardLetter && (
+        <div className="card-dock">
+          <LetterCard
+            key={cardLetter.id}
+            letter={cardLetter}
+            state={letterState(cardLetter, results, chartLens.has(cardLetter.id))}
             results={results}
-            autoplay={autoplay}
-            halt={lensOn.size > 0 || view === "robot"}
-            still={still}
-            onLens={setDemoLens}
+            playing={card?.playing ?? false}
+            onStop={stopCard}
+            onLens={setCardLens}
+            onMark={onMark}
           />
-        )}
-      </div>
-
-      <footer className="panel-foot">
-        <p className="plaque" data-testid="plaque">
-          {plaque}
-        </p>
-        <button
-          type="button"
-          className="quiet-toggle"
-          aria-pressed={paused}
-          onClick={() => ui.setPaused(!paused)}
-          data-testid="motion-toggle"
-        >
-          {paused ? "Motion paused" : "Pause motion"}
-        </button>
-      </footer>
+        </div>
+      )}
     </div>
   );
 }

@@ -8,6 +8,12 @@ const lensIds = letterIds.filter((id) => find(id, "lens") || find(id, "lens-brok
 
 async function openChart(page: Page) {
   await page.goto("/#/");
+  await expect(page.getByTestId("heading")).toHaveText("Eye Chart");
+  await expect(page.locator('a[data-testid^="letter-link-"]')).toHaveCount(24);
+}
+
+async function openAbout(page: Page) {
+  await page.getByTestId("about-open").click();
   await expect(page.getByTestId("reading-summary")).toHaveText(/Read correctly: \d+ of \d+ letters/);
 }
 
@@ -21,6 +27,7 @@ async function tally(page: Page): Promise<Record<State, number>> {
 
 test("the four tally counts add up to 24 and match the readings file", async ({ page }) => {
   await openChart(page);
+  await openAbout(page);
   const shown = await tally(page);
   const expected = Object.fromEntries(STATES.map((s) => [s, 0])) as Record<State, number>;
   for (const id of letterIds) expected[stateOf(id)] += 1;
@@ -31,6 +38,7 @@ test("the four tally counts add up to 24 and match the readings file", async ({ 
 
 test("the reading summary repeats the read count and the letter total", async ({ page }) => {
   await openChart(page);
+  await openAbout(page);
   const shown = await tally(page);
   const text = await page.getByTestId("reading-summary").innerText();
   const [, n, total] = text.match(/Read correctly: (\d+) of (\d+) letters/) ?? [];
@@ -40,7 +48,6 @@ test("the reading summary repeats the read count and the letter total", async ({
 
 test("every letter link shows the state the readings file gives it", async ({ page }) => {
   await openChart(page);
-  await expect(page.locator('a[data-testid^="letter-link-"]')).toHaveCount(24);
   for (const id of letterIds) {
     const link = page.getByTestId(`letter-link-${id}`);
     const state = stateOf(id);
@@ -50,8 +57,53 @@ test("every letter link shows the state the readings file gives it", async ({ pa
   }
 });
 
+test("clicking a letter opens its card, which steps through both twins and leads to the station", async ({ page }) => {
+  await openChart(page);
+  const id = letterIds.find((l) => stateOf(l) === "misread" && find(l, "lens")) ?? letterIds[0]!;
+  await page.getByTestId(`letter-link-${id}`).click();
+  const card = page.getByTestId("letter-card");
+  await expect(card).toHaveAttribute("data-letter-id", id);
+  await expect(card).toHaveAttribute("data-step", "works");
+  await expect(page.getByTestId("card-line")).toContainText("This version works.");
+  await page.getByTestId("card-next").click();
+  await expect(card).toHaveAttribute("data-step", "broken");
+  await expect(page.getByTestId("card-line")).toContainText("This version is broken.");
+  await page.getByTestId("card-next").click();
+  await expect(card).toHaveAttribute("data-step", "verdict");
+  await expect(page.getByTestId("card-key")).toContainText("Working version");
+  await expect(page.getByTestId("card-verdict")).toContainText("TestSprite read this letter wrong.");
+  await expect(page.getByTestId("card-line")).toContainText("Every letter on the chart is scored this way.");
+  if (find(id, "lens")) {
+    await page.getByTestId("card-next").click();
+    await expect(card).toHaveAttribute("data-step", "lens");
+    await expect(page.getByTestId("card-lens")).toBeVisible();
+    await expect(page.getByTestId("card-line")).toContainText("Can we help it see?");
+    await page.getByTestId("card-next").click();
+    await expect(card).toHaveAttribute("data-step", "after");
+    await expect(page.getByTestId("card-key")).toContainText("with the lens");
+  }
+  await page.getByTestId("card-details").click();
+  await expect(page).toHaveURL(new RegExp(`#/letter/${id}$`));
+  await expect(page.getByTestId("station-heading")).toBeVisible();
+});
+
+test("the card is open on a letter at load and switches when another letter is clicked", async ({ page }) => {
+  await openChart(page);
+  const card = page.getByTestId("letter-card");
+  await expect(card).toBeVisible();
+  const first = await card.getAttribute("data-letter-id");
+  const other = first === "counter" ? "toast" : "counter";
+  await page.getByTestId(`letter-link-${other}`).click();
+  await expect(card).toHaveAttribute("data-letter-id", other);
+  await expect(card).toHaveAttribute("data-step", "works");
+  await expect(card).toHaveAttribute("data-playing", "false");
+  await page.getByTestId("card-tab-broken").click();
+  await expect(card).toHaveAttribute("data-step", "broken");
+});
+
 test("there is one lens dial for each letter with a lens reading, all off at load", async ({ page }) => {
   await openChart(page);
+  await openAbout(page);
   const dials = page.locator('button[data-testid^="lens-dial-"]');
   await expect(dials).toHaveCount(lensIds.length);
   for (const id of lensIds) {
@@ -62,6 +114,7 @@ test("there is one lens dial for each letter with a lens reading, all off at loa
 for (const id of lensIds) {
   test(`lens dial ${id} switches its letter to the lens reading and back`, async ({ page }) => {
     await openChart(page);
+    await openAbout(page);
     const dial = page.getByTestId(`lens-dial-${id}`);
     const link = page.getByTestId(`letter-link-${id}`);
     const before = stateOf(id);
@@ -99,11 +152,11 @@ test("the sensor view counts real parts, and both Escape and the toggle leave it
   await page.keyboard.press("Escape");
   await expect(root).toHaveAttribute("data-view", "human");
   await expect(page.getByTestId("agent-overlay")).toHaveCount(0);
-  await expect(toggle).toHaveText("See it like TestSprite");
+  await expect(toggle).toHaveText("TestSprite view");
 
   await toggle.click();
   await expect(root).toHaveAttribute("data-view", "robot");
-  await expect(toggle).toHaveText("Back to human eyes");
+  await expect(toggle).toHaveText("Human view");
   await toggle.click();
   await expect(root).toHaveAttribute("data-view", "human");
   await expect(page.getByTestId("agent-overlay")).toHaveCount(0);
@@ -117,8 +170,11 @@ test("unknown routes show the not-found page and its link goes back to the chart
   await expect(page.getByTestId("heading")).toHaveText("Eye Chart");
 });
 
-test("the top bar links to the source on GitHub and the landing page says what TestSprite is", async ({ page }) => {
+test("the landing page says what TestSprite is and About links to the source on GitHub", async ({ page }) => {
   await openChart(page);
-  await expect(page.getByTestId("github-link")).toHaveAttribute("href", "https://github.com/Yazan-O/eye-chart");
   await expect(page.getByTestId("what-testsprite")).toContainText("TestSprite, the AI agent that tests web pages");
+  await openAbout(page);
+  await expect(page.getByTestId("github-link")).toHaveAttribute("href", "https://github.com/Yazan-O/eye-chart");
+  await expect(page.getByTestId("plaque")).toContainText(/Recorded run of/);
+  await expect(page.getByTestId("motion-toggle")).toHaveText("Pause motion");
 });

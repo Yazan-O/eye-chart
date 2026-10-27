@@ -16,18 +16,18 @@ import type { Group, Mesh, MeshBasicMaterial, PerspectiveCamera, Points } from "
 
 type SharedRef = MutableRefObject<Shared>;
 import type { ChartGlyph, ChartRow } from "../data/chart";
-import { backOut, focusAt, introDone, lampAt, landAt } from "../core/intro";
+import { backOut, clamp01, focusAt, introDone, lampAt, landAt } from "../core/intro";
 import type { IntroClock, IntroMode } from "../core/intro";
 import {
   ACCENT,
   drawGlyph,
   drawGrain,
   drawHatch,
-  drawLabel,
   GLYPH_FONT,
   INK,
   LAMP_INK,
   PANEL,
+  SKY,
 } from "./glyphArt";
 import { layoutChart } from "./layout";
 import type { PlacedGlyph, PlacedSlat, ScreenBox } from "./layout";
@@ -42,7 +42,7 @@ export interface ChartSceneProps {
   intro: IntroMode;
   skipAt: number | null;
   shift: number;
-  focusId: string | null;
+  pulse: { id: string; at: number } | null;
   onActive: (id: string | null) => void;
   onOpen: (id: string) => void;
   onReady: () => void;
@@ -63,7 +63,10 @@ interface Shared {
   born: number | null;
   still: boolean;
   dolly: { to: Vector3; at: number; id: string } | null;
+  pulse: { id: string; at: number } | null;
 }
+
+const PULSE_MS = 520;
 
 const FOV = 38;
 const DUST = 60;
@@ -180,8 +183,11 @@ function Glyph({
   const bar = useRef<Group>(null);
   const slash = useRef<Group>(null);
   const hatch = useRef<Mesh>(null);
+  const tick = useRef<Group>(null);
   const body = useRef<Group>(null);
   const ghostRef = useRef({ v: 0, vel: 0 });
+  const invalidate = useThree((st) => st.invalidate);
+  const ticked = glyph.state === "read" && glyph.lens === "on";
 
   useFrame(() => {
     const t = sharedRef.current.born === null ? 0 : now() - sharedRef.current.born;
@@ -191,12 +197,16 @@ function Glyph({
     const u = mat.uniforms;
     u.uFocus!.value = focusAt(clock, t, row);
     u.uLight!.value = lampAt(clock, t);
+    const pulse = sharedRef.current.pulse;
+    const pulsing = pulse !== null && pulse.id === glyph.id && now() - pulse.at < PULSE_MS;
+    const land = (ms: number) => (pulsing ? backOut(clamp01((now() - pulse.at) / ms)) : landAt(clock, t, row, ms));
+    if (pulsing) invalidate();
 
     const ghost = ghostRef.current;
     if (glyph.state === "misread") {
       ghost.v = backOut(landAt(clock, t, row, 420));
       ghost.vel = 0;
-      if (slash.current) slash.current.scale.x = Math.max(0.0001, landAt(clock, t, row, 260));
+      if (slash.current) slash.current.scale.x = Math.max(0.0001, land(300));
     } else if (sharedRef.current.still || (Math.abs(ghost.v) < 0.002 && Math.abs(ghost.vel) < 0.002)) {
       ghost.v = 0;
       ghost.vel = 0;
@@ -207,11 +217,12 @@ function Glyph({
     }
     u.uGhost!.value = Math.abs(ghost.v);
     if (glyph.state === "read") {
-      const k = landAt(clock, t, row, 500);
+      const k = land(500);
       if (bar.current) bar.current.scale.x = Math.max(0.0001, k);
+      if (tick.current) tick.current.scale.setScalar(Math.max(0.0001, k));
     }
     if (glyph.state === "blocked" && hatch.current) {
-      const k = landAt(clock, t, row, 260);
+      const k = land(300);
       hatch.current.scale.x = Math.max(0.0001, k);
       hatch.current.position.x = -(1 - k) * s * 0.6;
     }
@@ -234,11 +245,7 @@ function Glyph({
   const click = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     document.body.style.cursor = "";
-    if (sharedRef.current.still) {
-      onOpen(glyph.id);
-      return;
-    }
-    sharedRef.current.dolly = { to: new Vector3(place.x, place.y, place.z), at: now(), id: glyph.id };
+    onOpen(glyph.id);
   };
 
   return (
@@ -247,11 +254,23 @@ function Glyph({
         <mesh ref={face} material={material} onPointerOver={over} onPointerOut={out} onClick={click}>
           <planeGeometry args={[s, s]} />
         </mesh>
-        {glyph.state === "read" && (
+        {glyph.state === "read" && !ticked && (
           <group ref={bar} position={[0, -s * 0.46, 0.004]} scale={[0.0001, 1, 1]}>
             <mesh>
               <planeGeometry args={[s * 0.5, s * 0.035]} />
               <meshBasicMaterial color={LAMP_INK} toneMapped={false} fog={false} />
+            </mesh>
+          </group>
+        )}
+        {ticked && (
+          <group ref={tick} position={[s * 0.02, -s * 0.02, 0.006]} scale={0.0001}>
+            <mesh rotation={[0, 0, 0.8]} position={[-s * 0.16, -s * 0.1, 0]}>
+              <planeGeometry args={[s * 0.42, s * 0.09]} />
+              <meshBasicMaterial color={SKY} toneMapped={false} fog={false} />
+            </mesh>
+            <mesh rotation={[0, 0, -0.75]} position={[s * 0.14, 0, 0.001]}>
+              <planeGeometry args={[s * 0.72, s * 0.09]} />
+              <meshBasicMaterial color={SKY} toneMapped={false} fog={false} />
             </mesh>
           </group>
         )}
@@ -286,21 +305,16 @@ function Slat({
   lifted,
   sharedRef,
   grain,
-  edge,
 }: {
   slat: PlacedSlat;
   dim: boolean;
   lifted: boolean;
   sharedRef: SharedRef;
   grain: CanvasTexture;
-  edge: number;
 }) {
-  const label = useMemo(() => texture((c) => drawLabel(c, slat.fraction, LABEL), 256, 64), [slat.fraction]);
-  useEffect(() => () => label.dispose(), [label]);
   const face = useRef<MeshBasicMaterial>(null);
   const group = useRef<Group>(null);
   const base = useMemo(() => (dim ? ROW_DIM.clone() : new Color(PANEL)), [dim]);
-  const labelH = 0.26;
 
   useFrame(() => {
     const t = sharedRef.current.born === null ? 0 : now() - sharedRef.current.born;
@@ -322,10 +336,6 @@ function Slat({
       <mesh position={[0, 0, -0.005]}>
         <planeGeometry args={[slat.width, slat.height]} />
         <meshBasicMaterial ref={face} map={grain} color={base} toneMapped={false} fog={false} />
-      </mesh>
-      <mesh position={[-edge - labelH * 2.2, 0, 0]}>
-        <planeGeometry args={[labelH * 4, labelH]} />
-        <meshBasicMaterial map={label} transparent toneMapped={false} fog={false} />
       </mesh>
     </group>
   );
@@ -439,12 +449,12 @@ function Rig({
   }, [camera, size.width, size.height, glyphs, onPlaced]);
 
   const frame = useMemo(() => {
-    const height = extent.top - extent.bottom + 0.7;
-    const width = extent.width + 1.6;
+    const height = extent.top - extent.bottom + 0.1;
+    const width = extent.width + 0.3;
     const aspect = (size.width * (1 - shift)) / Math.max(1, size.height);
     const fit = Math.max(height, width / aspect);
     const distance = fit / 2 / Math.tan((FOV * Math.PI) / 360);
-    return { distance, centerY: (extent.top + extent.bottom) / 2, centerZ: -extent.depth / 2 };
+    return { distance, fit, centerY: (extent.top + extent.bottom) / 2, centerZ: -extent.depth / 2 };
   }, [extent, size.width, size.height, shift]);
 
   useEffect(() => {
@@ -475,8 +485,9 @@ function Rig({
       }
       return;
     }
-    camera.position.set(0, frame.centerY + 0.45, frame.distance);
-    aim.set(0, frame.centerY - 0.15, frame.centerZ);
+    const lift = frame.centerY + frame.fit * 0.034;
+    camera.position.set(0, lift - 0.04, frame.distance);
+    aim.set(0, lift, frame.centerZ);
     camera.lookAt(aim);
     place();
   });
@@ -485,7 +496,6 @@ function Rig({
 }
 
 const SLOW_FRAME_MS = 50;
-const LABEL = "#7f9bb3";
 
 function Ladder({ onSlow }: { onSlow: () => void }) {
   const statsRef = useRef({ last: 0, sum: 0, n: 0 });
@@ -548,7 +558,7 @@ function ChartScene({
   intro,
   skipAt,
   shift,
-  focusId,
+  pulse,
   onActive,
   onOpen,
   onReady,
@@ -570,7 +580,13 @@ function ChartScene({
     born: null,
     still,
     dolly: null,
+    pulse: null,
   });
+
+  useEffect(() => {
+    sharedRef.current.pulse = pulse;
+    if (pulse) invalidateRef.current();
+  }, [pulse]);
 
   useEffect(() => {
     sharedRef.current.still = calm;
@@ -581,16 +597,6 @@ function ChartScene({
     if (skipAt !== null) sharedRef.current.clock.skipAt = sharedRef.current.born === null ? 0 : skipAt - sharedRef.current.born;
   }, [sharedRef, skipAt]);
 
-  useEffect(() => {
-    if (!focusId) return;
-    const place = layout.glyphs.find((g) => g.id === focusId);
-    if (!place || sharedRef.current.still) {
-      onOpen(focusId);
-      return;
-    }
-    sharedRef.current.dolly = { to: new Vector3(place.x, place.y, place.z), at: now(), id: focusId };
-    invalidateRef.current();
-  }, [focusId, layout, onOpen]);
 
   const hatchMap = useMemo(() => texture(drawHatch, 128, 128), []);
   const grain = useMemo(() => {
@@ -617,7 +623,6 @@ function ChartScene({
   const activeRow = activeId ? (byId.get(activeId)?.row ?? -1) : -1;
 
   const phoropterY = layout.bottom - 0.75;
-  const labelEdge = useMemo(() => Math.max(0, ...layout.slats.map((sl) => sl.width / 2)), [layout]);
   const extent: Extent = useMemo(
     () => ({
       top: layout.top,
@@ -662,7 +667,6 @@ function ChartScene({
               lifted={activeRow === i}
               sharedRef={sharedRef}
               grain={grain}
-              edge={labelEdge}
             />
           ))}
           {layout.glyphs.map((p) => {
