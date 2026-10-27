@@ -72,7 +72,7 @@ I measured 7 lenses. Five fixed their letter: Toast, Hover menu, Virtual list, C
 
 Two TestSprite projects, two jobs.
 
-**The site suite** is 21 tests in the portal project "Eye Chart site", planned from the product requirements in `docs/PRD.md`. The TestSprite GitHub App runs it on every pull request against that PR's preview deploy, and `main` requires the "TestSprite V3" check, so a red check holds the merge.
+**The site suite** is 31 tests in the portal project "Eye Chart site", planned from the product requirements in `docs/PRD.md`. The TestSprite GitHub App runs it on every pull request against that PR's preview deploy, and `main` requires the "TestSprite V3" check, so a red check holds the merge.
 
 **The calibration** is the eye exam. A GitHub Action re-reads five headline twins on every PR preview. It never holds the merge, because a misread there is a finding about the tester, not a bug in the site. If TestSprite ships a new agent tomorrow, the next PR shows whether it reads better or worse.
 
