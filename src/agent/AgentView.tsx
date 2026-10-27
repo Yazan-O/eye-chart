@@ -95,9 +95,9 @@ export function AgentToggle() {
           </>
         ) : (
           <>
-            <span>Test</span>
-            <span>Sprite</span>
-            <span className="visually-hidden"> view</span>
+            <span className="agent-toggle-word" data-word="TestSprite" aria-hidden="true" />
+            <span className="agent-toggle-word" data-word="vision" aria-hidden="true" />
+            <span className="visually-hidden">TestSprite view</span>
           </>
         )}
       </span>

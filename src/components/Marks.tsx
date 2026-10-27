@@ -22,12 +22,18 @@ export function RobotMark() {
           <circle cx="45" cy="58" r="5" />
           <circle cx="75" cy="58" r="5" />
         </g>
-        <g fill="none" stroke="var(--lamp)" strokeWidth="4" strokeLinecap="round">
+        <g className="robot-glasses" fill="none" stroke="var(--lamp)" strokeWidth="4" strokeLinecap="round">
           <circle cx="45" cy="58" r="13" />
           <circle cx="75" cy="58" r="13" />
           <path d="M58 56q2-3 4 0M32 54l-10-4M88 54l10-4" />
         </g>
         <rect x="46" y="84" width="28" height="4" rx="2" fill="var(--sky)" />
+        <g className="robot-arm" fill="none" stroke="var(--robot-text)" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M170 50 122 22 68 40" strokeWidth="7" />
+          <path d="M68 40 57 50M68 40 64 52" stroke="var(--lamp)" strokeWidth="4" />
+          <circle cx="122" cy="22" r="6" fill="var(--graphite)" strokeWidth="4" />
+          <circle cx="68" cy="40" r="5" fill="var(--graphite)" strokeWidth="4" />
+        </g>
       </g>
     </svg>
   );
