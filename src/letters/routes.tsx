@@ -32,7 +32,7 @@ export function TwinPage({ id, variant }: { id?: string; variant?: string }) {
     <main className="letter-page">
       <h1>{letter.name}</h1>
       <p className="letter-hint">{letter.howToUse}</p>
-      <Component variant={variant} />
+      <Component key={`${id}/${variant}`} variant={variant} />
     </main>
   );
 }

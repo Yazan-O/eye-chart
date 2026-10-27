@@ -4,7 +4,7 @@
 
 <h2 align="center">A red or blocked verdict from an AI tester only helps if you can trust it. Eye Chart measures how far you can.</h2>
 
-<p align="center"><b>Gate status</b> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/1">PR 1: red 3 times, then green</a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/8">PR 8: planted bug blocked by <code>verify</code></a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/13">PR 13: TestSprite failed 29 of 31 on two real regressions; the fix is in the same PR</a></p>
+<p align="center"><b>Gate status</b> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/1">PR 1: red 3 times, then green</a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/8">PR 8: planted bug blocked by <code>verify</code></a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/13">PR 13: TestSprite failed 29 of 31 on two real regressions, fixed in PR 14</a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/15">PR 15: the same planted bug, now TestSprite failed 6 of 31 and held the merge</a></p>
 
 <p align="center">
   <a href="https://yazan-o.github.io/eye-chart/"><img alt="Live site" src="https://img.shields.io/badge/live-yazan--o.github.io%2Feye--chart-2f6fbf"></a>
@@ -14,7 +14,9 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-5b6878"></a>
 </p>
 
-<p align="center">TestSprite reports: <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79">PR 13 gate run, 29 of 31</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335">rewritten tally test on the planted bug (failed, as it should)</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da">same test on main (passed)</a></p>
+<p align="center">TestSprite reports: <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79">PR 13 gate run, 29 of 31</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335">rewritten tally test on the planted bug (failed, as it should)</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da">same test on main (passed)</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/42393415-b448-42eb-85f7-8f42c31a8bec">PR 15 gate run on the planted bug, 25 of 31</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/967d2f94-1cae-4899-97c7-f15f46124c87">PR 14 gate run, 31 of 31</a></p>
+
+<p align="center"><a href="https://youtu.be/VNnKflZ_bAo">Demo video</a> &nbsp;·&nbsp; <a href="https://x.com/YazanO_0/status/2114947823477129342">X post</a></p>
 
 <p align="center">
   <a href="https://yazan-o.github.io/eye-chart/"><img src="docs/media/eye-chart-tour.gif" width="800" alt="The live chart: 24 letters in 7 rows, misread letters slashed, blocked letters hatched. The sensor view shows what an agent can find on the page, then the Toast lens turns on and the chart recounts."></a>
@@ -33,8 +35,9 @@ When TestSprite misreads a letter, we give it a **lens**: a small change to the 
 | Letters read right on both twins | **17 of 24** | 4 letters misread, 3 blocked |
 | Hidden-text row (row 7) read right | **10 of 10 twins** | The agent ignored every planted "this works" note |
 | Lenses that fix their letter | **5 of 7** | 2 do not, and we show both |
-| Site suite on every PR | **31 tests**, required check | Red 3 times on PR 1, then green. On PR 13 it failed 29 of 31 on two real regressions that 121 Playwright tests passed; the fix is in the same PR |
+| Site suite on every PR | **31 tests**, required check | Red 3 times on PR 1, then green. On PR 13 it failed 29 of 31 on two real regressions that 121 Playwright tests passed; fixed in PR 14 |
 | Planted bug in PR 8 | **Blocked by `verify`** | 2 Playwright tests caught it. TestSprite's old tally test missed it, and the rewritten test now catches it |
+| Same bug planted again in PR 15 | **Blocked by TestSprite and `verify`** | TestSprite failed 6 of 31, 4 of them on the wrong tally |
 
 Every number above is computed from [`public/readings/latest.json`](public/readings/latest.json) (TestSprite cloud agent, CLI 0.15.0, 62 readings, 2026-10-26) or read from the PR check statuses linked below.
 
@@ -286,6 +289,10 @@ The agent had followed the test's "open the chart page" step to the live site an
 | main | passed | | [5b44d927](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da) |
 | planted bug (`4abcbcb`), published at `/pr-preview/replay-bug/` | failed | "Read correctly: 16; expected 17 ... a total of 23 instead of 24" | [6fc04668](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335) |
 
+### The same bug again: pull request 15, TestSprite holds the merge
+
+[Pull request 15](https://github.com/Yazan-O/eye-chart/pull/15) planted the same one-line bug on the new design to check the rewritten test. [TestSprite's gate](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/42393415-b448-42eb-85f7-8f42c31a8bec) failed 6 of 31 and held the merge. Four tests reported "Read correctly: 16 of 23 letters" where 17 of 24 was expected. `verify` failed too. The fix commit restores the line. [TestSprite's run on the fix commit](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/8cbe5a02-43a1-450d-9934-1f2f21dd4bde) also failed one test, "Compare working and broken counter pages", which found a real state leak between the twin pages; it is fixed in the same pull request.
+
 ### The redesign: pull request 13, TestSprite catches two real regressions
 
 [Pull request 13](https://github.com/Yazan-O/eye-chart/pull/13) turned the chart page into one screen. Its `verify` check passed (110 unit and 121 Playwright tests). [TestSprite's gate](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79) failed 29 of 31, on two regressions the Playwright tests had not covered:
@@ -293,7 +300,7 @@ The agent had followed the test's "open the chart page" step to the live site an
 - **Moving between letters.** TestSprite: "Previous and next navigation did not move between letter station pages." Next advanced the demo counter instead of the station.
 - **Lens link.** On the F lens page the link read "See the code change: letter E, Toast", the wrong letter.
 
-Both are real defects. The fix is in the same pull request.
+Both are real defects. They were fixed, and the design shipped as [pull request 14](https://github.com/Yazan-O/eye-chart/pull/14), which [passed all 31](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/967d2f94-1cae-4899-97c7-f15f46124c87).
 
 ### The re-examination comment: pull request 3
 

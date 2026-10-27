@@ -25,9 +25,9 @@ test("the counter twin counts three clicks right when it works and wrong when br
   await expect(page.locator(".letter-readout")).toHaveText("Count: 3");
 
   await page.goto("/#/l/counter/broken");
+  const readout = page.locator(".letter-readout");
+  await expect(readout).toHaveText("Count: 0");
   const addBroken = page.getByRole("button", { name: "Add one" });
   for (let i = 0; i < 3; i++) await addBroken.click();
-  const readout = page.locator(".letter-readout");
-  await expect(readout).toHaveText(/Count: \d+/);
-  await expect(readout).not.toHaveText("Count: 3");
+  await expect(readout).toHaveText("Count: 6");
 });
