@@ -1,0 +1,168 @@
+{
+  "takenAt": "2026-10-26T14:23:50.461Z",
+  "commit": "ca8b520",
+  "engine": "TestSprite cloud agent, CLI 0.15.0",
+  "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
+  "results": [
+    {
+      "letterId": "counter",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "e00e8fd8-de87-4dab-a81d-9ddc3e9af465",
+      "runId": "40da5e5c-6f1d-49b0-92ef-44f5bb71c21d",
+      "reason": "The counter displays “Count: 3” after three clicks on “Add one.”",
+      "screenshot": "readings/shots/40da5e5c-6f1d-49b0-92ef-44f5bb71c21d.png"
+    },
+    {
+      "letterId": "counter",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "86bdf5a4-8d31-4d34-b973-06bf0c1449d9",
+      "runId": "8bc513ab-f2de-4ef9-ade8-6580e6019fac",
+      "reason": "The hosted service is likely serving a build where the counter state is not isolated correctly, so the same state is being incremented twice per click or starts from a pre-existing value of 3. Common causes include duplicated onClick handlers, React Strict Mode side effects in a non-idempotent update, shared module-level state across requests/users, or a stale/cached production bundle that differs from the intended source. As a result, three clicks produce 6 instead of 3. Underlying error: TEST FAILURE\n\nThe counter shows 6 after the “Add one” button was clicked three times, instead of the expected count of 3.\n\nObservations:\n- The page displays “Count: 6”\n- The “Add one” button is visible on the counter page",
+      "screenshot": "readings/shots/8bc513ab-f2de-4ef9-ade8-6580e6019fac.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "1089581b-0df8-4365-98d1-3aefd96d9031",
+      "runId": "22f8d972-2606-42a8-afd1-9298b547a639",
+      "reason": "The hosted app likely has a broken or missing save-notification flow: the Save button may not be invoking the toast state update, the toast component may not be mounted or styled incorrectly, or the production build may be swallowing the async success callback/error. As a result, clicking Save leaves the page unchanged and no transient \"Saved\" confirmation is displayed, even though the UI copy mentions it. Underlying error: TEST FAILURE\n\nThe “Saved” confirmation notice was not observed after clicking Save.\n\nObservations:\n- The page remained on the Toast screen with the Save button visible.\n- The screenshot after clicking Save showed no confirmation notice.\n- “Saved” appeared in the page search only as part of the instructional text, “A Saved notice appears briefly.”",
+      "screenshot": "readings/shots/22f8d972-2606-42a8-afd1-9298b547a639.png"
+    },
+    {
+      "letterId": "toast",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "268b45a0-5cbb-42dd-8e1d-cc615199adc9",
+      "runId": "4c8a427e-fc7a-4410-a79b-a6a404515a35",
+      "reason": "The hosted app likely isn’t reflecting the post-save success state, so clicking Save does not trigger or complete the UI update that should display the \"Saved\" notice. This can happen if the Save handler is broken in the deployed bundle, the save API call fails silently, the component state never changes to \"saved\", or the notice exists in the DOM but is hidden/never mounted due to a production-side rendering or styling issue. Underlying error: TEST FAILURE\n\nThe “Saved” notice did not appear after clicking Save.\n\nObservations:\n- The page shows “Draft: Quarterly notes” and the Save button.\n- No notice with the text “Saved” is visible.",
+      "screenshot": "readings/shots/4c8a427e-fc7a-4410-a79b-a6a404515a35.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "2e46cd3f-1582-48e0-860f-a8a67a24e31c",
+      "runId": "53a48205-62e8-41ae-a88f-4cc7b66737cf",
+      "reason": "The site likely implements the Settings menu as a hover-only interaction (e.g., CSS :hover or mouseenter events) with no equivalent click, focus, or keyboard fallback. In a headless/test browser session that cannot perform hover, the menu never opens, so the Settings option is effectively inaccessible and the test is blocked. Underlying error: TEST BLOCKED\n\nThe Settings selection could not be tested because opening the menu requires hovering, and a hover action is not available in this browser session.\n\nObservations:\n- The page shows “Menu” and “Current page: Home.”\n- Clicking the page and keyboard activation did not reveal the menu options.",
+      "screenshot": "readings/shots/53a48205-62e8-41ae-a88f-4cc7b66737cf.png"
+    },
+    {
+      "letterId": "hover-menu",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "6c1f5b76-9cf8-4dce-928b-ae5974a225f9",
+      "runId": "b601adca-5b22-45a7-9f64-711aedde75af",
+      "reason": "The hosted page likely has a broken or inaccessible menu implementation: the Menu trigger may not be focusable/clickable, may rely on mouse-only behavior, or the menu items may be hidden by CSS/overlay/portal issues. As a result, automated keyboard interaction (Tab then Enter) cannot open the menu, so the Settings option never appears and navigation does not occur. Underlying error: TEST FAILURE\n\nThe Menu control did not open, so Settings could not be selected and the page did not change to “Current page: Settings.”\n\nObservations:\n- The page showed “Current page: Home.”\n- Clicking the visible page area and pressing Tab followed by Enter did not reveal menu options.\n- No Settings option appeared in the visible page content.",
+      "screenshot": "readings/shots/b601adca-5b22-45a7-9f64-711aedde75af.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "6934e9da-0140-4252-be7f-0d2abad7f081",
+      "runId": "0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b",
+      "reason": "The page displays “Hello, Ada!” after the greeting is submitted.",
+      "screenshot": "readings/shots/0bd87fdb-7e5e-4b48-ad3d-53f2c386db8b.png"
+    },
+    {
+      "letterId": "shadow-form",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "33a4ac62-eb9c-457d-87e9-51cd41a522eb",
+      "runId": "883c0708-3713-401d-ad9b-046bf3a0996a",
+      "reason": "The hosted page is likely using a broken or stale frontend build where the name input value is not being captured into state before generating the greeting, so the click handler falls back to an empty string. Another possible hosting-side issue is serving an outdated/cached bundle or misconfigured hydration/state initialization, causing the UI to display \"Hello, !\" even though the input contains \"Ada\". Underlying error: TEST FAILURE\n\nThe greeting did not include the entered name. The page displayed “Hello, !” instead of “Hello, Ada!”.\n\nObservations:\n- The “Your name” field contained “Ada”\n- After clicking “Greet,” the page showed “Hello, !”",
+      "screenshot": "readings/shots/883c0708-3713-401d-ad9b-046bf3a0996a.png"
+    },
+    {
+      "letterId": "animated-total",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "c1da41fd-6fa0-4307-8b94-b4c25263fda4",
+      "runId": "3a910c24-b38e-4e25-8c5a-7c2225a6d669",
+      "reason": "After clicking “Load total,” the displayed total reaches 1,250.",
+      "screenshot": "readings/shots/3a910c24-b38e-4e25-8c5a-7c2225a6d669.png"
+    },
+    {
+      "letterId": "animated-total",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "8629baa6-d966-4305-a3ea-f4291b59c052",
+      "runId": "1590d0db-8dc9-47be-90b2-efb523e5a1f5",
+      "reason": "The hosting-side service is likely returning an incomplete or stale total (1,205 instead of 1,250) due to a backend aggregation bug, missing records in the deployed dataset, or a caching/state issue causing the page to load an outdated value rather than the full computed total. Underlying error: TEST FAILURE\n\nThe displayed total did not reach the expected value of 1,250.\n\nObservations:\n- The “Load total” button was clicked.\n- The total remained at 1,205 after waiting.",
+      "screenshot": "readings/shots/1590d0db-8dc9-47be-90b2-efb523e5a1f5.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "failed",
+      "testId": "984301da-3dcd-49fc-8111-c91a50d360a2",
+      "runId": "d947bb5a-b0d7-46d9-b59d-eff124f24b7f",
+      "reason": "The virtual list’s scroll math or state synchronization is likely broken on the host page: after attempting to navigate to Item 7777, the component stayed around Items 9528–9548 and only selected Item 9548, which suggests the list is not honoring the requested index. A common root cause is an incorrect item-size assumption, a miscomputed scroll offset, or a virtualization library receiving the wrong container dimensions/scroll event, so the rendered window jumps to the wrong region instead of the target item. Underlying error: TEST FAILURE\n\nThe virtual list did not reach Item 7777, so it could not be selected and the required “Selected: Item 7777” message was not verified.\n\nObservations:\n- The page displays a virtual list with 10,000 items.\n- The visible range remained around Items 9528–9548 after attempted scrolling.\n- The selection status showed “Selected: Item 9548.”",
+      "screenshot": "readings/shots/d947bb5a-b0d7-46d9-b59d-eff124f24b7f.png"
+    },
+    {
+      "letterId": "virtual-list",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "failed",
+      "testId": "4f91f799-6ff7-4091-83e3-fa111e9f7cab",
+      "runId": "f3430e3d-22b4-4c6c-8856-c07b51334488",
+      "reason": "The hosting app likely has a broken or misconfigured virtual list/scroll container, so scrolling does not advance the rendered window beyond the first visible items. This can happen if the list container has no fixed height or overflow, the virtualization library is not wired to the scrollable parent, item heights are incorrect, or event handling/state updates are blocked. As a result, the page stays on Items 1–17 and never reaches Item 7777, leaving the selection as none. Underlying error: TEST FAILURE\n\nThe virtual list did not scroll to “Item 7777,” so the selection result could not be verified.\n\nObservations:\n- The list remained at Items 1–17 after repeated scroll attempts.\n- The page continued to show “Selected: none.”",
+      "screenshot": "readings/shots/f3430e3d-22b4-4c6c-8856-c07b51334488.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "17a2fe4e-f388-4e31-a437-d513e799b4a4",
+      "runId": "a63f4514-e4ab-4ed1-83cc-557130243bf8",
+      "reason": "The hosted page likely renders the slider as a custom canvas widget that is not actually focusable or keyboard-operable, or its event listeners are attached incorrectly so the automation cannot drag it or change it with ArrowRight. The readout staying at 50 suggests the interaction handlers are missing, blocked, or not wired to the underlying state on the hosting build. Underlying error: TEST BLOCKED\n\nThe slider could not be dragged to the 70 mark using the available browser interaction, so the readout could not be verified at 70.\n\nObservations:\n- The page shows a canvas slider with a 0–100 scale and the readout “Value: 50”\n- Clicking the page container and pressing ArrowRight did not change the readout",
+      "screenshot": "readings/shots/a63f4514-e4ab-4ed1-83cc-557130243bf8.png"
+    },
+    {
+      "letterId": "canvas-slider",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "blocked",
+      "testId": "6089667e-c5b7-4445-aaf9-670eefdfd0de",
+      "runId": "833f6eb5-abb4-45b4-9d6c-6cab08480b22",
+      "reason": "The page likely implements the slider purely as a canvas visualization or a custom-drawn control without an exposed DOM element or accessible drag target. As a result, the test framework cannot locate a draggable handle or generate a valid drag interaction, leaving the value stuck at 50 instead of allowing it to be moved to 70. Underlying error: TEST BLOCKED\n\nThe slider test could not be completed because the round handle could not be dragged to 70 with the available interaction controls. The readout remained at “Value: 50,” so “Value: 70” could not be verified.\n\nObservations:\n- The Canvas slider page loaded and showed a scale from 0 to 100.\n- The round handle was positioned at 50 and the readout showed “Value: 50.”\n- No drag-capable slider control was exposed for interaction.",
+      "screenshot": "readings/shots/833f6eb5-abb4-45b4-9d6c-6cab08480b22.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "works",
+      "truth": "pass",
+      "verdict": "blocked",
+      "testId": "0bbe4605-3972-4ce4-9d1d-247b846be9d6",
+      "runId": "7cf89bdf-e224-4b87-9f6b-6ce8aa100b34",
+      "reason": "The host page likely depends on a drag gesture to change the knob value, but the browser/test environment cannot generate the required drag/pointer positioning for that control. As a result, the interaction never starts or never receives move events, so the volume remains at 0 and the expected value cannot be reached. Underlying error: TEST BLOCKED\n\nThe requested knob interaction could not be completed because the available browser controls do not provide a drag gesture or pointer positioning. The volume stayed at 0, so the requested reading of 7 could not be verified.\n\nObservations:\n- The page instructs users to press the knob and drag upward.\n- The visible readout showed “Volume: 0” after the attempted page click.",
+      "screenshot": "readings/shots/7cf89bdf-e224-4b87-9f6b-6ce8aa100b34.png"
+    },
+    {
+      "letterId": "webgl-knob",
+      "variant": "broken",
+      "truth": "fail",
+      "verdict": "blocked",
+      "testId": "6ae9751e-28c0-4b50-aa1d-2d3fd1596c8e",
+      "runId": "6808f90d-5ab3-40ec-bb23-ba15220162a5",
+      "reason": "The knob interaction is likely implemented in a way that the hosting/browser environment cannot actually drag it—commonly due to using unsupported drag-and-drop semantics, touch-only handlers, or custom event handling that requires a real pointer device. As a result, the click is registered but the drag never fires, leaving the state at 'Volume: 0' instead of updating to 'Volume: 7'. Underlying error: TEST BLOCKED\n\nThe knob drag test could not be completed — the available browser interaction does not support dragging. The knob feature is present, but the readout remained at “Volume: 0,” so “Volume: 7” could not be verified.\n\nObservations:\n- The page instructs users to press the knob and drag upward.\n- The visible readout showed “Volume: 0” after the page click.",
+      "screenshot": "readings/shots/6808f90d-5ab3-40ec-bb23-ba15220162a5.png"
+    }
+  ]
+}
