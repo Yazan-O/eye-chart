@@ -243,13 +243,17 @@ describe("App routing", () => {
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
     act(() => ui.setReady(true));
     const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
+    await waitFor(() => expect(screen.getByTestId("demo")).toHaveAttribute("data-playing", "true"));
+    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 7000 });
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(link).toHaveAttribute("data-state", "misread");
-    await waitFor(() => expect(dial).not.toHaveClass("is-on"), { timeout: 3000 });
+    expect(screen.getByTestId("demo-lens")).toHaveAttribute("data-shown", "true");
+    await waitFor(() => expect(dial).not.toHaveClass("is-on"), { timeout: 6000 });
+    expect(screen.getByTestId("demo")).toHaveAttribute("data-playing", "false");
+    expect(screen.getByTestId("demo-state")).toHaveTextContent("Fixed with lens");
     expect(sessionStorage.getItem("eye-chart-lens-demo")).toBe("1");
     resetReadingsCache();
-  }, 8000);
+  }, 16000);
 
   it("ends the lens demo for good when a dial is turned during it", async () => {
     const reading = (variant: string, truth: string, verdict: string) => ({
@@ -280,9 +284,10 @@ describe("App routing", () => {
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
     act(() => ui.setReady(true));
     const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
+    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 7000 });
     fireEvent.click(dial);
     expect(dial).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("demo")).toHaveAttribute("data-playing", "false");
     fireEvent.click(dial);
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(dial).not.toHaveClass("is-on");
@@ -290,7 +295,49 @@ describe("App routing", () => {
     expect(dial).not.toHaveClass("is-on");
     expect(link).toHaveAttribute("data-state", "misread");
     resetReadingsCache();
-  }, 8000);
+  }, 16000);
+
+  it("stops the demo with its own button and replays it on request", async () => {
+    const reading = (variant: string, truth: string, verdict: string) => ({
+      letterId: "canvas-slider",
+      variant,
+      truth,
+      verdict,
+      reason: "r",
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          takenAt: "2026-10-26T15:00:00Z",
+          results: [
+            reading("works", "pass", "failed"),
+            reading("broken", "fail", "failed"),
+            reading("lens", "pass", "passed"),
+          ],
+        }),
+      }),
+    );
+    sessionStorage.clear();
+    resetReadingsCache();
+    renderAt("/");
+    await waitFor(() => expect(screen.getByTestId("letter-link-canvas-slider")).toHaveAttribute("data-state", "misread"));
+    act(() => ui.setReady(true));
+    const demo = screen.getByTestId("demo");
+    await waitFor(() => expect(demo).toHaveAttribute("data-playing", "true"));
+    fireEvent.click(screen.getByTestId("demo-stop"));
+    expect(demo).toHaveAttribute("data-playing", "false");
+    expect(screen.getByTestId("demo-state")).toHaveTextContent("Fixed with lens");
+    expect(screen.getByTestId("lens-dial-canvas-slider")).not.toHaveClass("is-on");
+    fireEvent.click(screen.getByTestId("demo-replay"));
+    expect(demo).toHaveAttribute("data-playing", "true");
+    expect(demo).toHaveAttribute("data-phase", "0");
+    fireEvent.keyDown(demo, { key: "ArrowRight" });
+    expect(demo).toHaveAttribute("data-playing", "false");
+    expect(demo).toHaveAttribute("data-phase", "1");
+    resetReadingsCache();
+  });
 
   it("fuses the station letter when the lens pane shows a recorded fix", async () => {
     const reading = (variant: string, truth: string, verdict: string) => ({

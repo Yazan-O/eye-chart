@@ -53,11 +53,13 @@ export default function LensDials({
                 onBlur={() => onActive(null)}
                 data-testid={`lens-dial-${d.id}`}
               >
-                <span className="dial-knob" aria-hidden="true" />
-                <span className="dial-text">
+                <span className="dial-face">
+                  <span className="dial-knob" aria-hidden="true" />
                   <span className="dial-glyph">{d.glyph}</span>
+                </span>
+                <span className="dial-text">
                   <span className="dial-name">{d.name}</span>
-                  <span className="dial-state">
+                  <span className="dial-state visually-hidden">
                     {d.on ? "On" : "Off"}
                     {d.measured ? "" : ", not measured"}
                   </span>
@@ -66,19 +68,19 @@ export default function LensDials({
                   </span>
                 </span>
               </button>
-              {d === shown && (
-                <p className="dial-detail" data-testid={`lens-dial-detail-${d.id}`}>
-                  {d.summary}{" "}
-                  <Link to={`/letter/${d.id}?pane=lens&focus=lens`} data-testid={`lens-dial-open-${d.id}`}>
-                    See the code change: letter {d.glyph}, {d.letter}
-                  </Link>
-                </p>
-              )}
             </li>
           ))}
         </ul>
       )}
-      <p className="dials-live" role="status" aria-live="polite" data-testid="lens-live">
+      {shown && (
+        <p className="dial-detail" data-testid={`lens-dial-detail-${shown.id}`}>
+          {shown.summary}{" "}
+          <Link to={`/letter/${shown.id}?pane=lens&focus=lens`} data-testid={`lens-dial-open-${shown.id}`}>
+            See the code change: letter {shown.glyph}, {shown.letter}
+          </Link>
+        </p>
+      )}
+      <p className="dials-live visually-hidden" role="status" aria-live="polite" data-testid="lens-live">
         {shown ? `${shown.name} on ${shown.glyph}: ${shown.without} becomes ${shown.with}.` : ""}
       </p>
     </section>

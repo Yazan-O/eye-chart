@@ -120,5 +120,5 @@ test("unknown routes show the not-found page and its link goes back to the chart
 test("the top bar links to the source on GitHub and the landing page says what TestSprite is", async ({ page }) => {
   await openChart(page);
   await expect(page.getByTestId("github-link")).toHaveAttribute("href", "https://github.com/Yazan-O/eye-chart");
-  await expect(page.getByTestId("what-testsprite")).toContainText("TestSprite is an AI testing agent");
+  await expect(page.getByTestId("what-testsprite")).toContainText("TestSprite, the AI agent that tests web pages");
 });

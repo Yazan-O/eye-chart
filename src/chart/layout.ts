@@ -16,6 +16,13 @@ export interface PlacedSlat {
   height: number;
 }
 
+export interface ScreenBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface ChartLayout {
   glyphs: PlacedGlyph[];
   slats: PlacedSlat[];

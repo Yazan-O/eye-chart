@@ -30,7 +30,7 @@ import {
   PANEL,
 } from "./glyphArt";
 import { layoutChart } from "./layout";
-import type { PlacedGlyph, PlacedSlat } from "./layout";
+import type { PlacedGlyph, PlacedSlat, ScreenBox } from "./layout";
 import Phoropter, { phoropterWidth } from "./Phoropter";
 import type { LensDial } from "./Phoropter";
 
@@ -42,9 +42,11 @@ export interface ChartSceneProps {
   intro: IntroMode;
   skipAt: number | null;
   shift: number;
+  focusId: string | null;
   onActive: (id: string | null) => void;
   onOpen: (id: string) => void;
   onReady: () => void;
+  onPlaced: (boxes: Record<string, ScreenBox>) => void;
   dials: LensDial[];
   onToggleLens: (id: string) => void;
 }
@@ -380,30 +382,68 @@ function Dust({ extent }: { extent: Extent }) {
   );
 }
 
+const DOLLY_MS = 450;
+const CORNERS = [
+  [-1, -1],
+  [1, -1],
+  [1, 1],
+  [-1, 1],
+] as const;
+
 function Rig({
   extent,
   shift,
+  glyphs,
   sharedRef,
   onOpen,
+  onPlaced,
 }: {
   extent: Extent;
   shift: number;
+  glyphs: PlacedGlyph[];
   sharedRef: SharedRef;
   onOpen: (id: string) => void;
+  onPlaced: (boxes: Record<string, ScreenBox>) => void;
 }) {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
   const aimRef = useRef(new Vector3());
   const goalRef = useRef(new Vector3());
-  const sway = useRef({ x: 0, y: 0 });
+  const probe = useRef(new Vector3());
+  const placed = useRef("");
+
+  const place = useCallback(() => {
+    const sig = `${size.width}x${size.height}:${camera.position.toArray().map((n) => n.toFixed(3)).join(",")}:${glyphs.length}`;
+    if (sig === placed.current) return;
+    placed.current = sig;
+    camera.updateMatrixWorld();
+    const boxes: Record<string, ScreenBox> = {};
+    for (const g of glyphs) {
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (const [dx, dy] of CORNERS) {
+        const v = probe.current.set(g.x + (dx * g.size) / 2, g.y + (dy * g.size) / 2, g.z).project(camera);
+        const px = ((v.x + 1) / 2) * size.width;
+        const py = ((1 - v.y) / 2) * size.height;
+        x0 = Math.min(x0, px);
+        y0 = Math.min(y0, py);
+        x1 = Math.max(x1, px);
+        y1 = Math.max(y1, py);
+      }
+      boxes[g.id] = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    }
+    onPlaced(boxes);
+  }, [camera, size.width, size.height, glyphs, onPlaced]);
 
   const frame = useMemo(() => {
-    const height = extent.top - extent.bottom + 1.3;
-    const width = extent.width + 1.8;
+    const height = extent.top - extent.bottom + 0.7;
+    const width = extent.width + 1.6;
     const aspect = (size.width * (1 - shift)) / Math.max(1, size.height);
     const fit = Math.max(height, width / aspect);
-    const distance = (fit / 2 / Math.tan((FOV * Math.PI) / 360)) * 1.04;
+    const distance = fit / 2 / Math.tan((FOV * Math.PI) / 360);
     return { distance, centerY: (extent.top + extent.bottom) / 2, centerZ: -extent.depth / 2 };
   }, [extent, size.width, size.height, shift]);
 
@@ -416,12 +456,12 @@ function Rig({
     invalidate();
   }, [camera, size.width, size.height, shift, invalidate]);
 
-  useFrame((state) => {
+  useFrame(() => {
     const aim = aimRef.current;
     const goal = goalRef.current;
     const d = sharedRef.current.dolly;
     if (d) {
-      const k = Math.min(1, (now() - d.at) / 600);
+      const k = Math.min(1, (now() - d.at) / DOLLY_MS);
       const e = k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2;
       goal.set(d.to.x, d.to.y, d.to.z + 1.4);
       camera.position.lerp(goal, e);
@@ -430,19 +470,15 @@ function Rig({
       if (k >= 1) {
         sharedRef.current.dolly = null;
         onOpen(d.id);
+      } else {
+        invalidate();
       }
       return;
     }
-    const still = sharedRef.current.still;
-    const reach = Math.tan((0.3 * Math.PI) / 180) * frame.distance;
-    const tx = still ? 0 : state.pointer.x * reach;
-    const ty = still ? 0 : state.pointer.y * reach * 0.6;
-    sway.current.x = still ? 0 : sway.current.x + (tx - sway.current.x) * 0.08;
-    sway.current.y = still ? 0 : sway.current.y + (ty - sway.current.y) * 0.08;
-    const breathe = 0;
-    camera.position.set(sway.current.x, frame.centerY + 0.45 + sway.current.y, frame.distance + breathe);
+    camera.position.set(0, frame.centerY + 0.45, frame.distance);
     aim.set(0, frame.centerY - 0.15, frame.centerZ);
     camera.lookAt(aim);
+    place();
   });
 
   return null;
@@ -469,8 +505,11 @@ function Ladder({ onSlow }: { onSlow: () => void }) {
   return null;
 }
 
-function Ticker({ active }: { active: boolean }) {
+function Ticker({ active, invalidateRef }: { active: boolean; invalidateRef: MutableRefObject<() => void> }) {
   const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    invalidateRef.current = () => invalidate();
+  }, [invalidate, invalidateRef]);
   useEffect(() => {
     invalidate();
     if (!active) return;
@@ -509,14 +548,17 @@ function ChartScene({
   intro,
   skipAt,
   shift,
+  focusId,
   onActive,
   onOpen,
   onReady,
+  onPlaced,
   dials,
   onToggleLens,
 }: ChartSceneProps) {
   const fontReady = useFontReady();
   const layout = useMemo(() => layoutChart(rows, still), [rows, still]);
+  const invalidateRef = useRef<() => void>(() => undefined);
   const [level, setLevel] = useState(0);
   const calm = still || level >= 2;
   const slow = useCallback(() => setLevel((l) => Math.min(2, l + 1)), []);
@@ -538,6 +580,17 @@ function ChartScene({
   useEffect(() => {
     if (skipAt !== null) sharedRef.current.clock.skipAt = sharedRef.current.born === null ? 0 : skipAt - sharedRef.current.born;
   }, [sharedRef, skipAt]);
+
+  useEffect(() => {
+    if (!focusId) return;
+    const place = layout.glyphs.find((g) => g.id === focusId);
+    if (!place || sharedRef.current.still) {
+      onOpen(focusId);
+      return;
+    }
+    sharedRef.current.dolly = { to: new Vector3(place.x, place.y, place.z), at: now(), id: focusId };
+    invalidateRef.current();
+  }, [focusId, layout, onOpen]);
 
   const hatchMap = useMemo(() => texture(drawHatch, 128, 128), []);
   const grain = useMemo(() => {
@@ -595,8 +648,8 @@ function ChartScene({
     >
       <ambientLight intensity={0.6} />
       <pointLight position={[0, layout.top, 1.2]} intensity={10} color={PANEL} distance={10} />
-      <Rig extent={extent} shift={shift} sharedRef={sharedRef} onOpen={onOpen} />
-      <Ticker active={!calm && !frozen} />
+      <Rig extent={extent} shift={shift} glyphs={layout.glyphs} sharedRef={sharedRef} onOpen={onOpen} onPlaced={onPlaced} />
+      <Ticker active={!calm && !frozen} invalidateRef={invalidateRef} />
       {!calm && !frozen && <Ladder onSlow={slow} />}
       {fontReady && (
         <>
