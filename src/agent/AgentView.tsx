@@ -85,8 +85,22 @@ export function AgentToggle() {
       data-testid="agent-toggle"
       data-state={on ? "on" : "off"}
     >
-      <span className="sprite-mark" style={{ maskImage: `url(${MARK})`, WebkitMaskImage: `url(${MARK})` }} aria-hidden="true" />
-      <span className="agent-toggle-text">{on ? "Human view" : "TestSprite view"}</span>
+      <span className="agent-toggle-ring" aria-hidden="true">
+        <span className="sprite-mark" style={{ maskImage: `url(${MARK})`, WebkitMaskImage: `url(${MARK})` }} />
+      </span>
+      <span className="agent-toggle-text">
+        {on ? (
+          <>
+            <span>Human</span> <span>view</span>
+          </>
+        ) : (
+          <>
+            <span>Test</span>
+            <span>Sprite</span>
+            <span className="visually-hidden"> view</span>
+          </>
+        )}
+      </span>
     </button>
   );
 }

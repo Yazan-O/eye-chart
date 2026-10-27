@@ -55,6 +55,7 @@ test("a station screenshot opens larger and closes with Escape", async ({ page }
   await page.getByTestId("reading-works-screenshot").click();
   const zoom = page.getByTestId("reading-works-screenshot-zoom");
   await expect(zoom).toBeVisible();
+  await expect(zoom.locator("img")).toHaveJSProperty("complete", true);
   const width = await zoom.locator("img").evaluate((el) => el.getBoundingClientRect().width);
   expect(width).toBeGreaterThan(400);
   await page.keyboard.press("Escape");

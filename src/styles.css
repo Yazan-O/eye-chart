@@ -143,26 +143,42 @@ button {
 
 .agent-toggle {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
-  height: 30px;
-  padding: 0 11px 0 8px;
+  gap: 5px;
+  padding: 0;
   border: 0;
-  border-radius: 3px;
-  background: var(--room-3);
+  background: none;
   color: var(--on-room);
-  font: 700 12px / 1 var(--text);
+  font: 700 11px / 1.1 var(--text);
   letter-spacing: 0.01em;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 160ms var(--ease), color 160ms var(--ease);
+}
+
+.agent-toggle-ring {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--room-3);
+  transition: background 160ms var(--ease);
+}
+
+.agent-toggle-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
 }
 
 .agent-toggle .sprite-mark {
-  width: 18px;
-  height: 18px;
+  width: 30px;
+  height: 30px;
   flex: none;
-  background: currentColor;
+  background: var(--on-room);
+  transition: background 160ms var(--ease);
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
@@ -171,13 +187,16 @@ button {
   -webkit-mask-size: contain;
 }
 
-.agent-toggle:hover {
+.agent-toggle:hover .agent-toggle-ring {
   background: #27405a;
 }
 
-.agent-toggle[aria-pressed="true"] {
+.agent-toggle[aria-pressed="true"] .agent-toggle-ring {
   background: var(--panel);
-  color: var(--ink);
+}
+
+.agent-toggle[aria-pressed="true"] .sprite-mark {
+  background: var(--ink);
 }
 
 .github-link {
@@ -352,8 +371,9 @@ button {
 
 .brand .wordmark {
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
   font: inherit;
 }
 
@@ -362,12 +382,18 @@ button {
 }
 
 .brand .robot-mark {
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
 }
 
 .chart .topbar-actions {
-  gap: 6px;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.about-button[aria-expanded="true"] {
+  background: var(--panel);
+  color: var(--ink);
 }
 
 .chart-intro {
@@ -1200,15 +1226,22 @@ button {
   }
 
   .brand .robot-mark {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
   }
 
   .agent-toggle {
     gap: 0;
-    padding: 0;
-    width: 30px;
-    justify-content: center;
+  }
+
+  .agent-toggle-ring {
+    width: 36px;
+    height: 36px;
+  }
+
+  .agent-toggle .sprite-mark {
+    width: 22px;
+    height: 22px;
   }
 
   .agent-toggle-text {
