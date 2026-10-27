@@ -1551,7 +1551,6 @@ a {
   transform-origin: center;
   transition:
     transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    margin 700ms cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 400ms ease;
 }
 
@@ -1588,7 +1587,7 @@ a {
   text-align: center;
   font: 400 28px / 1 var(--mono);
   color: var(--sky);
-  transition: opacity 400ms ease, width 700ms ease;
+  transition: opacity 400ms ease;
 }
 
 .explode[data-open="false"] .plate {
@@ -1597,12 +1596,15 @@ a {
 }
 
 .explode[data-open="false"] .plate + .plate-joint {
-  width: 0;
   opacity: 0;
 }
 
-.explode[data-open="false"] .plate-joint + .plate {
-  margin-left: -22%;
+.explode[data-open="false"] .plate--lens {
+  transform: translateX(calc(-40px - 30%)) rotateY(-38deg);
+}
+
+.explode[data-open="false"] .plate--after {
+  transform: translateX(calc(-80px - 90%)) rotateY(-38deg);
 }
 
 :root[data-motion="paused"] .plate,
@@ -1649,10 +1651,6 @@ a {
 
   .explode[data-open="false"] .plate {
     transform: none;
-  }
-
-  .explode[data-open="false"] .plate-joint + .plate {
-    margin-left: 0;
   }
 
   .explode-toggle {
@@ -2583,5 +2581,20 @@ a {
 @media (max-width: 860px) {
   .hero .stage {
     height: max(56svh, 460px);
+  }
+}
+
+@media (min-width: 861px) {
+  .dock .dials-head {
+    order: -2;
+  }
+
+  .dock .dials-live {
+    order: -1;
+  }
+
+  .dock .dial-detail {
+    order: -1;
+    margin: 0 0 4px;
   }
 }

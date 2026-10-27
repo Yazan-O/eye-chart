@@ -6,6 +6,7 @@ import { lensResult } from "../core/derive";
 import { useStillMotion } from "../core/motion";
 import { ui, useUi } from "../core/store";
 import { useLetters, useReadings } from "../data/hooks";
+import { letterState } from "../data/readings";
 import EventField from "./EventField";
 import { leaveSensor, OVERLAY } from "./control";
 import { countSensor } from "./sampler";
@@ -101,6 +102,8 @@ export default function Sensor() {
     [compare, lensRows, results],
   );
 
+  const readBefore = letters.filter((l) => letterState(l, results, false) === "read").length;
+  const readAfter = letters.filter((l) => letterState(l, results, fixed.has(l.id)) === "read").length;
   const counts = countSensor(nodes);
   const onChart = pathname === "/";
   const total = letters.length;
@@ -121,6 +124,11 @@ export default function Sensor() {
         <p className="retina-caption" data-testid="sensor-caption">
           {CAPTION}
         </p>
+        {compare && (
+          <p className="retina-caption" data-testid="compare-result">
+            With the recorded lenses: {readAfter} of {total} letters read correctly, up from {readBefore}.
+          </p>
+        )}
         <div className="retina-actions">
           <button type="button" className="button button--quiet" onClick={leaveSensor} data-testid="agent-exit">
             Back to human eyes

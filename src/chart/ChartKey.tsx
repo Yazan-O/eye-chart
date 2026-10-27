@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import type { ChartRow } from "../data/chart";
@@ -10,7 +11,7 @@ export interface ChartKeyProps {
   onActive: (id: string | null) => void;
 }
 
-export default function ChartKey({ rows, activeId, onActive }: ChartKeyProps) {
+function ChartKey({ rows, activeId, onActive }: ChartKeyProps) {
   if (rows.length === 0) {
     return (
       <p className="chart-key-empty" data-testid="chart-empty">
@@ -56,3 +57,5 @@ export default function ChartKey({ rows, activeId, onActive }: ChartKeyProps) {
     </nav>
   );
 }
+
+export default memo(ChartKey);

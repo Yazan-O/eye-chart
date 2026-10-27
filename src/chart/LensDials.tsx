@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { LensDial } from "./Phoropter";
 
@@ -14,7 +15,10 @@ export default function LensDials({
   onReset: () => void;
   onActive: (id: string | null) => void;
 }) {
-  const anyOn = dials.some((d) => d.on);
+  const [latest, setLatest] = useState<string | null>(null);
+  const onDials = dials.filter((d) => d.on);
+  const anyOn = onDials.length > 0;
+  const shown = onDials.find((d) => d.id === latest) ?? onDials[onDials.length - 1];
   return (
     <section className="dials" aria-label="Lens machine" data-testid="lens-machine">
       <div className="dials-head">
@@ -39,7 +43,10 @@ export default function LensDials({
                 className={`dial${d.on || d.demo ? " is-on" : ""}${activeId === d.id ? " is-active" : ""}`}
                 aria-pressed={d.on}
                 aria-label={`${d.name} lens on ${d.glyph}`}
-                onClick={() => onToggle(d.id)}
+                onClick={() => {
+                  if (!d.on) setLatest(d.id);
+                  onToggle(d.id);
+                }}
                 onMouseEnter={() => onActive(d.id)}
                 onMouseLeave={() => onActive(null)}
                 onFocus={() => onActive(d.id)}
@@ -59,7 +66,7 @@ export default function LensDials({
                   </span>
                 </span>
               </button>
-              {d.on && (
+              {d === shown && (
                 <p className="dial-detail" data-testid={`lens-dial-detail-${d.id}`}>
                   {d.summary}{" "}
                   <Link to={`/letter/${d.id}?pane=lens&focus=lens`} data-testid={`lens-dial-open-${d.id}`}>
@@ -72,10 +79,7 @@ export default function LensDials({
         </ul>
       )}
       <p className="dials-live" role="status" aria-live="polite" data-testid="lens-live">
-        {dials
-          .filter((d) => d.on)
-          .map((d) => `${d.name} on ${d.glyph}: ${d.without} becomes ${d.with}.`)
-          .join(" ")}
+        {shown ? `${shown.name} on ${shown.glyph}: ${shown.without} becomes ${shown.with}.` : ""}
       </p>
     </section>
   );
