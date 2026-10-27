@@ -214,7 +214,7 @@ function Glyph({
       hatch.current.position.x = -(1 - k) * s * 0.6;
     }
     if (body.current) {
-      const target = active ? 1.015 : 1;
+      const target = active ? 1.08 : 1;
       const cur = body.current.scale.x;
       body.current.scale.setScalar(sharedRef.current.still ? target : cur + (target - cur) * 0.25);
     }

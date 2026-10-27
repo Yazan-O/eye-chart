@@ -214,7 +214,7 @@ describe("App routing", () => {
     resetReadingsCache();
   });
 
-  it("plays the lens demo once on a recorded fix without pressing the dial", async () => {
+  function stubFix() {
     const reading = (variant: string, truth: string, verdict: string) => ({
       letterId: "canvas-slider",
       variant,
@@ -238,59 +238,96 @@ describe("App routing", () => {
     );
     sessionStorage.clear();
     resetReadingsCache();
-    renderAt("/");
-    const link = screen.getByTestId("letter-link-canvas-slider");
-    await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
-    act(() => ui.setReady(true));
-    const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
-    expect(dial).toHaveAttribute("aria-pressed", "false");
-    expect(link).toHaveAttribute("data-state", "misread");
-    await waitFor(() => expect(dial).not.toHaveClass("is-on"), { timeout: 3000 });
-    expect(sessionStorage.getItem("eye-chart-lens-demo")).toBe("1");
-    resetReadingsCache();
-  }, 8000);
+  }
 
-  it("ends the lens demo for good when a dial is turned during it", async () => {
-    const reading = (variant: string, truth: string, verdict: string) => ({
-      letterId: "canvas-slider",
-      variant,
-      truth,
-      verdict,
-      reason: "r",
-    });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          takenAt: "2026-10-26T15:00:00Z",
-          results: [
-            reading("works", "pass", "failed"),
-            reading("broken", "fail", "failed"),
-            reading("lens", "pass", "passed"),
-          ],
-        }),
-      }),
-    );
-    sessionStorage.clear();
-    resetReadingsCache();
+  it("plays the demo once on landing, previewing the recorded fix without pressing the dial", async () => {
+    stubFix();
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
-    act(() => ui.setReady(true));
-    const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
-    fireEvent.click(dial);
-    expect(dial).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(dial);
-    expect(dial).toHaveAttribute("aria-pressed", "false");
-    expect(dial).not.toHaveClass("is-on");
-    await new Promise((r) => setTimeout(r, 2600));
-    expect(dial).not.toHaveClass("is-on");
-    expect(link).toHaveAttribute("data-state", "misread");
+    vi.useFakeTimers();
+    try {
+      act(() => ui.setReady(true));
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
+      expect(screen.getByTestId("demo-toggle")).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByTestId("step-count")).toHaveTextContent("1 of 4");
+      act(() => {
+        vi.advanceTimersByTime(2700);
+      });
+      expect(screen.getByTestId("step-count")).toHaveTextContent("2 of 4");
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+      const dial = screen.getByTestId("lens-dial-canvas-slider");
+      expect(screen.getByTestId("step-count")).toHaveTextContent("3 of 4");
+      expect(dial).toHaveClass("is-on");
+      expect(dial).toHaveAttribute("aria-pressed", "false");
+      expect(link).toHaveAttribute("data-state", "misread");
+      act(() => {
+        vi.advanceTimersByTime(4000);
+      });
+      expect(screen.getByTestId("step-count")).toHaveTextContent("4 of 4");
+      expect(dial).not.toHaveClass("is-on");
+      expect(sessionStorage.getItem("eye-chart-lens-demo")).toBe("1");
+    } finally {
+      vi.useRealTimers();
+    }
     resetReadingsCache();
-  }, 8000);
+  });
+
+  it("ends the demo for good when a dial is turned during it", async () => {
+    stubFix();
+    renderAt("/");
+    const link = screen.getByTestId("letter-link-canvas-slider");
+    await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    vi.useFakeTimers();
+    try {
+      act(() => ui.setReady(true));
+      act(() => {
+        vi.advanceTimersByTime(50);
+      });
+      act(() => {
+        vi.advanceTimersByTime(7800);
+      });
+      const dial = screen.getByTestId("lens-dial-canvas-slider");
+      expect(dial).toHaveClass("is-on");
+      fireEvent.pointerDown(dial);
+      fireEvent.click(dial);
+      expect(screen.getByTestId("demo-toggle")).toHaveAttribute("aria-pressed", "false");
+      expect(dial).toHaveAttribute("aria-pressed", "true");
+      fireEvent.click(dial);
+      expect(dial).toHaveAttribute("aria-pressed", "false");
+      expect(dial).not.toHaveClass("is-on");
+      act(() => {
+        vi.advanceTimersByTime(20000);
+      });
+      expect(dial).not.toHaveClass("is-on");
+      expect(link).toHaveAttribute("data-state", "misread");
+      expect(screen.getByTestId("step-count")).toHaveTextContent("3 of 4");
+    } finally {
+      vi.useRealTimers();
+    }
+    resetReadingsCache();
+  });
+
+  it("moves between the four steps with the arrow keys and the step controls", () => {
+    renderAt("/");
+    expect(screen.getByTestId("step-count")).toHaveTextContent("1 of 4");
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    expect(screen.getByTestId("step-count")).toHaveTextContent("2 of 4");
+    fireEvent.click(screen.getByTestId("step-next"));
+    expect(screen.getByTestId("step-count")).toHaveTextContent("3 of 4");
+    fireEvent.click(screen.getByTestId("step-dot-4"));
+    expect(screen.getByTestId("step-count")).toHaveTextContent("4 of 4");
+    expect(screen.getByTestId("step-next")).toBeDisabled();
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+    fireEvent.click(screen.getByTestId("step-prev"));
+    expect(screen.getByTestId("step-count")).toHaveTextContent("2 of 4");
+    expect(screen.getByTestId("step-2")).toHaveAttribute("data-state", "active");
+    expect(screen.getByTestId("step-1")).toHaveAttribute("data-state", "before");
+  });
 
   it("fuses the station letter when the lens pane shows a recorded fix", async () => {
     const reading = (variant: string, truth: string, verdict: string) => ({

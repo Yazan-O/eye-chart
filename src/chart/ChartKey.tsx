@@ -46,8 +46,10 @@ function ChartKey({ rows, activeId, onActive }: ChartKeyProps) {
                   onBlur={() => onActive(null)}
                 >
                   <GlyphMark glyph={g.glyph} state={g.state} />
-                  <span className="chart-key-name">{g.name}</span>
-                  <span className="chart-key-state">{STATE_WORDS[g.state]}</span>
+                  <span className="chart-key-text">
+                    <span className="chart-key-name">{g.name}</span>
+                    <span className="chart-key-state">{STATE_WORDS[g.state]}</span>
+                  </span>
                 </Link>
               </li>
             ))}

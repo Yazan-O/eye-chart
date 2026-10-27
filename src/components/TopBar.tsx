@@ -2,15 +2,21 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { AgentToggle } from "../agent/AgentView";
 import About from "./About";
-import { GlassesMark } from "./Marks";
+import { RobotMark } from "./Marks";
 
-export default function TopBar({ children }: { children?: ReactNode }) {
+export default function TopBar({ children, home = false }: { children?: ReactNode; home?: boolean }) {
   return (
     <header className="topbar" data-testid="topbar">
       <div className="topbar-start">
         <Link to="/" className="wordmark" data-testid="wordmark" aria-label="Eye Chart, home">
-          <GlassesMark />
-          <span className="wordmark-text">Eye Chart</span>
+          <RobotMark />
+          {home ? (
+            <h1 className="wordmark-text" data-testid="heading">
+              Eye Chart
+            </h1>
+          ) : (
+            <span className="wordmark-text">Eye Chart</span>
+          )}
         </Link>
         {children}
       </div>
