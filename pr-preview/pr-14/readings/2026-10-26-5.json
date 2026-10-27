@@ -1,0 +1,28 @@
+{
+  "takenAt": "2026-10-26T16:29:31.235Z",
+  "commit": "b21edc6",
+  "engine": "TestSprite cloud agent, CLI 0.15.0",
+  "projectId": "94699d53-5d3b-4447-ae05-d9d5495745d1",
+  "results": [
+    {
+      "letterId": "autocomplete",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "0a3efdf6-1034-4dea-bc43-b153effde723",
+      "runId": "fa63d558-cbf7-4fec-a644-231673fb701a",
+      "reason": "The page shows “Chosen: Rochester” after the suggestion is selected.",
+      "screenshot": "readings/shots/fa63d558-cbf7-4fec-a644-231673fb701a.png"
+    },
+    {
+      "letterId": "consent-scrim",
+      "variant": "lens",
+      "truth": "pass",
+      "verdict": "passed",
+      "testId": "876b75ca-a58b-4e6a-b3f9-eb34da8bbf4b",
+      "runId": "5beaf3d4-23f4-4ecb-baa9-0b79f92bef73",
+      "reason": "The Consent scrim page displays “Step 2 of 3.”",
+      "screenshot": "readings/shots/5beaf3d4-23f4-4ecb-baa9-0b79f92bef73.png"
+    }
+  ]
+}
