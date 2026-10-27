@@ -2,15 +2,19 @@
 
 <p align="center"><b>An eye exam for TestSprite's own AI tester, scored against answers known before any test runs.</b></p>
 
+<h2 align="center">A red or blocked verdict from an AI tester only helps if you can trust it. Eye Chart measures how far you can.</h2>
+
+<p align="center"><b>Gate status</b> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/1">PR 1: red 3 times, then green</a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/8">PR 8: planted bug blocked by <code>verify</code></a> &nbsp;·&nbsp; <a href="https://github.com/Yazan-O/eye-chart/pull/13">PR 13: TestSprite failed 29 of 31 on two real regressions; the fix is in the same PR</a></p>
+
 <p align="center">
   <a href="https://yazan-o.github.io/eye-chart/"><img alt="Live site" src="https://img.shields.io/badge/live-yazan--o.github.io%2Feye--chart-2f6fbf"></a>
   <a href="https://github.com/Yazan-O/eye-chart/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Yazan-O/eye-chart/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/Yazan-O/eye-chart/actions/workflows/pages.yml"><img alt="Deploy" src="https://github.com/Yazan-O/eye-chart/actions/workflows/pages.yml/badge.svg"></a>
-  <a href="https://github.com/Yazan-O/eye-chart/pull/8/checks"><img alt="TestSprite V3 gate: 31 of 31, required on main" src="https://img.shields.io/badge/TestSprite%20V3%20gate-31%2F31%20%7C%20required%20on%20main-1d8a5b"></a>
+  <a href="https://github.com/Yazan-O/eye-chart/pull/13/checks"><img alt="TestSprite V3 gate: 31 tests, required on main" src="https://img.shields.io/badge/TestSprite%20V3%20gate-31%20tests%20%7C%20required%20on%20main-1d8a5b"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-5b6878"></a>
 </p>
 
-<p align="center"><a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/c85b8a73-aa97-4470-84b3-053eb1d1a94a">TestSprite report for the PR 8 fix run: 31 of 31 tests passed</a></p>
+<p align="center">TestSprite reports: <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79">PR 13 gate run, 29 of 31</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335">rewritten tally test on the planted bug (failed, as it should)</a> &nbsp;·&nbsp; <a href="https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da">same test on main (passed)</a></p>
 
 <p align="center">
   <a href="https://yazan-o.github.io/eye-chart/"><img src="docs/media/eye-chart-tour.gif" width="800" alt="The live chart: 24 letters in 7 rows, misread letters slashed, blocked letters hatched. The sensor view shows what an agent can find on the page, then the Toast lens turns on and the chart recounts."></a>
@@ -29,8 +33,8 @@ When TestSprite misreads a letter, we give it a **lens**: a small change to the 
 | Letters read right on both twins | **17 of 24** | 4 letters misread, 3 blocked |
 | Hidden-text row (row 7) read right | **10 of 10 twins** | The agent ignored every planted "this works" note |
 | Lenses that fix their letter | **5 of 7** | 2 do not, and we show both |
-| Site suite on every PR | **31 of 31**, required check | Went red 3 times on PR 1 before it went green |
-| Planted bug in PR 8 | **Blocked by the required checks** | 2 Playwright tests caught it; it was fixed and merged |
+| Site suite on every PR | **31 tests**, required check | Red 3 times on PR 1, then green. On PR 13 it failed 29 of 31 on two real regressions that 121 Playwright tests passed; the fix is in the same PR |
+| Planted bug in PR 8 | **Blocked by `verify`** | 2 Playwright tests caught it. TestSprite's old tally test missed it, and the rewritten test now catches it |
 
 Every number above is computed from [`public/readings/latest.json`](public/readings/latest.json) (TestSprite cloud agent, CLI 0.15.0, 62 readings, 2026-10-26) or read from the PR check statuses linked below.
 
@@ -193,7 +197,7 @@ Every pull request runs three kinds of check against its own preview deploy. Two
 
 ```mermaid
 flowchart TD
-  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 109 unit tests, 109 Playwright tests, build"]
+  PR["Pull request opened or updated"] --> VER["verify job, ci.yml<br/>lint, types, 110 unit tests, 121 Playwright tests, build"]
   PR --> DEP["Deploy job, pages.yml<br/>preview at /eye-chart/pr-preview/pr-N/<br/>finishes only when the preview serves this build"]
   DEP --> APP["TestSprite GitHub App<br/>31-test site suite on the preview"]
   PR --> RX["Re-examination job, calibration.yml<br/>waits for the preview, then the TestSprite CLI<br/>re-reads 5 headline twins"]
@@ -209,8 +213,8 @@ flowchart TD
 |---|---|---|---|---|
 | **Site suite**: TestSprite project "Eye Chart site", 31 tests, planned from [`docs/PRD.md`](docs/PRD.md) | The Eye Chart site itself | Chart, letter stations, lens machine, sensor view, routes, twin pages and phone width. The PRD it is planned from states checkable facts, for example: the four tally counts add up to 24, the summary line equals the read-correctly tally, and each lens letter's link carries `data-lens="on"` or `"off"`. | Every PR, through the TestSprite GitHub App, on that PR's preview | **Yes.** `main` requires the "TestSprite V3" check. |
 | **Re-examination**: TestSprite calibration project, CLI 0.15.0 | TestSprite itself, on 5 headline twins: `toast/works`, `hover-menu/works`, `hover-menu/lens`, `autocomplete/broken`, `consent-scrim/broken` | Each verdict against the twin's built-in truth, posted as a table on the PR | Same-repo PRs, while at least 8 credits remain; below that it posts a "skipped" note and starts no run | **No, by design.** A misread is a finding about the tester, not a bug in the site. |
-| **Unit tests**: Vitest, 13 files, 109 tests | Data rules and widgets | Readings parsing and scoring, lens logic, chart rows and layout, the sensor view's accessibility scan, routing, and the twins of each letter | Every PR and every push to `main` | **Yes.** `main` requires "verify". |
-| **End-to-end tests**: Playwright, 109 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
+| **Unit tests**: Vitest, 13 files, 110 tests | Data rules and widgets | Readings parsing and scoring, lens logic, chart rows and layout, the sensor view's accessibility scan, routing, and the twins of each letter | Every PR and every push to `main` | **Yes.** `main` requires "verify". |
+| **End-to-end tests**: Playwright, 121 tests | The built site in Chromium, served by `vite preview` | Exact values, not presence: the numbers on screen equal the numbers in `public/readings/latest.json`; chart, stations, lens dials, sensor view, routes, phone width and reduced motion | Every PR and every push to `main`, inside the required `verify` check | **Yes.** `main` requires "verify". |
 
 <details>
 <summary><b>The 31 site-suite tests</b> (names from <code>calibration/site-suite/</code>)</summary>
@@ -273,7 +277,23 @@ The merge waited until the check was green. Pull requests [2](https://github.com
 
 The two Playwright tests that caught it are in `e2e/chart.spec.ts`: the four tally counts add up to 24 and match the readings file, and the reading summary repeats the read count and the letter total.
 
-The finding: TestSprite's suite passed the buggy commit 31 of 31. Its test "Tally counts add to 24 and match the About totals" passed while the page showed 23 and the totals no longer matched. A count that is off by one row read as correct, which is the kind of misread Eye Chart measures. The check that held the merge was `verify`.
+The finding: TestSprite's suite passed the buggy commit 31 of 31. Its test "Tally counts add to 24 and match the About totals" passed while the page showed 23 and the totals no longer matched. The check that held the merge was `verify`.
+
+The agent had followed the test's "open the chart page" step to the live site and checked main's numbers instead of the preview's. The test is rewritten to stay on the page it is given and compare exact numbers (17, 4, 3, 0, sum 24). Run once against each build:
+
+| Build | Verdict | TestSprite's reason | Run |
+|---|---|---|---|
+| main | passed | | [5b44d927](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da) |
+| planted bug (`4abcbcb`), published at `/pr-preview/replay-bug/` | failed | "Read correctly: 16; expected 17 ... a total of 23 instead of 24" | [6fc04668](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335) |
+
+### The redesign: pull request 13, TestSprite catches two real regressions
+
+[Pull request 13](https://github.com/Yazan-O/eye-chart/pull/13) turned the chart page into one screen. Its `verify` check passed (110 unit and 121 Playwright tests). [TestSprite's gate](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79) failed 29 of 31, on two regressions the Playwright tests had not covered:
+
+- **Moving between letters.** TestSprite: "Previous and next navigation did not move between letter station pages." Next advanced the demo counter instead of the station.
+- **Lens link.** On the F lens page the link read "See the code change: letter E, Toast", the wrong letter.
+
+Both are real defects. The fix is in the same pull request.
 
 ### The re-examination comment: pull request 3
 

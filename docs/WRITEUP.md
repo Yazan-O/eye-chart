@@ -76,7 +76,11 @@ Two TestSprite projects, two jobs.
 
 **The calibration** is the eye exam. A GitHub Action re-reads five headline twins on every PR preview. It never holds the merge, because a misread there is a finding about the tester, not a bug in the site. If TestSprite ships a new agent tomorrow, the next PR shows whether it reads better or worse.
 
-The proof is [pull request 1](https://github.com/Yazan-O/eye-chart/pull/1). The check ran red three times: 18 of 21, then 20 of 21, then 20 of 21. Then it ran green, 21 of 21, and the merge went through.
+Three pull requests show it working.
+
+- [Pull request 1](https://github.com/Yazan-O/eye-chart/pull/1): the check ran red three times: 18 of 21, then 20 of 21, then 20 of 21. Then it ran green, 21 of 21, and the merge went through.
+- [Pull request 8](https://github.com/Yazan-O/eye-chart/pull/8): I planted a bug on purpose, a chart tally that skips the first row (16 instead of 17, 23 letters instead of 24). `verify` blocked it with 2 failing Playwright tests. TestSprite's old tally test passed it, because the agent had wandered to the live site. I rewrote the test to stay on the page it is given: run [6fc04668](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/6fc04668-6aaa-4db9-9063-bb846564d335) fails the planted build, and run [5b44d927](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/5b44d927-f0ee-4803-aa20-74140c09c6da) passes main.
+- [Pull request 13](https://github.com/Yazan-O/eye-chart/pull/13): the one-screen redesign. [TestSprite's gate failed 29 of 31](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/4ccc9881-7efc-4e81-a620-a5d650863d79) on two real regressions, the next and previous walk between letter stations and a lens link that named the wrong letter. The 121 Playwright tests had passed. The fix is in the same pull request.
 
 ## One limit
 
