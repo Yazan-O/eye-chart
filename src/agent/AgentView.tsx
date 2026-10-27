@@ -32,7 +32,7 @@ export function AgentViewProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && ui.get().view === "robot") {
+      if (e.key === "Esc" && ui.get().view === "robot") {
         leaveSensor();
         return;
       }
