@@ -8,23 +8,15 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "assertion",
-      "description": "Read the four tally counts: Read correctly, Misread, Blocked and Not read yet. Verify they add up to exactly 24"
-    },
-    {
-      "type": "action",
-      "description": "Click the 'About' button"
+      "description": "Compare the tally under the title with these exact expected numbers: tally-read 17, tally-misread 4, tally-blocked 3, tally-unread 0, sum 24. That is: 'Read correctly' shows 17, 'Misread' shows 4, 'Blocked' shows 3, 'Not read yet' shows 0. Fail if any shown number differs from its expected number, for example Read correctly 16, or if the four do not add to 24"
     },
     {
       "type": "assertion",
-      "description": "Verify the About panel's letters line reads 'Letters: A read correctly, B misread, C blocked, D not read yet.' where A, B, C and D are exactly the four tally counts read before"
-    },
-    {
-      "type": "assertion",
-      "description": "Verify the About panel's totals line reads 'The readings file holds N readings: M twin readings, K of them correct, and L lens readings.' with N equal to M plus L, and K equal to the first number in the chart's 'Twin readings correct: K of M' line"
+      "description": "The reading-summary line below the tally must contain the exact text 'Read correctly: 17 of 24 letters'. Fail if it shows any other pair of numbers, for example 'Read correctly: 16 of 23 letters'"
     }
   ]
 }
