@@ -31,6 +31,16 @@ The 10 exact-value tests in the TestSprite site suite (each passed once against 
 - the sensor view reports a part count above 0, and Escape removes the status line;
 - an unknown route shows "Page not found", and "Back to the chart" returns to the chart with its tally.
 
+### The PR 8 tally miss, and the rewritten test
+In PR 8 a planted off-by-one made the tally skip the chart's first row: 16 of 23 instead of 17 of 24. Playwright caught it. TestSprite's tally test passed it. Its run steps show why: the agent opened the PR preview, then followed the plan's "Open the site's chart page (the base URL, hash #/)" to `https://yazan-o.github.io/eye-chart/#/`, the live site, and checked main's numbers instead (run 155916ca).
+
+The test is now rewritten. It stays on the page it is given and compares exact numbers: tally 17, 4, 3, 0, sum 24, and "Read correctly: 17 of 24 letters". The planted commit's build is published at `https://yazan-o.github.io/eye-chart/pr-preview/replay-bug/`. The rewritten test was run once against each:
+
+| Build | Verdict | TestSprite's reason | Run |
+|---|---|---|---|
+| main | passed | | 5b44d927-f0ee-4803-aa20-74140c09c6da |
+| planted bug (4abcbcb) | failed | "Read correctly: 16; expected 17 ... a total of 23 instead of 24" | 6fc04668-6aaa-4db9-9063-bb846564d335 |
+
 The Playwright suite checks:
 - the four tally counts add up to 24 and equal the counts computed from the readings file, and the reading summary repeats the read count;
 - every one of the 24 letter links shows the state the readings file gives it;

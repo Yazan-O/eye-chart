@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
@@ -501,7 +501,7 @@ function Intro({ sharedRef, onReady }: { sharedRef: SharedRef; onReady: () => vo
   return null;
 }
 
-export default function ChartScene({
+function ChartScene({
   rows,
   activeId,
   still,
@@ -644,3 +644,5 @@ export default function ChartScene({
     </Canvas>
   );
 }
+
+export default memo(ChartScene);

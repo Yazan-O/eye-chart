@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildRows } from "../data/chart";
 import { useLetters, useReadings } from "../data/hooks";
@@ -77,7 +77,7 @@ export default function ChartPage() {
   const { letters } = useLetters();
   const { file, ready } = useReadings();
   const still = useStillMotion();
-  const { view, paused, ready: landed } = useUi();
+  const { view, paused, ready: landed, compare } = useUi();
   const [demo, setDemo] = useState<string | null>(null);
   const wide = useWideScreen();
   const navigate = useNavigate();
@@ -86,6 +86,9 @@ export default function ChartPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [params, setParams] = useSearchParams();
   const lensParam = params.get("lens") ?? "";
+  const chartParam = useDeferredValue(lensParam);
+  const chartActive = useDeferredValue(activeId);
+  const comparing = compare && view === "robot";
 
   useEffect(() => {
     markIntroShown();
@@ -93,12 +96,12 @@ export default function ChartPage() {
   }, []);
 
   useEffect(() => {
-    if (intro !== "full" || skipAt !== null) return;
+    if (intro !== "full" || skipAt !== null || landed) return;
     const skip = () => setSkipAt(performance.now());
     const events = ["keydown", "pointerdown", "wheel", "touchstart"] as const;
     events.forEach((e) => window.addEventListener(e, skip, { once: true, passive: true }));
     return () => events.forEach((e) => window.removeEventListener(e, skip));
-  }, [intro, skipAt]);
+  }, [intro, skipAt, landed]);
 
   const markReady = useCallback(() => {
     if (ui.get().view === "human") ui.setReady(true);
@@ -109,6 +112,15 @@ export default function ChartPage() {
     const wanted = new Set(lensParam.split(",").filter(Boolean));
     return new Set(withLens.filter((l) => wanted.has(l.id)).map((l) => l.id));
   }, [lensParam, withLens]);
+  const chartLens = useMemo(() => {
+    const wanted = new Set(chartParam.split(",").filter(Boolean));
+    const results = file?.results ?? [];
+    return new Set(
+      letters
+        .filter((l) => (l.lens && wanted.has(l.id)) || (comparing && lensResult(l.id, results) === "fixed"))
+        .map((l) => l.id),
+    );
+  }, [chartParam, letters, comparing, file]);
   const dials: LensDial[] = useMemo(
     () =>
       withLens.map((l) => ({
@@ -142,24 +154,30 @@ export default function ChartPage() {
     },
     [lensOn, setLenses],
   );
+  const toggleRef = useRef(toggleLens);
+  useEffect(() => {
+    toggleRef.current = toggleLens;
+  }, [toggleLens]);
+  const sceneToggle = useCallback((id: string) => toggleRef.current(id), []);
+  const openLetter = useCallback((id: string) => navigate(`/letter/${id}`), [navigate]);
 
   const rows = useMemo(
-    () => buildRows(letters, file?.results ?? [], lensOn),
-    [letters, file, lensOn],
+    () => buildRows(letters, file?.results ?? [], chartLens),
+    [letters, file, chartLens],
   );
   const demoId = useMemo(() => {
     const results = file?.results ?? [];
     const lensIds = new Set(withLens.map((l) => l.id));
     for (const g of rows.flatMap((r) => r.glyphs)) {
-      if (g.state === "misread" && lensIds.has(g.id) && !lensOn.has(g.id) && lensResult(g.id, results) === "fixed") {
+      if (g.state === "misread" && lensIds.has(g.id) && !chartLens.has(g.id) && lensResult(g.id, results) === "fixed") {
         return g.id;
       }
     }
     return null;
-  }, [rows, withLens, lensOn, file]);
+  }, [rows, withLens, chartLens, file]);
   const sceneRows = useMemo(
-    () => (demo ? buildRows(letters, file?.results ?? [], new Set([...lensOn, demo])) : rows),
-    [demo, rows, letters, file, lensOn],
+    () => (demo ? buildRows(letters, file?.results ?? [], new Set([...chartLens, demo])) : rows),
+    [demo, rows, letters, file, chartLens],
   );
 
   useEffect(() => {
@@ -190,7 +208,7 @@ export default function ChartPage() {
   if (!ready) summary = "Loading the readings.";
   else if (file && all.length > 0) {
     const lensWords =
-      lensOn.size === 0 ? "" : lensOn.size === 1 ? "With 1 lens on. " : `With ${lensOn.size} lenses on. `;
+      chartLens.size === 0 ? "" : chartLens.size === 1 ? "With 1 lens on. " : `With ${chartLens.size} lenses on. `;
     summary = `${lensWords}Read correctly: ${count("read")} of ${all.length} letters${taken ? `, measured ${taken}` : ""}.`;
   }
   const plaque = file
@@ -211,17 +229,17 @@ export default function ChartPage() {
             <Suspense fallback={<div className="chart-flat" data-testid="chart-flat" />}>
               <ChartScene
                 rows={sceneRows}
-                activeId={activeId}
+                activeId={chartActive}
                 still={still}
                 frozen={view === "robot"}
                 intro={intro}
                 skipAt={skipAt}
                 shift={wide ? 0.18 : 0}
                 onActive={setActiveId}
-                onOpen={(id) => navigate(`/letter/${id}`)}
+                onOpen={openLetter}
                 onReady={markReady}
                 dials={NO_DIALS}
-                onToggleLens={toggleLens}
+                onToggleLens={sceneToggle}
               />
             </Suspense>
           </SceneBoundary>
@@ -287,7 +305,7 @@ export default function ChartPage() {
             {paused ? "Motion paused" : "Pause motion"}
           </button>
         </div>
-        <ChartKey rows={rows} activeId={activeId} onActive={setActiveId} />
+        <ChartKey rows={rows} activeId={chartActive} onActive={setActiveId} />
       </section>
     </div>
   );
