@@ -291,7 +291,7 @@ The agent had followed the test's "open the chart page" step to the live site an
 
 ### The same bug again: pull request 15, TestSprite holds the merge
 
-[Pull request 15](https://github.com/Yazan-O/eye-chart/pull/15) planted the same one-line bug on the new design to check the rewritten test. [TestSprite's gate](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/42393415-b448-42eb-85f7-8f42c31a8bec) failed 6 of 31 and held the merge. Four tests reported "Read correctly: 16 of 23 letters" where 17 of 24 was expected. `verify` failed too. The fix commit restores the line.
+[Pull request 15](https://github.com/Yazan-O/eye-chart/pull/15) planted the same one-line bug on the new design to check the rewritten test. [TestSprite's gate](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/42393415-b448-42eb-85f7-8f42c31a8bec) failed 6 of 31 and held the merge. Four tests reported "Read correctly: 16 of 23 letters" where 17 of 24 was expected. `verify` failed too. The fix commit restores the line. [TestSprite's run on the fix commit](https://www.testsprite.com/dashboard-v3/o/9db76168-3c40-5a47-9bb7-b3589a267ccc/projects/aca2323a-9450-40b3-ab92-6ad21f4d77ff/execution/8cbe5a02-43a1-450d-9934-1f2f21dd4bde) also failed one test, "Compare working and broken counter pages", which found a real state leak between the twin pages; it is fixed in the same pull request.
 
 ### The redesign: pull request 13, TestSprite catches two real regressions
 
