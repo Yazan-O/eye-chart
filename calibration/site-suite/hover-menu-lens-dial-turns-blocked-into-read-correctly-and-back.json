@@ -8,11 +8,15 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "In the lens bar at the bottom, verify the Hover menu dial ('Menu button') shows Off and its reading line says 'Blocked'"
+      "description": "In the About panel's lens machine, verify the 'Menu button' dial shows Off and its reading line says 'Blocked'"
     },
     {
       "type": "action",
@@ -20,7 +24,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the dial's reading line now says 'Blocked → Read correctly' and the reading summary begins 'With 1 lens on.'"
+      "description": "Verify the dial's reading line now says 'Blocked → Read correctly' and the reading summary in the About panel begins 'With 1 lens on.'"
     },
     {
       "type": "action",

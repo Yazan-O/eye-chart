@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the working counter standalone page"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/l/counter/works' after it (for example .../#/l/counter/works). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "action",
@@ -16,11 +16,11 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the working page shows the expected accumulated count"
+      "description": "Verify the working page shows 'Count: 3'"
     },
     {
       "type": "action",
-      "description": "Navigate to the broken counter standalone page"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/l/counter/broken' after it (for example .../#/l/counter/broken). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "action",
@@ -28,7 +28,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the broken page shows a different count outcome than the working page"
+      "description": "Verify the broken page shows a count other than 3"
     }
   ]
 }

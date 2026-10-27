@@ -8,15 +8,23 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the eye chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "assertion",
-      "description": "Verify the page displays the chart heading, the reading summary, the tally, and the chart canvas"
+      "description": "Verify the page shows the 'Eye Chart' heading, the chart, and a letter card with a letter name, its state and the steps Works, Broken, Verdict, The fix and Result"
     },
     {
       "type": "assertion",
-      "description": "Verify the chart key lists all seven rows and the letter links are present"
+      "description": "Verify the chart key lists all seven rows and 24 letter links"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'About' button in the top bar to open the About panel"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the About panel shows the tally and a reading summary that says 'Read correctly: N of 24 letters'"
     }
   ]
 }

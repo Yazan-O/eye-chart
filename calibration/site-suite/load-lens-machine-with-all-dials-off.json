@@ -8,15 +8,19 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the lens machine page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "Verify all lens dials are off at load"
+      "description": "Verify all seven lens dials in the About panel's lens machine show Off"
     },
     {
       "type": "assertion",
-      "description": "Verify the chart shows the original letter states"
+      "description": "Verify the reading summary says 'Read correctly: 17 of 24 letters' and does not mention a lens"
     }
   ]
 }

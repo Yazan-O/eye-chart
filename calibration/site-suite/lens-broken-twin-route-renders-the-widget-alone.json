@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site at hash #/l/virtual-list/lens-broken (base URL followed by #/l/virtual-list/lens-broken)"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/l/virtual-list/lens-broken' after it (for example .../#/l/virtual-list/lens-broken). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "assertion",
@@ -16,7 +16,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the page shows no 'Eye Chart' heading and no tally, so the widget is rendered alone"
+      "description": "Verify the page shows no 'Eye Chart' heading and no chart, so the widget is rendered alone"
     }
   ]
 }

@@ -8,11 +8,11 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the Eye Chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "assertion",
-      "description": "Verify the main chart experience is displayed"
+      "description": "Verify the chart and the letter card are displayed"
     },
     {
       "type": "assertion",

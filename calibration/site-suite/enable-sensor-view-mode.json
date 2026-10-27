@@ -8,19 +8,19 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the Eye Chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Click the control to enable sensor view mode"
+      "description": "Click the 'TestSprite view' button in the top bar"
     },
     {
       "type": "assertion",
-      "description": "Verify the page shows the sensor view status line"
+      "description": "Verify a strip at the bottom reads 'Sensor view. N parts found.' where N is a whole number greater than 0"
     },
     {
       "type": "assertion",
-      "description": "Verify the sensor view reports page coverage information"
+      "description": "Verify the strip reports how many of the 24 letters it can find inside the chart canvas"
     }
   ]
 }

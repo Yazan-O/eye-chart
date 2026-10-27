@@ -8,11 +8,15 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the Eye Chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Click the control to enable sensor view mode"
+      "description": "Click the 'TestSprite view' button in the top bar"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify a strip at the bottom shows the sensor view and a 'Back to human eyes' button"
     },
     {
       "type": "action",
@@ -20,11 +24,11 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the sensor view status line is no longer shown"
+      "description": "Verify the sensor view strip is gone and the top-bar button says 'TestSprite view' again"
     },
     {
       "type": "assertion",
-      "description": "Verify the normal eye chart view is displayed"
+      "description": "Verify the normal eye chart with its letter card is displayed"
     }
   ]
 }

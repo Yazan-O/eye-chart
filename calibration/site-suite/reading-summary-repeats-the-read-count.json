@@ -8,11 +8,15 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "Verify the reading summary says 'Read correctly: N of 24 letters' and that N is exactly the number shown in the 'Read correctly' tally"
+      "description": "In the About panel, verify the reading summary says 'Read correctly: N of 24 letters' and that N is exactly the number shown in the 'Read correctly' tally above it"
     }
   ]
 }

@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site at hash #/letter/toast (base URL followed by #/letter/toast)"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/letter/toast' after it (for example .../#/letter/toast). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "assertion",

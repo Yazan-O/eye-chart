@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the working counter standalone page"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/l/counter/works' after it (for example .../#/l/counter/works). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "action",
@@ -16,7 +16,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the counter shows the accumulated count after three clicks"
+      "description": "Verify the counter shows 'Count: 3'"
     }
   ]
 }

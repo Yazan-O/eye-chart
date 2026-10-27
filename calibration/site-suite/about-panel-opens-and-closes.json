@@ -8,19 +8,19 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the eye chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Open the About panel"
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "Verify an About panel is displayed with an explanation of the project"
+      "description": "Verify the About panel is displayed with an explanation of the project, the tally, the lens machine and a 'Close' button"
     },
     {
       "type": "action",
-      "description": "Close the About panel"
+      "description": "Click 'Close' in the About panel"
     },
     {
       "type": "assertion",

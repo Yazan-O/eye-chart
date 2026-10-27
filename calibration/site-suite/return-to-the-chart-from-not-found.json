@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to a non-existent hash route"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/no-such-page' after it (for example .../#/no-such-page). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "action",
@@ -20,7 +20,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the eye chart heading is displayed"
+      "description": "Verify the 'Eye Chart' heading is displayed"
     }
   ]
 }
