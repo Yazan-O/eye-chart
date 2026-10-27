@@ -8,11 +8,11 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Click the link for a letter that has a lens"
+      "description": "Click the 'Toast' letter on the chart, then click 'Details' in the letter card to open its station"
     },
     {
       "type": "assertion",

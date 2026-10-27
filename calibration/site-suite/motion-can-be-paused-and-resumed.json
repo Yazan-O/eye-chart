@@ -8,23 +8,27 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the eye chart page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Click the motion toggle"
-    },
-    {
-      "type": "assertion",
-      "description": "Verify motion is paused and the control indicates the paused state"
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "action",
-      "description": "Click the motion toggle again"
+      "description": "Click 'Pause motion' in the About panel"
     },
     {
       "type": "assertion",
-      "description": "Verify motion resumes and the paused indicator is removed"
+      "description": "Verify the button now says 'Motion paused'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Motion paused' button again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the button says 'Pause motion' again"
     }
   ]
 }

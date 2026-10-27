@@ -8,23 +8,27 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the lens machine page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Turn on a lens dial for a letter with a lens"
-    },
-    {
-      "type": "assertion",
-      "description": "Verify the selected letter changes to its lens reading"
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "action",
-      "description": "Turn off the same lens dial"
+      "description": "In the About panel's lens machine, click the 'Status that stays' lens dial"
     },
     {
       "type": "assertion",
-      "description": "Verify the selected letter returns to its original state"
+      "description": "Verify its reading line changes to 'Misread → Read correctly'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Status that stays' lens dial again"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify its reading line returns to 'Misread'"
     }
   ]
 }

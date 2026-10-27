@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate directly to the chart hash route"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/' after it (for example .../#/). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "assertion",
@@ -16,7 +16,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the main eye chart content is displayed"
+      "description": "Verify the 'Eye Chart' heading, the chart and the letter card are displayed"
     }
   ]
 }

@@ -8,23 +8,27 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site's chart page (the base URL, hash #/) and wait 4 seconds for the chart to settle"
-    },
-    {
-      "type": "assertion",
-      "description": "In the lens bar at the bottom, verify the Toast dial ('Status that stays') shows Off and its reading line says 'Misread'"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Click the Toast lens dial ('Status that stays')"
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "Verify the dial's reading line now says 'Misread → Read correctly', the reading summary begins 'With 1 lens on.', and the URL contains 'lens=toast'"
+      "description": "In the About panel's lens machine, verify the 'Status that stays' dial shows Off and its reading line says 'Misread'"
     },
     {
       "type": "action",
-      "description": "Click the Toast lens dial again"
+      "description": "Click the 'Status that stays' lens dial"
+    },
+    {
+      "type": "assertion",
+      "description": "Verify the dial's reading line now says 'Misread → Read correctly' and the reading summary in the About panel begins 'With 1 lens on.', and the URL contains 'lens=toast'"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Status that stays' lens dial again"
     },
     {
       "type": "assertion",

@@ -11,12 +11,16 @@
       "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
-      "type": "assertion",
-      "description": "Compare the tally under the title with these exact expected numbers: tally-read 17, tally-misread 4, tally-blocked 3, tally-unread 0, sum 24. That is: 'Read correctly' shows 17, 'Misread' shows 4, 'Blocked' shows 3, 'Not read yet' shows 0. Fail if any shown number differs from its expected number, for example Read correctly 16, or if the four do not add to 24"
+      "type": "action",
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "assertion",
-      "description": "The reading-summary line below the tally must contain the exact text 'Read correctly: 17 of 24 letters'. Fail if it shows any other pair of numbers, for example 'Read correctly: 16 of 23 letters'"
+      "description": "Compare the tally in the About panel with these exact expected numbers: tally-read 17, tally-misread 4, tally-blocked 3, tally-unread 0, sum 24. That is: 'Read correctly' shows 17, 'Misread' shows 4, 'Blocked' shows 3, 'Not read yet' shows 0. Fail if any shown number differs from its expected number, for example Read correctly 16, or if the four do not add to 24"
+    },
+    {
+      "type": "assertion",
+      "description": "The reading summary in the About panel must contain the exact text 'Read correctly: 17 of 24 letters'. Fail if it shows any other pair of numbers, for example 'Read correctly: 16 of 23 letters'"
     }
   ]
 }

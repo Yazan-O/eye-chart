@@ -8,19 +8,23 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Navigate to the lens machine page"
+      "description": "Stay on the page that is already open at the start URL and do not navigate to any other address: the chart is on that page. Wait 4 seconds for the chart to settle"
     },
     {
       "type": "action",
-      "description": "Turn on one lens dial for a letter with a lens"
+      "description": "Click the 'About' button in the top bar to open the About panel"
     },
     {
       "type": "action",
-      "description": "Turn on another lens dial for a different letter with a lens"
+      "description": "In the About panel's lens machine, click the 'Status that stays' lens dial"
+    },
+    {
+      "type": "action",
+      "description": "Click the 'Menu button' lens dial"
     },
     {
       "type": "assertion",
-      "description": "Verify both selected letters display their lens readings"
+      "description": "Verify both dials show On, their reading lines say 'Misread → Read correctly' and 'Blocked → Read correctly', and the reading summary says 2 lenses are on"
     }
   ]
 }

@@ -69,6 +69,27 @@ function renderAt(path: string) {
   );
 }
 
+function stubReadings(works: string, broken: string, lens: string, lensTruth = "pass") {
+  const reading = (variant: string, truth: string, verdict: string) => ({
+    letterId: "canvas-slider",
+    variant,
+    truth,
+    verdict,
+    reason: "r",
+  });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        takenAt: "2026-10-26T15:00:00Z",
+        results: [reading("works", "pass", works), reading("broken", "fail", broken), reading("lens", lensTruth, lens)],
+      }),
+    }),
+  );
+  resetReadingsCache();
+}
+
 describe("App routing", () => {
   beforeEach(() => {
     mockMatchMedia(false);
@@ -97,6 +118,8 @@ describe("App routing", () => {
     expect(screen.getByTestId("letter-link-canvas-slider")).toHaveAccessibleName(
       "Canvas slider: Not read yet",
     );
+    expect(screen.getByTestId("letter-card")).toHaveAttribute("data-letter-id", "canvas-slider");
+    fireEvent.click(screen.getByTestId("about-open"));
     expect(await screen.findByTestId("reading-summary")).toHaveTextContent("Not read yet.");
   });
 
@@ -130,10 +153,10 @@ describe("App routing", () => {
     renderAt("/");
     const toggle = screen.getByTestId("agent-toggle");
     expect(toggle).toHaveAttribute("aria-pressed", "false");
-    expect(toggle).toHaveTextContent("See it like TestSprite");
+    expect(toggle).toHaveTextContent("TestSprite view");
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(toggle).toHaveTextContent("Back to human eyes");
+    expect(toggle).toHaveTextContent("Human view");
     expect(toggle).toHaveAttribute("data-state", "on");
     expect(document.documentElement.dataset.view).toBe("robot");
     expect(await screen.findByTestId("agent-overlay")).toBeInTheDocument();
@@ -164,8 +187,9 @@ describe("App routing", () => {
     }
   });
 
-  it("toggles pause motion and marks the root", () => {
+  it("toggles pause motion from About and marks the root", () => {
     renderAt("/");
+    fireEvent.click(screen.getByTestId("about-open"));
     const pause = screen.getByTestId("motion-toggle");
     expect(pause).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(pause);
@@ -173,33 +197,15 @@ describe("App routing", () => {
     expect(document.documentElement.dataset.motion).toBe("paused");
   });
 
-  it("turns a lens dial with the keyboard-reachable button and rereads the chart", async () => {
-    const reading = (variant: string, truth: string, verdict: string) => ({
-      letterId: "canvas-slider",
-      variant,
-      truth,
-      verdict,
-      reason: "r",
-    });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          takenAt: "2026-10-26T15:00:00Z",
-          results: [
-            reading("works", "pass", "passed"),
-            reading("broken", "fail", "passed"),
-            reading("lens", "fail", "failed"),
-          ],
-        }),
-      }),
-    );
-    resetReadingsCache();
+  it("turns a lens dial inside About and rereads the chart", async () => {
+    stubReadings("passed", "passed", "failed", "fail");
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
+    fireEvent.click(screen.getByTestId("about-open"));
     expect(screen.getByTestId("twin-summary")).toHaveTextContent("Twin readings correct: 1 of 2.");
+    expect(screen.getByTestId("tally-misread")).toHaveTextContent("1");
+    expect(screen.getByTestId("tally-misread")).toHaveTextContent("letter it misread");
     const dial = screen.getByTestId("lens-dial-canvas-slider");
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(link).toHaveAttribute("data-lens", "off");
@@ -214,107 +220,90 @@ describe("App routing", () => {
     resetReadingsCache();
   });
 
-  it("plays the lens demo once on a recorded fix without pressing the dial", async () => {
-    const reading = (variant: string, truth: string, verdict: string) => ({
-      letterId: "canvas-slider",
-      variant,
-      truth,
-      verdict,
-      reason: "r",
-    });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          takenAt: "2026-10-26T15:00:00Z",
-          results: [
-            reading("works", "pass", "failed"),
-            reading("broken", "fail", "failed"),
-            reading("lens", "pass", "passed"),
-          ],
-        }),
-      }),
-    );
+  it("opens the card by itself for a recorded fix and steps through to the lens without pressing the dial", async () => {
+    stubReadings("failed", "failed", "passed");
     sessionStorage.clear();
-    resetReadingsCache();
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
     act(() => ui.setReady(true));
+    const card = await screen.findByTestId("letter-card");
+    expect(card).toHaveAttribute("data-letter-id", "canvas-slider");
+    await waitFor(() => expect(card).toHaveAttribute("data-playing", "true"));
+    expect(card).toHaveAttribute("data-step", "works");
+    expect(screen.getByTestId("card-line")).toHaveTextContent("This version works.");
+    await waitFor(() => expect(card).toHaveAttribute("data-step", "verdict"), { timeout: 4000 });
+    expect(screen.getByTestId("card-verdict")).toHaveTextContent("TestSprite read this letter wrong.");
+    expect(screen.getByTestId("card-key")).toHaveTextContent("Broken version");
+    await waitFor(() => expect(card).toHaveAttribute("data-step", "lens"), { timeout: 4000 });
+    fireEvent.click(screen.getByTestId("about-open"));
     const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
+    expect(dial).toHaveClass("is-on");
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(link).toHaveAttribute("data-state", "misread");
-    await waitFor(() => expect(dial).not.toHaveClass("is-on"), { timeout: 3000 });
+    fireEvent.click(screen.getByTestId("about-close"));
+    await waitFor(() => expect(card).toHaveAttribute("data-step", "after"), { timeout: 4000 });
+    expect(screen.getByTestId("card-state")).toHaveTextContent("Fixed with lens");
+    expect(screen.getByTestId("card-verdict")).toHaveTextContent("Fixed with the lens.");
+    await waitFor(() => expect(card).toHaveAttribute("data-playing", "false"));
     expect(sessionStorage.getItem("eye-chart-lens-demo")).toBe("1");
     resetReadingsCache();
-  }, 8000);
+  }, 12000);
 
-  it("ends the lens demo for good when a dial is turned during it", async () => {
-    const reading = (variant: string, truth: string, verdict: string) => ({
-      letterId: "canvas-slider",
-      variant,
-      truth,
-      verdict,
-      reason: "r",
-    });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          takenAt: "2026-10-26T15:00:00Z",
-          results: [
-            reading("works", "pass", "failed"),
-            reading("broken", "fail", "failed"),
-            reading("lens", "pass", "passed"),
-          ],
-        }),
-      }),
-    );
+  it("stops the card for good when a dial is turned while it plays", async () => {
+    stubReadings("failed", "failed", "passed");
     sessionStorage.clear();
-    resetReadingsCache();
     renderAt("/");
     const link = screen.getByTestId("letter-link-canvas-slider");
     await waitFor(() => expect(link).toHaveAttribute("data-state", "misread"));
     act(() => ui.setReady(true));
+    const card = await screen.findByTestId("letter-card");
+    await waitFor(() => expect(card).toHaveAttribute("data-playing", "true"));
+    fireEvent.click(screen.getByTestId("about-open"));
     const dial = screen.getByTestId("lens-dial-canvas-slider");
-    await waitFor(() => expect(dial).toHaveClass("is-on"), { timeout: 1500 });
     fireEvent.click(dial);
     expect(dial).toHaveAttribute("aria-pressed", "true");
+    expect(card).toHaveAttribute("data-playing", "false");
     fireEvent.click(dial);
     expect(dial).toHaveAttribute("aria-pressed", "false");
     expect(dial).not.toHaveClass("is-on");
-    await new Promise((r) => setTimeout(r, 2600));
-    expect(dial).not.toHaveClass("is-on");
+    await new Promise((r) => setTimeout(r, 1600));
+    expect(card).toHaveAttribute("data-playing", "false");
+    expect(card).toHaveAttribute("data-step", "works");
     expect(link).toHaveAttribute("data-state", "misread");
     resetReadingsCache();
-  }, 8000);
+  }, 12000);
+
+  it("steps the card by hand and switches it to another letter", async () => {
+    stubReadings("failed", "failed", "passed");
+    sessionStorage.clear();
+    renderAt("/");
+    await waitFor(() => expect(screen.getByTestId("letter-link-canvas-slider")).toHaveAttribute("data-state", "misread"));
+    act(() => ui.setReady(true));
+    const card = await screen.findByTestId("letter-card");
+    await waitFor(() => expect(card).toHaveAttribute("data-playing", "true"));
+    fireEvent.click(screen.getByTestId("card-next"));
+    expect(card).toHaveAttribute("data-playing", "false");
+    expect(card).toHaveAttribute("data-step", "broken");
+    fireEvent.keyDown(card, { key: "ArrowLeft" });
+    expect(card).toHaveAttribute("data-step", "works");
+    expect(screen.getByTestId("card-back")).toBeDisabled();
+    expect(screen.getByTestId("card-details")).toHaveAttribute("href", "/letter/canvas-slider");
+    fireEvent.click(screen.getByTestId("card-tab-lens"));
+    expect(card).toHaveAttribute("data-step", "lens");
+    fireEvent.click(screen.getByTestId("letter-link-plain-button"));
+    expect(screen.getByTestId("letter-card")).toHaveAttribute("data-letter-id", "plain-button");
+    expect(screen.getByTestId("letter-card")).toHaveAttribute("data-step", "works");
+    expect(screen.queryByTestId("card-tab-lens")).toBeNull();
+    fireEvent.click(screen.getByTestId("card-tab-verdict"));
+    expect(screen.getByTestId("card-verdict")).toHaveTextContent("TestSprite has not read this letter yet.");
+    expect(screen.getByTestId("card-line")).toHaveTextContent("Every letter on the chart is scored this way.");
+    expect(screen.getByTestId("card-next")).toBeDisabled();
+    resetReadingsCache();
+  });
 
   it("fuses the station letter when the lens pane shows a recorded fix", async () => {
-    const reading = (variant: string, truth: string, verdict: string) => ({
-      letterId: "canvas-slider",
-      variant,
-      truth,
-      verdict,
-      reason: "r",
-    });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          takenAt: "2026-10-26T15:00:00Z",
-          results: [
-            reading("works", "pass", "failed"),
-            reading("broken", "fail", "failed"),
-            reading("lens", "pass", "passed"),
-          ],
-        }),
-      }),
-    );
-    resetReadingsCache();
+    stubReadings("failed", "failed", "passed");
     renderAt("/letter/canvas-slider");
     const glyph = await screen.findByTestId("station-glyph");
     await waitFor(() => expect(glyph).toHaveAttribute("data-mark", "slash"));
@@ -337,6 +326,7 @@ describe("App routing", () => {
     expect(screen.getByTestId("about-panel")).toHaveAccessibleName("An eye exam for an AI tester");
     expect(screen.getByTestId("about-run")).toHaveTextContent("No run recorded yet.");
     expect(screen.getByTestId("about-measured")).toHaveTextContent("0 of 2 letters measured.");
+    expect(screen.getByTestId("github-link")).toHaveAttribute("href", "https://github.com/Yazan-O/eye-chart");
     fireEvent.click(screen.getByTestId("about-close"));
     expect(screen.queryByTestId("about-panel")).not.toBeInTheDocument();
   });

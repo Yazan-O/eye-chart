@@ -17,15 +17,6 @@ export default function TopBar({ children }: { children?: ReactNode }) {
       <div className="topbar-actions">
         <AgentToggle />
         <About />
-        <a
-          className="button button--quiet topbar-github"
-          href="https://github.com/Yazan-O/eye-chart"
-          target="_blank"
-          rel="noreferrer"
-          data-testid="github-link"
-        >
-          GitHub
-        </a>
       </div>
     </header>
   );

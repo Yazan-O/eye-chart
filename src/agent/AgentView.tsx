@@ -66,6 +66,8 @@ export function AgentViewProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const MARK = `${import.meta.env.BASE_URL}testsprite-mark.svg`;
+
 export function AgentToggle() {
   const { on } = useAgentView();
   const prefetch = useCallback(() => {
@@ -74,15 +76,31 @@ export function AgentToggle() {
   return (
     <button
       type="button"
-      className="button agent-toggle"
+      className="agent-toggle"
       aria-pressed={on}
+      aria-label={on ? "Human view" : "TestSprite view"}
       onClick={toggleSensor}
       onMouseEnter={prefetch}
       onFocus={prefetch}
       data-testid="agent-toggle"
       data-state={on ? "on" : "off"}
     >
-      {on ? "Back to human eyes" : "See it like TestSprite"}
+      <span className="agent-toggle-ring" aria-hidden="true">
+        <span className="sprite-mark" style={{ maskImage: `url(${MARK})`, WebkitMaskImage: `url(${MARK})` }} />
+      </span>
+      <span className="agent-toggle-text">
+        {on ? (
+          <>
+            <span>Human</span> <span>view</span>
+          </>
+        ) : (
+          <>
+            <span>Test</span>
+            <span>Sprite</span>
+            <span className="visually-hidden"> view</span>
+          </>
+        )}
+      </span>
     </button>
   );
 }

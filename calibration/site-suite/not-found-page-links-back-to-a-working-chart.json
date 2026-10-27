@@ -8,7 +8,7 @@
   "planSteps": [
     {
       "type": "action",
-      "description": "Open the site at hash #/no-such-page (base URL followed by #/no-such-page)"
+      "description": "Take the address of the page already open, keep everything before '#' exactly as it is, and open it with '#/no-such-page' after it (for example .../#/no-such-page). Do not go to any other site address. Wait 3 seconds"
     },
     {
       "type": "assertion",
@@ -20,7 +20,7 @@
     },
     {
       "type": "assertion",
-      "description": "Verify the 'Eye Chart' heading and the 'Read correctly' tally are visible and the URL hash is '#/'"
+      "description": "Verify the 'Eye Chart' heading and the letter card are visible and the URL hash is '#/'"
     }
   ]
 }

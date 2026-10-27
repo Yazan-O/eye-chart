@@ -16,11 +16,24 @@ async function animated(page: Page, selector: string): Promise<string[]> {
 
 async function openChart(page: Page) {
   await page.goto("/#/");
+  await expect(page.locator('a[data-testid^="letter-link-"]')).toHaveCount(24);
+}
+
+async function openAbout(page: Page) {
+  await page.getByTestId("about-open").click();
   await expect(page.getByTestId("reading-summary")).toHaveText(/Read correctly: \d+ of \d+ letters/);
 }
 
+async function closeAbout(page: Page) {
+  await page.getByTestId("about-close").click();
+  await expect(page.getByTestId("about-panel")).toHaveCount(0);
+}
+
 async function readCount(page: Page): Promise<number> {
-  return Number(await page.getByTestId("tally-read").locator("dd").innerText());
+  await openAbout(page);
+  const n = Number(await page.getByTestId("tally-read").locator("dd").innerText());
+  await closeAbout(page);
+  return n;
 }
 
 for (const [width, height] of [
@@ -31,8 +44,9 @@ for (const [width, height] of [
   test.describe(`at ${width}x${height}`, () => {
     test.use({ viewport: { width, height } });
 
-    test("the chart stays clear of the lens bar with every lens on", async ({ page }) => {
+    test("every lens can be turned on from About and one detail shows", async ({ page }) => {
       await openChart(page);
+      await openAbout(page);
       const dials = page.locator('button[data-testid^="lens-dial-"]');
       const n = await dials.count();
       expect(n).toBeGreaterThan(1);
@@ -41,12 +55,24 @@ for (const [width, height] of [
         await expect(dials.nth(i)).toHaveAttribute("aria-pressed", "true");
       }
       await expect(page.locator('[data-testid^="lens-dial-detail-"]')).toHaveCount(1);
-      const gap = await page.evaluate(() => {
+      await expect(page.getByTestId("reading-summary")).toContainText(`With ${n} lenses on.`);
+    });
+
+    test("the page has no scrollbars and the chart letters sit inside the stage", async ({ page }) => {
+      await openChart(page);
+      await page.waitForSelector(".chart-key--placed");
+      const fit = await page.evaluate(() => {
+        const d = document.documentElement;
         const stage = document.querySelector('[data-testid="scene"]')!.getBoundingClientRect();
-        const dock = document.querySelector(".dock")!.getBoundingClientRect();
-        return dock.top - stage.bottom;
+        const links = [...document.querySelectorAll('a[data-testid^="letter-link-"]')].map((a) =>
+          a.getBoundingClientRect(),
+        );
+        return {
+          noScroll: d.scrollWidth <= d.clientWidth && d.scrollHeight <= d.clientHeight,
+          inside: links.every((b) => b.top >= stage.top - 1 && b.bottom <= stage.bottom + 1 && b.width > 4),
+        };
       });
-      expect(gap).toBeGreaterThanOrEqual(0);
+      expect(fit).toEqual({ noScroll: true, inside: true });
     });
   });
 }
@@ -56,6 +82,7 @@ test.describe("at 1440x900", () => {
 
   test("turning a lens on keeps the other dials under the pointer", async ({ page }) => {
     await openChart(page);
+    await openAbout(page);
     const first = page.getByTestId("lens-dial-toast");
     const second = page.getByTestId("lens-dial-hover-menu");
     const box = (await second.boundingBox())!;
@@ -69,7 +96,8 @@ test.describe("at 1440x900", () => {
 
   test("lens and twin controls animate only transform and opacity", async ({ page }) => {
     await openChart(page);
-    const dialProps = await animated(page, ".dock .dial, .dock .dial-knob");
+    await openAbout(page);
+    const dialProps = await animated(page, ".dials .dial, .dials .dial-knob");
     await page.goto("/#/letter/toast");
     await expect(page.getByTestId("lens-exploded")).toBeVisible();
     const explodeProps = await animated(page, ".plate, .plate-joint, .pane-switch button");
@@ -82,6 +110,18 @@ test.describe("at 1440x900", () => {
     await explode.click();
     await expect(page.getByTestId("lens-exploded")).toHaveAttribute("data-open", "false");
     await expect.poll(async () => (await plate.boundingBox())!.x).toBeLessThan(open - 40);
+  });
+
+  test("the card plays by itself on load and stops on a click", async ({ page }) => {
+    await openChart(page);
+    const card = page.getByTestId("letter-card");
+    await expect(card).toHaveAttribute("data-playing", "true", { timeout: 15_000 });
+    await expect(card).toHaveAttribute("data-step", "works");
+    await page.getByTestId("card-next").click();
+    await expect(card).toHaveAttribute("data-playing", "false");
+    await expect(card).toHaveAttribute("data-step", "broken");
+    await page.waitForTimeout(1200);
+    await expect(card).toHaveAttribute("data-step", "broken");
   });
 });
 
@@ -102,7 +142,6 @@ for (const width of [1440, 375]) {
       const after = Number((await result.innerText()).match(/lenses: (\d+) of/)?.[1]);
       expect(after).toBeGreaterThan(before);
       await expect.poll(() => readCount(page)).toBe(after);
-      await expect(page.getByTestId("reading-summary")).toContainText("lenses on");
       await compare.click();
       await expect(compare).toHaveAttribute("aria-pressed", "false");
       await expect(result).toHaveCount(0);

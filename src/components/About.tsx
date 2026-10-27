@@ -1,17 +1,38 @@
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useLetters, useReadings } from "../data/hooks";
 import { buildRows } from "../data/chart";
 import { STATE_WORDS, twinTally } from "../data/readings";
 import type { GlyphState } from "../data/types";
 import GlyphMark from "./GlyphMark";
 
-const REPO = "https://github.com/Yazan-O/eye-chart";
+export const REPO = "https://github.com/Yazan-O/eye-chart";
 const KEY: [GlyphState, string][] = [
   ["read", "TestSprite passed the working twin and failed the broken one."],
   ["misread", "TestSprite got at least one twin wrong. A ghost copy and an orange slash."],
   ["blocked", "TestSprite could not test a twin. Hatched."],
   ["unread", "No reading recorded yet. An outline only."],
 ];
+
+export function GithubLink() {
+  return (
+    <a
+      className="github-link"
+      href={REPO}
+      target="_blank"
+      rel="noreferrer"
+      data-testid="github-link"
+    >
+      <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+        />
+      </svg>
+      Source on GitHub
+    </a>
+  );
+}
 
 function RunFacts() {
   const { letters } = useLetters();
@@ -55,7 +76,7 @@ function RunFacts() {
   );
 }
 
-export default function About() {
+export default function About({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -80,13 +101,18 @@ export default function About() {
       <button
         ref={opener}
         type="button"
-        className="button button--quiet"
+        className="about-button"
+        aria-label="About"
+        title="About"
         aria-expanded={open}
         aria-controls="about-panel"
         onClick={() => setOpen((v) => !v)}
         data-testid="about-open"
       >
-        About
+        <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M10 9v5.5M10 6.2v.3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
       </button>
       {open && (
         <div className="about-scrim" onClick={close} data-testid="about-scrim">
@@ -107,6 +133,7 @@ export default function About() {
               agent sees. Each letter is a real widget, built twice: one copy works, the other is
               broken in a way any person would spot. TestSprite tests both.
             </p>
+            {children}
             <RunFacts />
             <h3>What the marks mean</h3>
             <ul className="about-key">
@@ -129,7 +156,7 @@ export default function About() {
               tested again. Turn a dial to see the chart with that lens on. A dial with no
               recorded reading says &ldquo;not measured&rdquo; and changes nothing.
             </p>
-            <h3>See it like TestSprite</h3>
+            <h3>TestSprite view</h3>
             <p>
               A camera that only sees change, built from the page&rsquo;s own structure. It is
               one half of what an agent reads (it also reads screenshots), and an illustration,
@@ -140,7 +167,14 @@ export default function About() {
             <h3>Keys</h3>
             <p>
               R switches the view when the chart or the button has focus. Escape leaves it.
-              Pause motion stops every ambient movement.
+              Left and right arrows step through a letter&rsquo;s card.
+            </p>
+            <p>
+              <GithubLink />
+            </p>
+            <p className="about-credit">
+              The mark on the TestSprite view button is TestSprite&rsquo;s own logo, from
+              testsprite.com, used here to name the agent under test.
             </p>
             <p>
               <a href={REPO} target="_blank" rel="noreferrer" data-testid="about-repo">
